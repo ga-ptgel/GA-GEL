@@ -4,21 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#b45309" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="GA GEL" />
-  <title>GA GEL — PT Global Energi Lestari</title>
-
-  <link id="dynamicPwaManifest" rel="manifest" href="./manifest.json" />
-  <link id="appFaviconLink" rel="icon" type="image/png" href="https://gelgroup.co.id/images/logo-gel.png" />
-  <link id="appleTouchIconLink" rel="apple-touch-icon" href="https://gelgroup.co.id/images/logo-gel.png" />
-
+  <title>GA GEL — Portal Operasional Terpadu PT Global Energi Lestari</title>
+  <link id="dynamicPwaManifest" rel="manifest" href="" />
+  <link id="appFaviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f3c64f'/%3E%3Cstop offset='50%25' stop-color='%23d4a017'/%3E%3Cstop offset='100%25' stop-color='%23b58112'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='22' y='22' width='468' height='468' rx='112' fill='%23ffffff' stroke='url(%23g)' stroke-width='18'/%3E%3Cg transform='translate(256,262)' fill='none' stroke='url(%23g)' stroke-width='22' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z'/%3E%3Cpath d='M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z' transform='rotate(120)'/%3E%3Cpath d='M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z' transform='rotate(240)'/%3E%3Cpath d='M-96,-58 L-96,-94 L-62,-94'/%3E%3Cpath d='M96,-58 L96,-94 L62,-94'/%3E%3Cpath d='M-28,118 L0,144 L28,118'/%3E%3Ccircle cx='0' cy='0' r='22' fill='%23ffffff' stroke='url(%23g)' stroke-width='18'/%3E%3C/g%3E%3C/svg%3E" />
+  <link id="appleTouchIconLink" rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f3c64f'/%3E%3Cstop offset='50%25' stop-color='%23d4a017'/%3E%3Cstop offset='100%25' stop-color='%23b58112'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='22' y='22' width='468' height='468' rx='112' fill='%23ffffff' stroke='url(%23g)' stroke-width='18'/%3E%3Cg transform='translate(256,262)' fill='none' stroke='url(%23g)' stroke-width='22' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z'/%3E%3Cpath d='M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z' transform='rotate(120)'/%3E%3Cpath d='M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z' transform='rotate(240)'/%3E%3Cpath d='M-96,-58 L-96,-94 L-62,-94'/%3E%3Cpath d='M96,-58 L96,-94 L62,-94'/%3E%3Cpath d='M-28,118 L0,144 L28,118'/%3E%3Ccircle cx='0' cy='0' r='22' fill='%23ffffff' stroke='url(%23g)' stroke-width='18'/%3E%3C/g%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <script>
@@ -54,6 +55,34 @@
       const app = document.getElementById('appleTouchIconLink');
       if (fav) { fav.type = 'image/png'; fav.href = logoUrl; }
       if (app) { app.href = logoUrl; }
+
+      // Konversi logo-gel.png asli ke DataURL PNG 512x512 (jika CORS mengizinkan) agar shortcut Desktop Windows selalu menampilkan logo asli PT GEL
+      try {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          try {
+            const c = document.createElement('canvas');
+            c.width = 512;
+            c.height = 512;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 512, 512);
+            const pad = 44;
+            const avail = 512 - pad * 2;
+            const ratio = Math.min(avail / (img.width || 1), avail / (img.height || 1));
+            const dw = Math.round((img.width || avail) * ratio);
+            const dh = Math.round((img.height || avail) * ratio);
+            ctx.drawImage(img, Math.round((512 - dw) / 2), Math.round((512 - dh) / 2), dw, dh);
+            const dataPng = c.toDataURL('image/png');
+            window.__GEL_ICON_PNG_DATA_URL = dataPng;
+            if (fav) fav.href = dataPng;
+            if (app) app.href = dataPng;
+            setManifestWithIcon(dataPng);
+          } catch (e) {}
+        };
+        img.src = logoUrl;
+      } catch (e) {}
     })();
   </script>
 
@@ -2740,204 +2769,120 @@
     window.addEventListener('resize', fitPvrSheetsToViewport);
 
     function initPwaAppExperience() {
+      const gelLogoUrl = 'https://gelgroup.co.id/images/logo-gel.png';
+      // Ikon persis sesuai screenshot: kotak putih sudut membulat berbingkai emas dengan logo GEL di tengah
+      const exactGelAppSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs><linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f3c64f"/><stop offset="50%" stop-color="#d4a017"/><stop offset="100%" stop-color="#b58112"/></linearGradient></defs><rect x="22" y="22" width="468" height="468" rx="112" fill="#ffffff" stroke="url(#goldGrad)" stroke-width="18"/><g transform="translate(256,262)" fill="none" stroke="url(#goldGrad)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"><path d="M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z"/><path d="M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z" transform="rotate(120)"/><path d="M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z" transform="rotate(240)"/><path d="M-96,-58 L-96,-94 L-62,-94"/><path d="M96,-58 L96,-94 L62,-94"/><path d="M-28,118 L0,144 L28,118"/><circle cx="0" cy="0" r="22" fill="#ffffff" stroke="url(#goldGrad)" stroke-width="18"/></g></svg>`;
+      const exactSvgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(exactGelAppSvg);
+
+      const applyManifestWithIcon = (pngDataUrl) => {
+        try {
+          const fav = getEl('appFaviconLink');
+          const apple = getEl('appleTouchIconLink');
+          if (fav) { fav.type = 'image/png'; fav.href = pngDataUrl; }
+          if (apple) { apple.href = pngDataUrl; }
+
+          const startUrl = window.location.href.split('#')[0];
+          const manifestObj = {
+            id: startUrl,
+            name: 'GA GEL — PT Global Energi Lestari',
+            short_name: 'GA GEL',
+            description: 'Portal Operasional General Affair & Site — PT Global Energi Lestari',
+            start_url: startUrl,
+            scope: startUrl.substring(0, startUrl.lastIndexOf('/') + 1) || './',
+            display: 'standalone',
+            orientation: 'any',
+            background_color: '#ffffff',
+            theme_color: '#b45309',
+            icons: [
+              { src: pngDataUrl, sizes: '192x192', type: 'image/png', purpose: 'any' },
+              { src: pngDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+            ]
+          };
+          const mLink = getEl('dynamicPwaManifest');
+          if (mLink) {
+            mLink.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestObj));
+          }
+        } catch (e) {}
+      };
+
+      // Render PNG 512x512 secara instan (kotak putih membulat berbingkai emas + logo PT GEL) agar Windows/Mac/HP langsung menampilkan ikon screenshot tanpa jatuh ke huruf G
+      const renderRoundedGoldBadgePng = (innerImg) => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = 512;
+          canvas.height = 512;
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, 512, 512);
+
+          // Kotak putih sudut membulat (rx=112) dengan bingkai emas seperti screenshot
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(22, 22, 468, 468, 112);
+          ctx.fillStyle = '#ffffff';
+          ctx.fill();
+          const grad = ctx.createLinearGradient(0, 0, 512, 512);
+          grad.addColorStop(0, '#f3c64f');
+          grad.addColorStop(0.5, '#d4a017');
+          grad.addColorStop(1, '#b58112');
+          ctx.lineWidth = 18;
+          ctx.strokeStyle = grad;
+          ctx.stroke();
+          ctx.clip();
+
+          if (innerImg && innerImg.width > 0) {
+            const pad = 74;
+            const avail = 512 - pad * 2;
+            const ratio = Math.min(avail / innerImg.width, avail / innerImg.height);
+            const dw = Math.round(innerImg.width * ratio);
+            const dh = Math.round(innerImg.height * ratio);
+            ctx.drawImage(innerImg, Math.round((512 - dw) / 2), Math.round((512 - dh) / 2), dw, dh);
+          }
+          ctx.restore();
+          return canvas.toDataURL('image/png');
+        } catch (err) {
+          return exactSvgDataUrl;
+        }
+      };
+
+      // 1. Pasang langsung PNG dari SVG emblem emas agar milidetik ke-0 sudah siap saat dialog Install muncul
+      const svgImg = new Image();
+      svgImg.onload = () => applyManifestWithIcon(renderRoundedGoldBadgePng(svgImg));
+      svgImg.src = exactSvgDataUrl;
+
+      // 2. Jika logo-gel.png resmi bisa dimuat tanpa blokir CORS, perbarui dengan gambar asli di dalam bingkai yang sama
+      try {
+        const officialImg = new Image();
+        officialImg.crossOrigin = 'anonymous';
+        officialImg.onload = () => applyManifestWithIcon(renderRoundedGoldBadgePng(officialImg));
+        officialImg.src = gelLogoUrl;
+      } catch (e) {}
+
       window.addEventListener('beforeinstallprompt', e => {
         e.preventDefault();
         deferredPwaPrompt = e;
         const btn = getEl('installPwaBtn');
         if (btn) btn.classList.add('ring-2', 'ring-yellow-300');
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const params = new URLSearchParams(window.location.search);
+        if (!isStandalone && (params.get('install') === '1' || !sessionStorage.getItem('ga_gel_install_prompted'))) {
+          sessionStorage.setItem('ga_gel_install_prompted', '1');
+          setTimeout(() => triggerInstallPwaApp(), 700);
+        }
       });
 
       window.addEventListener('appinstalled', () => {
         deferredPwaPrompt = null;
-        showToast('Aplikasi GA GEL berhasil terpasang di perangkat Anda!', 'success');
+        closeUniversalModal();
+        showToast('Aplikasi GA GEL (Logo PT GEL) berhasil terpasang di perangkat Anda!', 'success');
       });
-    }
 
-    function loadStorage() {
-      try {
-        recoverOriginal17PtLogos();
-        const candidateKeys = [
-          STORAGE_KEY,
-          'ticketing_pvr_mining_v4',
-          'ticketing_pvr_mining_v3',
-          'ticketing_pvr_mining_v2',
-          'ticketing_pvr_mining_v1'
-        ];
-        try {
-          for (let i = 0; i < localStorage.length; i++) {
-            const k = localStorage.key(i);
-            if (k && /ticketing_pvr|ga_portal/i.test(k) && !candidateKeys.includes(k)) {
-              candidateKeys.push(k);
-            }
+      const isStandaloneNow = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      if (!isStandaloneNow && new URLSearchParams(window.location.search).get('install') === '1') {
+        setTimeout(() => {
+          if (!getEl('universalModalOverlay')?.classList.contains('flex')) {
+            triggerInstallPwaApp();
           }
-        } catch (e) {}
-
-        const seenRecIds = new Set();
-        const seenKtpNiks = new Set();
-        const seenOpsIds = new Set();
-        const seenStnkIds = new Set();
-        const seenSewaIds = new Set();
-
-        candidateKeys.forEach(k => {
-          const raw = localStorage.getItem(k);
-          if (!raw) return;
-          try {
-            const parsed = JSON.parse(raw);
-            if (!parsed || typeof parsed !== 'object') return;
-            if (Array.isArray(parsed.deletedEntityIds)) {
-              deletedEntityIds = Array.from(new Set([...deletedEntityIds, ...parsed.deletedEntityIds]));
-            }
-
-            if (Array.isArray(parsed.records)) {
-              parsed.records.forEach(r => {
-                const key = r?.id || `${r?.invoice}-${r?.nama}-${r?.tanggalOrder}`;
-                if (r && !seenRecIds.has(key)) {
-                  seenRecIds.add(key);
-                  records.push(r);
-                }
-              });
-            }
-            if (parsed.ptCustomLogos && typeof parsed.ptCustomLogos === 'object') {
-              Object.keys(parsed.ptCustomLogos).forEach(code => {
-                if (parsed.ptCustomLogos[code] && !ptCustomLogos[code]) {
-                  ptCustomLogos[code] = parsed.ptCustomLogos[code];
-                }
-              });
-            }
-            if (Array.isArray(parsed.opsGelRecords)) {
-              parsed.opsGelRecords.forEach(o => {
-                const key = o?.id || `${o?.date}-${o?.applicant}-${o?.total}`;
-                if (o && !seenOpsIds.has(key)) {
-                  seenOpsIds.add(key);
-                  opsGelRecords.push(o);
-                }
-              });
-            }
-            if (Array.isArray(parsed.stnkRecords)) {
-              parsed.stnkRecords.forEach(s => {
-                const key = s?.id || `${s?.nopol}-${s?.dueDate}`;
-                if (s && !seenStnkIds.has(key)) {
-                  seenStnkIds.add(key);
-                  stnkRecords.push(s);
-                }
-              });
-            }
-            if (Array.isArray(parsed.sewaLvRecords)) {
-              parsed.sewaLvRecords.forEach(lv => {
-                const key = lv?.id || `${lv?.noPo}-${lv?.unit}`;
-                if (lv && !seenSewaIds.has(key)) {
-                  seenSewaIds.add(key);
-                  sewaLvRecords.push(lv);
-                }
-              });
-            }
-            if (Array.isArray(parsed.pengajuanSewaRecords)) {
-              parsed.pengajuanSewaRecords.forEach(ps => {
-                if (ps && !pengajuanSewaRecords.some(x => x.id === ps.id)) {
-                  pengajuanSewaRecords.push(ps);
-                }
-              });
-            }
-            if (Array.isArray(parsed.perubahanPoRecords)) {
-              parsed.perubahanPoRecords.forEach(gp => {
-                if (gp && !perubahanPoRecords.some(x => x.id === gp.id)) {
-                  perubahanPoRecords.push(gp);
-                }
-              });
-            }
-            if (Array.isArray(parsed.ktpRecords)) {
-              parsed.ktpRecords.forEach(ktp => {
-                const key = ktp?.nik || ktp?.id;
-                if (ktp && !seenKtpNiks.has(key)) {
-                  seenKtpNiks.add(key);
-                  ktpRecords.push(ktp);
-                }
-              });
-            }
-            if (parsed.pvrStateByPt && typeof parsed.pvrStateByPt === 'object') {
-              pvrStateByPt = { ...parsed.pvrStateByPt, ...pvrStateByPt };
-            }
-            if (parsed.cateringTowerState && typeof parsed.cateringTowerState === 'object') {
-              cateringTowerState = {
-                ...cateringTowerState,
-                ...parsed.cateringTowerState,
-                sites: Array.isArray(parsed.cateringTowerState.sites) && parsed.cateringTowerState.sites.length
-                  ? parsed.cateringTowerState.sites
-                  : cateringTowerState.sites,
-                reports: Array.isArray(parsed.cateringTowerState.reports) && parsed.cateringTowerState.reports.length
-                  ? parsed.cateringTowerState.reports
-                  : cateringTowerState.reports,
-                employees: Array.isArray(parsed.cateringTowerState.employees) && parsed.cateringTowerState.employees.length
-                  ? parsed.cateringTowerState.employees
-                  : cateringTowerState.employees,
-                guests: Array.isArray(parsed.cateringTowerState.guests) && parsed.cateringTowerState.guests.length
-                  ? parsed.cateringTowerState.guests
-                  : cateringTowerState.guests,
-                qualityLogs: Array.isArray(parsed.cateringTowerState.qualityLogs)
-                  ? parsed.cateringTowerState.qualityLogs
-                  : cateringTowerState.qualityLogs,
-                actionLogs: Array.isArray(parsed.cateringTowerState.actionLogs)
-                  ? parsed.cateringTowerState.actionLogs
-                  : cateringTowerState.actionLogs,
-                entriesByTab: {
-                  ...cateringTowerState.entriesByTab,
-                  ...(parsed.cateringTowerState.entriesByTab || {})
-                },
-                auditLogs: Array.isArray(parsed.cateringTowerState.auditLogs) && parsed.cateringTowerState.auditLogs.length
-                  ? parsed.cateringTowerState.auditLogs
-                  : cateringTowerState.auditLogs
-              };
-            }
-          } catch (parseErr) {}
-        });
-      } catch (e) {
-        console.warn('loadStorage fallback:', e);
-      }
-      if (!sewaLvRecords.length) {
-        sewaLvRecords = getDefaultSewa2026Records();
-      }
-      updateNavBadge();
-    }
-
-    function saveStorage() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({
-          records,
-          ptCustomLogos,
-          opsGelRecords,
-          stnkRecords,
-          sewaLvRecords,
-          pengajuanSewaRecords,
-          perubahanPoRecords,
-          ktpRecords,
-          pvrStateByPt,
-          cateringTowerState,
-          deletedEntityIds
-        }));
-        localStorage.setItem('ga_permanent_17_pt_logos_v1', JSON.stringify(ptCustomLogos));
-        // Mirror backup permanen untuk mencegah kehilangan data saat update/refresh
-        localStorage.setItem(`${STORAGE_KEY}_mirror_backup`, JSON.stringify({
-          savedAt: new Date().toISOString(),
-          records,
-          ptCustomLogos,
-          opsGelRecords,
-          stnkRecords,
-          sewaLvRecords,
-          pengajuanSewaRecords,
-          perubahanPoRecords,
-          ktpRecords,
-          pvrStateByPt,
-          cateringTowerState,
-          deletedEntityIds
-        }));
-      } catch (e) {
-        console.warn('localStorage penuh:', e);
-        showToast('Penyimpanan browser hampir penuh. Lakukan Backup JSON secara berkala.', 'warning');
-      }
-      updateNavBadge();
-      if (supabaseClient && !isApplyingRemoteSync) {
-        clearTimeout(cloudPushTimer);
-        cloudPushTimer = setTimeout(() => pushStateToSupabase(), 350);
+        }, 900);
       }
     }
 
@@ -3787,9 +3732,15 @@
       openUniversalModal(`
         <div class="space-y-4">
           <div class="flex items-center justify-between border-b pb-3">
-            <div>
-              <span class="px-2 py-0.5 rounded-full bg-sky-100 text-sky-900 text-[10px] font-black uppercase">Real-Time Cloud Database</span>
-              <h3 class="text-base font-black text-slate-900 mt-1">☁️ Sinkronisasi Supabase &amp; Export index.html GitHub</h3>
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-white p-1.5 border-2 border-amber-500 flex items-center justify-center shadow-sm">
+                <img src="https://gelgroup.co.id/images/logo-gel.png" onerror="this.onerror=null;this.src=getEl('appFaviconLink')?.href || '';" class="w-full h-full object-contain" />
+              </div>
+              <div>
+                <div class="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black mb-0.5">${deviceBadge}</div>
+                <h3 class="text-base font-black text-slate-900">Install Aplikasi "GA GEL" (Seperti Excel)</h3>
+                <p class="text-xs text-slate-500">Ikon Desktop &amp; HP menggunakan Logo Resmi PT Global Energi Lestari</p>
+              </div>
             </div>
             <button type="button" onclick="closeUniversalModal()" class="text-slate-400 font-bold">✕</button>
           </div>
@@ -5708,74 +5659,229 @@
     }
 
     async function extractTextFromPdfFile(file) {
-      if (typeof pdfjsLib === 'undefined') return '';
+      if (!file) return '';
+      if (typeof pdfjsLib === 'undefined') {
+        throw new Error('Library PDF.js belum termuat. Periksa koneksi internet.');
+      }
       const buf = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      let pdf;
+      try {
+        pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
+      } catch (workerErr) {
+        // Fallback tanpa web worker jika diblokir oleh sandbox / CSP / offline
+        pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf), disableWorker: true }).promise;
+      }
       let fullText = '';
       for (let p = 1; p <= pdf.numPages; p++) {
         const page = await pdf.getPage(p);
         const content = await page.getTextContent();
-        fullText += content.items.map(it => it.str).join(' ') + '\n';
+        const lines = [];
+        let lastY = null;
+        let lineBuf = '';
+        content.items.forEach(it => {
+          const y = Array.isArray(it.transform) ? Math.round(it.transform[5]) : null;
+          if (lastY !== null && y !== null && Math.abs(y - lastY) > 4) {
+            if (lineBuf.trim()) lines.push(lineBuf.trim());
+            lineBuf = it.str || '';
+          } else {
+            lineBuf += (lineBuf && !lineBuf.endsWith(' ') ? ' ' : '') + (it.str || '');
+          }
+          lastY = y;
+        });
+        if (lineBuf.trim()) lines.push(lineBuf.trim());
+        fullText += lines.join('\n') + '\n';
+      }
+
+      // Jika PDF berupa hasil scan gambar (teks kosong), jalankan OCR otomatis halaman 1
+      if (fullText.replace(/\s+/g, '').length < 25 && typeof Tesseract !== 'undefined' && pdf.numPages >= 1) {
+        try {
+          const page1 = await pdf.getPage(1);
+          const viewport = page1.getViewport({ scale: 2.0 });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          await page1.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+          const ocrRes = await Tesseract.recognize(canvas.toDataURL('image/png'), 'ind+eng');
+          if (ocrRes?.data?.text) fullText += '\n' + ocrRes.data.text;
+        } catch (ocrPdfErr) {}
       }
       return fullText;
     }
 
+    function parseIndonesianOrIsoDate(str) {
+      if (!str) return '';
+      const monthMap = {
+        jan: '01', januari: '01', january: '01',
+        feb: '02', februari: '02', february: '02',
+        mar: '03', maret: '03', march: '03',
+        apr: '04', april: '04',
+        mei: '05', may: '05',
+        jun: '06', juni: '06', june: '06',
+        jul: '07', juli: '07', july: '07',
+        agu: '08', agt: '08', agustus: '08', aug: '08', august: '08',
+        sep: '09', sept: '09', september: '09',
+        okt: '10', oktober: '10', oct: '10', october: '10',
+        nov: '11', november: '11',
+        des: '12', desember: '12', dec: '12', december: '12'
+      };
+      const m1 = String(str).match(/\b(\d{1,2})\s+([A-Za-z]{3,9})\s+(20\d{2})\b/);
+      if (m1) {
+        const mm = monthMap[m1[2].toLowerCase()];
+        if (mm) return `${m1[3]}-${mm}-${String(m1[1]).padStart(2, '0')}`;
+      }
+      const m2 = String(str).match(/\b(\d{1,2})[\/\-](\d{1,2})[\/\-](20\d{2})\b/);
+      if (m2) {
+        return `${m2[3]}-${String(m2[2]).padStart(2, '0')}-${String(m2[1]).padStart(2, '0')}`;
+      }
+      return '';
+    }
+
+    function detectPtFromPdfText(clean) {
+      const upper = String(clean || '').toUpperCase();
+      if (/MULTIDAYA\s*FORTUNA|\bMDF\b/.test(upper)) return 'MDF';
+      if (/ERA\s*PERKASA\s*MINING|\bEPM\b/.test(upper)) return 'EPM';
+      if (/GLOBAL\s*SINERGI\s*MARITIM|\bGSM\b/.test(upper)) return 'GSM';
+      if (/GLOBAL\s*SAMUDERA\s*JASINDO|\bGSJ\b/.test(upper)) return 'GSJ';
+      if (/KARINA\s*MINING|\bKMC\b/.test(upper)) return 'KMC';
+      if (/QUASAR\s*INTI|\bQIN\b/.test(upper)) return 'QIN';
+      if (/BUKIT\s*SUNUR|\bBSPC\b/.test(upper)) return 'BSPC';
+      if (/SUMATERA\s*INTI\s*PERKASA|\bSIP\b/.test(upper)) return 'SIP';
+      if (/TEMPIRAI\s*ENERGY|\bTER\b/.test(upper)) return 'TER';
+      if (/KELINCI\s*KARYA|\bKKS\b/.test(upper)) return 'KKS';
+      if (/MADHUCON\s*INDONESIA|\bMI\b/.test(upper)) return 'MI';
+      if (/GEMURUH\s*KARSA|\bGK\b/.test(upper)) return 'GK';
+      if (/ANUGRAH\s*RIAU\s*COAL|\bARC\b/.test(upper)) return 'ARC';
+      if (/GLOBAL\s*ENERGI\s*LESTARI|\bGEL\b/.test(upper)) return 'GEL';
+      return '';
+    }
+
     function parseTicketPdfText(text) {
-      const clean = String(text || '').replace(/\s+/g, ' ');
-      const pnrMatch = clean.match(/(?:Booking\s*(?:Code|ID)|PNR|Kode\s*Booking)\s*[:#]?\s*([A-Z0-9]{5,8})/i);
-      const flightMatch = clean.match(/\b(GA|JT|ID|QG|IU|SJ|IN|IW|KA)\s*-?\s*(\d{2,4})\b/i);
-      const routeMatch = clean.match(/\b([A-Z]{3})\s*(?:-|→|to|ke)\s*([A-Z]{3})\b/);
-      const invMatch = clean.match(/(?:Order\s*ID|Invoice|No\.?\s*Pesanan)\s*[:#]?\s*(\d{8,20})/i);
-      const priceMatches = Array.from(clean.matchAll(/(?:IDR|Rp\.?)\s*([\d.,]{5,15})/gi))
+      const rawLines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const clean = rawLines.join(' ').replace(/\s+/g, ' ');
+
+      const pnrMatch = clean.match(/(?:Airline\s*Booking\s*Code|Booking\s*(?:Code|ID|Reference)|Kode\s*Booking|PNR)\s*[:#]?\s*([A-Z0-9]{5,8})/i);
+      const flightMatch = clean.match(/\b(GA|JT|ID|QG|IU|SJ|IN|IW|IP|8B|KA)\s*-?\s*(\d{2,4})\b/i);
+      const iataMatches = Array.from(clean.matchAll(/\b([A-Z]{3})\b/g))
+        .map(m => m[1])
+        .filter(code => Boolean(IATA_CITY_MAP[code]));
+      const directRouteMatch = clean.match(/\b([A-Z]{3})\s*(?:-|–|—|→|to|ke)\s*([A-Z]{3})\b/i);
+      let rute = '';
+      if (directRouteMatch && IATA_CITY_MAP[directRouteMatch[1].toUpperCase()] && IATA_CITY_MAP[directRouteMatch[2].toUpperCase()]) {
+        rute = `${directRouteMatch[1].toUpperCase()} - ${directRouteMatch[2].toUpperCase()}`;
+      } else if (iataMatches.length >= 2) {
+        const uniqueCodes = [];
+        iataMatches.forEach(c => { if (uniqueCodes[uniqueCodes.length - 1] !== c) uniqueCodes.push(c); });
+        if (uniqueCodes.length >= 2) rute = `${uniqueCodes[0]} - ${uniqueCodes[1]}`;
+      }
+
+      const orderIdMatch = clean.match(/(?:Order\s*ID|Traveloka\s*Booking\s*ID|No\.?\s*Pesanan|Invoice\s*(?:No|Number)?|Booking\s*ID)\s*[:#]?\s*(\d{8,22})/i);
+      const receiptMatch = clean.match(/(?:Receipt\s*(?:No|Number|ID)?|No\.?\s*Receipt|Transaction\s*ID)\s*[:#]?\s*(\d{10,25})/i);
+
+      const priceMatches = Array.from(clean.matchAll(/(?:IDR|Rp\.?)\s*([\d.,]{5,18})/gi))
         .map(m => Number(m[1].replace(/[.,]/g, '')) || 0)
         .filter(n => n >= 50000 && n < 500000000);
-      const paxMatches = Array.from(clean.matchAll(/\b(Mr\.?|Mrs\.?|Ms\.?|Tn\.?|Ny\.?)\s+([A-Z][A-Z\s]{2,35}?)(?=\s+(?:Adult|Dewasa|Ticket|No\.|PNR|CGK|PNK|PKU|PLM|SUB|BPN|KNO|ID|GA|JT|QG|IDR|Rp|\d))/g));
+
+      // Ekstrak seluruh penumpang (mendukung format "1. Mr. MOCHAMAD RIZAL", "Mr. JOHN DOE", "Tn. BUDI", dll.)
+      const passengers = [];
+      const seenPax = new Set();
+      const paxRegex = /(?:^|\s|\d+\.)\b(Mr\.?|Mrs\.?|Ms\.?|Miss|Tn\.?|Ny\.?|Nn\.?)\s+([A-Z][A-Z\s'.]{2,38}?)(?=\s*(?:\(|Adult|Dewasa|Child|Infant|Ticket|E-Ticket|No\.|PNR|Booking|CGK|PNK|PKU|PLM|SUB|BPN|KNO|PDG|DJB|BKS|UPG|DPS|YIA|SRG|BTH|GA|JT|ID|QG|IU|SJ|IDR|Rp|\d|$))/g;
+      let pm;
+      while ((pm = paxRegex.exec(clean)) !== null) {
+        const rawTitle = pm[1];
+        const rawName = pm[2].replace(/\s+/g, ' ').trim().toUpperCase();
+        if (rawName.length >= 3 && !/BOOKING|FLIGHT|HOTEL|TRAVELOKA|TIKET|TOTAL|PRICE|PAYMENT|RECEIPT/.test(rawName) && !seenPax.has(rawName)) {
+          seenPax.add(rawName);
+          passengers.push({
+            title: /^Mrs|^Ny/i.test(rawTitle) ? 'Mrs.' : (/^Ms|^Miss|^Nn/i.test(rawTitle) ? 'Ms.' : 'Mr.'),
+            name: rawName,
+            role: ''
+          });
+        }
+      }
+
+      // Ekstrak tanggal order & tanggal berangkat / check-in
+      const allDates = [];
+      const dateRegex = /\b(?:\d{1,2}\s+(?:Jan|Feb|Mar|Apr|Mei|May|Jun|Jul|Agu|Agt|Aug|Sep|Sept|Okt|Oct|Nov|Des|Dec)[a-z]*\s+20\d{2}|\d{1,2}[\/\-]\d{1,2}[\/\-]20\d{2})\b/gi;
+      let dm;
+      while ((dm = dateRegex.exec(clean)) !== null) {
+        const iso = parseIndonesianOrIsoDate(dm[0]);
+        if (iso && !allDates.includes(iso)) allDates.push(iso);
+      }
+
+      const isHotel = /(?:Hotel\s*Voucher|Check-?in|Check-?out|Tipe\s*Kamar|Room\s*Type|Night\(s\)|Malam)/i.test(clean) && !flightMatch;
+      const isTrain = /(?:Kereta\s*Api|PT\s*KAI|Stasiun|Kode\s*Booking\s*KAI|Argo|Taksaka|Bima)/i.test(clean);
 
       let maskapai = '';
-      if (/Garuda\s*Indonesia/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'GA') maskapai = 'Garuda Indonesia';
+      if (isHotel) {
+        const hotelLine = rawLines.find(l => /Hotel|Resort|Inn|Suites|Aston|Santika|Mercure|Novotel|Swiss-Bel|Harris|Fave|Pop!|Ibis|Amaris|Grand/i.test(l) && l.length < 70);
+        maskapai = hotelLine || 'Hotel Voucher';
+      } else if (isTrain) {
+        maskapai = 'PT KAI';
+      } else if (/Garuda\s*Indonesia/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'GA') maskapai = 'Garuda Indonesia';
       else if (/Batik\s*Air/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'ID') maskapai = 'Batik Air';
       else if (/Lion\s*Air/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'JT') maskapai = 'Lion Air';
       else if (/Citilink/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'QG') maskapai = 'Citilink';
       else if (/Super\s*Air\s*Jet/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'IU') maskapai = 'Super Air Jet';
       else if (/Sriwijaya/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'SJ') maskapai = 'Sriwijaya Air';
-      else if (/Kereta\s*Api|KAI/i.test(clean)) maskapai = 'PT KAI';
+      else if (/Pelita\s*Air/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'IP') maskapai = 'Pelita Air';
+      else if (/TransNusa/i.test(clean) || flightMatch?.[1]?.toUpperCase() === '8B') maskapai = 'TransNusa';
+
+      // Ekstrak jabatan dari Surat Perdin / Cuti Roster jika ada
+      const jabatanMatch = clean.match(/(?:Jabatan|Position|Posisi)\s*[:\-]\s*([A-Za-z0-9\s\/&.-]{3,45}?)(?=\s+(?:Departemen|Department|Divisi|Lokasi|Site|Tujuan|Keperluan|Tanggal|\n|$))/i);
+      const detectedJabatan = jabatanMatch ? jabatanMatch[1].trim() : '';
+      if (detectedJabatan && passengers.length) {
+        passengers.forEach(p => { if (!p.role) p.role = detectedJabatan; });
+      }
 
       return {
-        isHotel: /Hotel|Check-in|Check-out|Voucher\s*Hotel|Room/i.test(clean) && !flightMatch,
+        isHotel,
+        isTrain,
+        detectedPt: detectPtFromPdfText(clean),
         maskapai,
         flightNo: flightMatch ? `${flightMatch[1].toUpperCase()}-${flightMatch[2]}` : '',
         pnr: pnrMatch ? pnrMatch[1].toUpperCase() : '',
-        rute: routeMatch ? `${routeMatch[1]} - ${routeMatch[2]}` : '',
-        invoice: invMatch ? invMatch[1] : '',
+        rute,
+        invoice: orderIdMatch ? orderIdMatch[1] : '',
+        receiptCode: receiptMatch ? receiptMatch[1] : (orderIdMatch ? orderIdMatch[1] : ''),
+        tanggalOrder: allDates[0] || '',
+        departDate: allDates[1] || allDates[0] || '',
+        returnDate: allDates[2] || '',
         nominal: priceMatches.length ? Math.max(...priceMatches) : 0,
         vendor: /Tiket\.com/i.test(clean) ? 'Tiket.com' : 'Traveloka',
         keperluan: /Cuti\s*Roster/i.test(clean) ? 'Cuti Roster' : (/Cuti/i.test(clean) ? 'Cuti Tahunan' : 'Perdin'),
-        passengers: paxMatches.map(m => ({
-          title: /^Mrs|^Ny/i.test(m[1]) ? 'Mrs.' : (/^Ms/i.test(m[1]) ? 'Ms.' : 'Mr.'),
-          name: m[2].trim().toUpperCase(),
-          role: ''
-        }))
+        jabatan: detectedJabatan,
+        passengers
       };
     }
 
     function applyParsedPdfToForm(parsed) {
       if (!parsed) return;
+      if (parsed.detectedPt && PT_FULL_INFO[parsed.detectedPt]) setElVal('fPt', parsed.detectedPt);
       if (parsed.isHotel) setElVal('fJenisLayanan', 'HOTEL');
+      else if (parsed.isTrain) setElVal('fJenisLayanan', 'TRAIN');
+      else setElVal('fJenisLayanan', 'FLIGHT');
+      onServiceTypeChange();
+
       if (parsed.maskapai) setElVal('fMaskapaiHotel', parsed.maskapai);
       if (parsed.flightNo) setElVal('fFlightNoRoom', parsed.flightNo);
       if (parsed.pnr) setElVal('fPnrNights', parsed.pnr);
       if (parsed.rute) setElVal('fRute', parsed.rute);
-      if (parsed.invoice) {
-        setElVal('fInvoice', parsed.invoice);
-        setElVal('fReceiptCode', parsed.invoice);
-      }
+      if (parsed.tanggalOrder) setElVal('fTanggalOrder', parsed.tanggalOrder);
+      if (parsed.departDate) setElVal('fDepartDate', parsed.departDate);
+      if (parsed.returnDate) setElVal('fReturnDate', parsed.returnDate);
+      if (parsed.invoice) setElVal('fInvoice', parsed.invoice);
+      if (parsed.receiptCode) setElVal('fReceiptCode', parsed.receiptCode);
       if (parsed.nominal > 0) setElVal('fNominal', parsed.nominal);
       if (parsed.vendor) setElVal('fVendor', parsed.vendor);
       if (parsed.keperluan) setElVal('fKeperluan', parsed.keperluan);
+
       if (parsed.passengers && parsed.passengers.length) {
         const box = getEl('passengerRowsContainer');
         if (box) box.innerHTML = '';
         parsed.passengers.forEach(p => addPassengerRow(p));
+      } else if (parsed.jabatan) {
+        const firstRole = document.querySelector('#passengerRowsContainer .pax-role');
+        if (firstRole && !firstRole.value) firstRole.value = parsed.jabatan;
       }
       recalculateMova();
       refreshFormDerivedOutputs();
@@ -5784,6 +5890,7 @@
     async function handlePairedSlotUpload(slotNum, files) {
       if (!files || !files.length) return;
       try {
+        setElText('pairedSlotStatusText', `⏳ Membaca PDF ${files[0].name}...`);
         const text = await extractTextFromPdfFile(files[0]);
         const parsed = parseTicketPdfText(text);
         if (slotNum === 1) {
@@ -5794,26 +5901,51 @@
           setElText('slot2FileLabel', `✓ ${files[0].name}`);
         } else {
           pairedSlots[3].push(files[0].name);
+          pairedSlots.slot3Parsed = parsed;
           setElText('slot3FileLabel', `✓ ${pairedSlots[3].length} file Perdin/Cuti`);
         }
-        applyParsedPdfToForm(parsed);
-        setElText('pairedSlotStatusText', `Status: Berhasil membaca ${files[0].name}`);
-        showToast(`PDF ${files[0].name} berhasil dibaca otomatis!`, 'success');
+
+        // Gabungkan hasil Slot 1 (Tiket), Slot 2 (Receipt), dan Slot 3 (Perdin/Cuti)
+        const merged = {
+          ...(pairedSlots[1] || {}),
+          invoice: pairedSlots[2]?.invoice || pairedSlots[1]?.invoice || parsed.invoice,
+          receiptCode: pairedSlots[2]?.receiptCode || pairedSlots[1]?.receiptCode || parsed.receiptCode,
+          nominal: Math.max(Number(pairedSlots[1]?.nominal) || 0, Number(pairedSlots[2]?.nominal) || 0, Number(parsed.nominal) || 0),
+          tanggalOrder: pairedSlots[2]?.tanggalOrder || pairedSlots[1]?.tanggalOrder || parsed.tanggalOrder,
+          keperluan: pairedSlots.slot3Parsed?.keperluan || pairedSlots[1]?.keperluan || parsed.keperluan,
+          detectedPt: pairedSlots.slot3Parsed?.detectedPt || pairedSlots[1]?.detectedPt || pairedSlots[2]?.detectedPt || parsed.detectedPt,
+          jabatan: pairedSlots.slot3Parsed?.jabatan || parsed.jabatan,
+          passengers: (pairedSlots[1]?.passengers?.length ? pairedSlots[1].passengers : parsed.passengers).map(p => ({
+            ...p,
+            role: p.role || pairedSlots.slot3Parsed?.jabatan || parsed.jabatan || ''
+          }))
+        };
+
+        applyParsedPdfToForm(merged);
+        setElText('pairedSlotStatusText', `Status: ✓ Terbaca ${files[0].name}`);
+        showToast(`PDF ${files[0].name} berhasil diekstrak ke form!`, 'success');
       } catch (err) {
-        showToast('Gagal mengekstrak PDF. Pastikan PDF berisi teks.', 'warning');
+        console.error('PDF extract error:', err);
+        setElText('pairedSlotStatusText', `Status: Gagal membaca ${files[0].name}`);
+        showToast('Gagal mengekstrak PDF: ' + (err.message || 'Format tidak didukung'), 'error');
       }
     }
 
     async function handleBatchPdfFiles(files) {
       if (!files || !files.length) return;
+      showToast(`Sedang membaca ${files.length} file PDF...`, 'info');
       for (const f of Array.from(files)) {
-        const txt = await extractTextFromPdfFile(f);
-        const parsed = parseTicketPdfText(txt);
-        pdfQueue.push({ fileName: f.name, parsed });
+        try {
+          const txt = await extractTextFromPdfFile(f);
+          const parsed = parseTicketPdfText(txt);
+          pdfQueue.push({ fileName: f.name, parsed });
+        } catch (err) {
+          console.warn('Batch PDF skip:', f.name, err);
+        }
       }
       renderPdfQueue();
       if (pdfQueue[0]) applyParsedPdfToForm(pdfQueue[0].parsed);
-      showToast(`${files.length} file PDF berhasil masuk antrian.`, 'success');
+      showToast(`${pdfQueue.length} file PDF berhasil masuk antrian.`, 'success');
     }
 
     function renderPdfQueue() {
@@ -5876,54 +6008,142 @@
     // =========================================================================
     // SCANNER OCR KTP INDONESIA (NIK 16 DIGIT, NAMA & PAS FOTO)
     // =========================================================================
+    function preprocessKtpCanvasForOcr(img) {
+      const targetW = Math.max(1200, Math.min(1800, img.width * 2));
+      const scale = targetW / (img.width || 1);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Tingkatkan kontras grayscale agar angka NIK & huruf E-KTP terbaca tajam oleh OCR
+      try {
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const d = imgData.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+          const contrasted = Math.min(255, Math.max(0, (gray - 128) * 1.45 + 128));
+          d[i] = d[i + 1] = d[i + 2] = contrasted;
+        }
+        ctx.putImageData(imgData, 0, 0);
+      } catch (e) {}
+      return canvas.toDataURL('image/png');
+    }
+
+    function parseIndonesianKtpText(rawText) {
+      const normalizedDigits = String(rawText || '')
+        .replace(/[OoQqDd]/g, '0')
+        .replace(/[Il|!]/g, '1')
+        .replace(/[Zz]/g, '2')
+        .replace(/[Ss]/g, '5')
+        .replace(/[Bb]/g, '8');
+
+      // Cari 16 digit NIK (baik menyambung maupun terpisah spasi)
+      let nik = '';
+      const nikCompact = normalizedDigits.match(/\b(\d{16})\b/);
+      if (nikCompact) {
+        nik = nikCompact[1];
+      } else {
+        const nikSpaced = normalizedDigits.match(/(\d{4}\s*\d{4}\s*\d{4}\s*\d{4})/);
+        if (nikSpaced) nik = nikSpaced[1].replace(/\s+/g, '');
+      }
+
+      // Cari Nama Lengkap di baris "Nama : ..." atau tepat di bawah NIK
+      let nama = '';
+      const lines = String(rawText || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const mNama = line.match(/(?:Nama|Narna|Maha)\s*[:;.\-]?\s*([A-Z\s'.]{3,42})/i);
+        if (mNama && mNama[1].trim().length >= 3) {
+          nama = mNama[1].replace(/[^A-Z\s'.]/gi, '').replace(/\s+/g, ' ').trim().toUpperCase();
+          break;
+        }
+      }
+      if (!nama && lines.length >= 3) {
+        const nikLineIdx = lines.findIndex(l => /\d{10,16}/.test(l.replace(/\s+/g, '')));
+        if (nikLineIdx >= 0 && lines[nikLineIdx + 1]) {
+          const candidate = lines[nikLineIdx + 1].replace(/^Nama\s*[:;.\-]?\s*/i, '').replace(/[^A-Z\s'.]/gi, '').trim().toUpperCase();
+          if (candidate.length >= 3 && !/TEMPAT|LAHIR|JENIS|ALAMAT|PROVINSI|KABUPATEN|KOTA/.test(candidate)) {
+            nama = candidate;
+          }
+        }
+      }
+
+      const isFemale = /PEREMPUAN|WANITA|FEMALE/i.test(rawText || '');
+      return { nik, nama, gender: isFemale ? 'PEREMPUAN' : 'LAKI-LAKI' };
+    }
+
     async function handleKtpImageUpload(e) {
       const file = e.target.files?.[0];
       if (!file) return;
+      const progressBox = getEl('ktpOcrProgressBox');
+      if (progressBox) {
+        progressBox.textContent = '⏳ Memuat foto KTP & menjalankan OCR otomatis... Mohon tunggu 3–6 detik.';
+        progressBox.classList.remove('hidden');
+      }
+
       compressImageToDataUrl(file, async dataUrl => {
         currentKtpPhotoData = dataUrl;
         const img = getEl('ktpPhotoPreviewImg');
         if (img) { img.src = dataUrl; img.classList.remove('hidden'); }
         getEl('ktpEmptyPlaceholder')?.classList.add('hidden');
-        getEl('ktpOcrProgressBox')?.classList.remove('hidden');
 
-        // Crop area pas foto E-KTP (bagian kanan kartu KTP)
-        try {
-          const tempImg = new Image();
-          tempImg.onload = () => {
+        const loadedImg = await new Promise(resolve => {
+          const t = new Image();
+          t.onload = () => resolve(t);
+          t.onerror = () => resolve(null);
+          t.src = dataUrl;
+        });
+
+        let ocrSourceUrl = dataUrl;
+        if (loadedImg) {
+          try {
             const c = document.createElement('canvas');
-            const sx = Math.round(tempImg.width * 0.68);
-            const sy = Math.round(tempImg.height * 0.22);
-            const sw = Math.round(tempImg.width * 0.28);
-            const sh = Math.round(tempImg.height * 0.56);
+            const sx = Math.round(loadedImg.width * 0.68);
+            const sy = Math.round(loadedImg.height * 0.22);
+            const sw = Math.round(loadedImg.width * 0.28);
+            const sh = Math.round(loadedImg.height * 0.56);
             c.width = 160; c.height = 200;
-            c.getContext('2d').drawImage(tempImg, sx, sy, sw, sh, 0, 0, 160, 200);
+            c.getContext('2d').drawImage(loadedImg, sx, sy, sw, sh, 0, 0, 160, 200);
             currentKtpFaceData = c.toDataURL('image/jpeg', 0.85);
             const faceEl = getEl('ktpFaceCropPreview');
             if (faceEl) { faceEl.src = currentKtpFaceData; faceEl.classList.remove('hidden'); }
             getEl('ktpFaceEmptyText')?.classList.add('hidden');
-          };
-          tempImg.src = dataUrl;
-        } catch (cropErr) {}
+            ocrSourceUrl = preprocessKtpCanvasForOcr(loadedImg);
+          } catch (cropErr) {}
+        }
 
         try {
-          if (typeof Tesseract !== 'undefined') {
-            const res = await Tesseract.recognize(dataUrl, 'ind+eng');
-            const rawText = res?.data?.text || '';
-            setElVal('ktpRawOcrText', rawText);
-            const nikMatch = rawText.replace(/[Oo]/g, '0').replace(/[Il|]/g, '1').match(/\b(\d{16})\b/);
-            if (nikMatch) setElVal('ktpNikInput', nikMatch[1]);
-            const nameMatch = rawText.match(/Nama\s*[:;]?\s*([A-Z\s'.]{3,40})/i);
-            if (nameMatch) setElVal('ktpNameInput', nameMatch[1].replace(/\n.*/g, '').trim().toUpperCase());
-            if (/PEREMPUAN|WANITA/i.test(rawText)) setElVal('ktpGenderSelect', 'PEREMPUAN');
-            else if (/LAKI/i.test(rawText)) setElVal('ktpGenderSelect', 'LAKI-LAKI');
+          if (typeof Tesseract === 'undefined') {
+            throw new Error('Engine OCR Tesseract belum termuat.');
           }
-          showToast('Scan OCR KTP selesai! Periksa NIK & Nama sebelum menyimpan.', 'success');
+          const res = await Tesseract.recognize(ocrSourceUrl, 'ind+eng', {
+            logger: m => {
+              if (progressBox && m?.status === 'recognizing text') {
+                progressBox.textContent = `⏳ Membaca teks E-KTP (${Math.round((m.progress || 0) * 100)}%)...`;
+              }
+            }
+          });
+          const rawText = res?.data?.text || '';
+          setElVal('ktpRawOcrText', rawText);
+          const parsedKtp = parseIndonesianKtpText(rawText);
+          if (parsedKtp.nik) setElVal('ktpNikInput', parsedKtp.nik);
+          if (parsedKtp.nama) setElVal('ktpNameInput', parsedKtp.nama);
+          setElVal('ktpGenderSelect', parsedKtp.gender);
+
+          if (parsedKtp.nik || parsedKtp.nama) {
+            showToast(`Scan KTP berhasil! NIK: ${parsedKtp.nik || '-'} | Nama: ${parsedKtp.nama || '-'}`, 'success');
+          } else {
+            showToast('Foto KTP terbaca, silakan cek hasil teks OCR atau lengkapi NIK/Nama.', 'warning');
+          }
         } catch (ocrErr) {
-          showToast('Foto KTP dimuat. Silakan lengkapi NIK & Nama jika OCR kurang jelas.', 'info');
+          console.error('OCR KTP error:', ocrErr);
+          showToast('OCR KTP terkendala jaringan/worker. Foto KTP tetap tersimpan, silakan ketik NIK & Nama.', 'warning');
         } finally {
-          getEl('ktpOcrProgressBox')?.classList.add('hidden');
+          if (progressBox) progressBox.classList.add('hidden');
         }
-      }, 1100, 0.85);
+      }, 1400, 0.90);
     }
 
     function resetKtpScannerForm() {
@@ -6037,7 +6257,7 @@
       if (typeof ExcelJS !== 'undefined') {
         const wb = new ExcelJS.Workbook();
         wb.creator = 'GA GEL — PT Global Energi Lestari';
-        const ws = wb.addWorksheet('REKAPITULASI_TIKET_HOTEL', {
+        const ws = wb.addWorksheet('REKAPITULASI_PEMESANAN_TIKET_HO', {
           views: [{ state: 'frozen', ySplit: 4 }]
         });
 
@@ -6151,7 +6371,8 @@
         const colWidths = [6, 14, 18, 20, 10, 28, 16, 16, 18, 20, 14, 16, 18, 20, 20, 16, 18, 18];
         colWidths.forEach((w, i) => { ws.getColumn(i + 1).width = w; });
 
-        const wsRec = wb.addWorksheet('REKONSILIASI_UNPAID_PER_PT');
+        // Sheet 2: REKONSILIASI_PVR_PER_PT (Sesuai template asli)
+        const wsRec = wb.addWorksheet('REKONSILIASI_PVR_PER_PT');
         wsRec.mergeCells('A1:D1');
         wsRec.getCell('A1').value = 'REKONSILIASI TAGIHAN UNPAID PER ENTITAS PT (SIAP PENGAJUAN PVR)';
         wsRec.getCell('A1').font = { name: 'Calibri', size: 12, bold: true, color: { argb: 'FFFFFFFF' } };
@@ -6187,13 +6408,53 @@
         wsRec.getColumn(3).width = 42;
         wsRec.getColumn(4).width = 24;
 
+        // Sheet 3: RINGKASAN_VENDOR_MOVA (Sesuai template asli)
+        const wsVen = wb.addWorksheet('RINGKASAN_VENDOR_MOVA');
+        wsVen.mergeCells('A1:D1');
+        wsVen.getCell('A1').value = 'RINGKASAN TRANSAKSI VENDOR & ESTIMASI PENDAPATAN MOVA';
+        wsVen.getCell('A1').font = { name: 'Calibri', size: 12, bold: true, color: { argb: 'FFFFFFFF' } };
+        wsVen.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } };
+        wsVen.getRow(1).height = 26;
+
+        ['No.', 'Vendor', 'Total Nominal Transaksi (Rp)', 'Total Estimasi MOVA (Rp)'].forEach((h, i) => {
+          const cell = wsVen.getRow(3).getCell(i + 1);
+          cell.value = h;
+          cell.font = { bold: true };
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00B0F0' } };
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+        });
+
+        const vendorMap = {};
+        records.forEach(r => {
+          const v = r.vendor || 'Traveloka';
+          if (!vendorMap[v]) vendorMap[v] = { nom: 0, mova: 0 };
+          vendorMap[v].nom += Number(r.nominal) || 0;
+          vendorMap[v].mova += Number(r.mova) || 0;
+        });
+        Object.keys(vendorMap).forEach((vName, idx) => {
+          const row = wsVen.getRow(4 + idx);
+          row.getCell(1).value = idx + 1;
+          row.getCell(2).value = vName;
+          row.getCell(3).value = vendorMap[vName].nom;
+          row.getCell(4).value = vendorMap[vName].mova;
+          row.getCell(3).numFmt = '#,##0';
+          row.getCell(4).numFmt = '#,##0';
+          for (let c = 1; c <= 4; c++) {
+            row.getCell(c).border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+          }
+        });
+        wsVen.getColumn(1).width = 6;
+        wsVen.getColumn(2).width = 24;
+        wsVen.getColumn(3).width = 26;
+        wsVen.getColumn(4).width = 26;
+
         const buffer = await wb.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `REKAPITULASI_TIKET_HOTEL_${getTodayIso()}.xlsx`;
         a.click();
-        showToast('File REKAPITULASI_TIKET_HOTEL (.XLSX) berformat Excel asli berhasil diunduh!', 'success');
+        showToast('File REKAPITULASI_TIKET_HOTEL (.XLSX) sesuai format asli Anda berhasil diunduh!', 'success');
         return;
       }
 
@@ -6501,6 +6762,54 @@
     // =========================================================================
     // HELPER PENDUKUNG CLOUD SYNC, KATERING & LOGO 17 PT
     // =========================================================================
+    function loadStorage() {
+      try {
+        recoverOriginal17PtLogos();
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(`${STORAGE_KEY}_mirror_backup`);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') {
+            mergeWorkspaceStates(parsed);
+          }
+        }
+      } catch (e) {
+        console.warn('loadStorage fallback:', e);
+      }
+      if (!sewaLvRecords.length) {
+        sewaLvRecords = getDefaultSewa2026Records();
+      }
+      updateNavBadge();
+    }
+
+    function saveStorage() {
+      try {
+        const snapshot = {
+          savedAt: new Date().toISOString(),
+          records,
+          ptCustomLogos,
+          opsGelRecords,
+          stnkRecords,
+          sewaLvRecords,
+          pengajuanSewaRecords,
+          perubahanPoRecords,
+          ktpRecords,
+          pvrStateByPt,
+          cateringTowerState,
+          deletedEntityIds
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+        localStorage.setItem(`${STORAGE_KEY}_mirror_backup`, JSON.stringify(snapshot));
+        localStorage.setItem('ga_permanent_17_pt_logos_v1', JSON.stringify(ptCustomLogos));
+      } catch (e) {
+        console.warn('saveStorage warning:', e);
+      }
+      updateNavBadge();
+      if (supabaseClient && !isApplyingRemoteSync) {
+        clearTimeout(cloudPushTimer);
+        cloudPushTimer = setTimeout(() => pushStateToSupabase(), 600);
+      }
+    }
+
     function recoverOriginal17PtLogos() {
       try {
         const saved = JSON.parse(localStorage.getItem('ga_permanent_17_pt_logos_v1') || '{}');
