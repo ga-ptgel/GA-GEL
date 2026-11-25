@@ -36,7 +36,7 @@
       inset: -6%;
       width: 112%;
       height: 112%;
-      background-image: url('visi-1.png'), url('https://gelgroup.co.id/images/slider-1.jpg');
+      background-image: url('visi-1.png');
       background-size: cover;
       background-position: center 55%;
       opacity: 0.28;
@@ -98,20 +98,13 @@
       inset: -5%;
       width: 110%;
       height: 110%;
-      background-image: url('visi-1_2.png'), url('visi-1.png'), url('https://gelgroup.co.id/images/slider-1.jpg');
+      background-image: url('visi-1_2.png'), url('visi-1.png');
       background-size: cover;
       background-position: center 52%;
-      filter: contrast(1.16) saturate(1.35) brightness(0.92);
+      filter: contrast(1.14) saturate(1.32) brightness(0.88);
       will-change: transform;
       transition: transform 0.2s ease-out;
       animation: kenBurnsMining 28s ease-in-out infinite alternate;
-    }
-    .login-gate-vignette {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 22% 26%, rgba(251, 191, 36, 0.36) 0%, rgba(245, 158, 11, 0.16) 36%, transparent 68%),
-        linear-gradient(135deg, rgba(11, 22, 40, 0.56) 0%, rgba(15, 23, 42, 0.38) 50%, rgba(120, 53, 15, 0.44) 100%);
     }
     .login-gate-vignette {
       position: absolute;
@@ -286,7 +279,7 @@
   <input type="file" id="ptLogoFileInput" accept="image/*" class="hidden" onchange="handleUploadPtLogo(this.files)" />
 
   <!-- =======================================================================
-       GERBANG AKSES EKSKLUSIF LINGKUP PERUSAHAAN (HO & 14 SITES)
+       GERBANG AKSES EKSKLUSIF DEPARTEMEN GENERAL AFFAIR (GA ACCESS GATE)
   ======================================================================== -->
   <div id="gaAccessGateOverlay" class="fixed inset-0 z-50 bg-slate-950 overflow-y-auto flex items-center justify-center p-4 sm:p-6 no-print">
     <!-- Vivid Animated Mining Photo Watermark on Login Page -->
@@ -354,53 +347,90 @@
         </div>
       </div>
 
-      <!-- Kolom Kanan: Login Terverifikasi Khusus PIC Perusahaan (HO & 14 Site) -->
+      <!-- Kolom Kanan: Form Login Interaktif & Kompatibel Semua Layar -->
       <div class="lg:col-span-7 bg-white/95 backdrop-blur-xl p-6 sm:p-8 flex flex-col justify-center">
-        <div class="mb-4">
-          <span class="text-[10px] font-black uppercase tracking-widest text-amber-700">Akses Terbatas Lingkup Perusahaan</span>
-          <h2 class="text-lg sm:text-xl font-black text-slate-900 mt-0.5">Login Resmi PIC (HO & Site)</h2>
-          <p class="text-xs text-slate-500 mt-1">Hanya akun PIC yang didaftarkan oleh Admin HO yang dapat masuk dan mengakses database perusahaan.</p>
+        <div class="mb-5">
+          <span class="text-[10px] font-black uppercase tracking-widest text-amber-700">Verifikasi Identitas Pengguna</span>
+          <h2 class="text-lg sm:text-xl font-black text-slate-900 mt-0.5">Masuk ke Workspace Operasional</h2>
+          <p class="text-xs text-slate-500 mt-1">Pilih peran Anda di bawah ini untuk menyesuaikan tampilan modul kerja.</p>
         </div>
 
-        <div id="cloudConnectionStatusBanner" class="mb-4 px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-[11px] text-emerald-900 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-          <span id="cloudStatusBannerText" class="font-bold">✅ Terhubung ke Database Terpusat Perusahaan (Supabase Cloud Active)</span>
+        <!-- Tab Pemilih Mode Login (Tim Site vs Departemen GA) -->
+        <div class="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-slate-100 border border-slate-200 mb-5">
+          <button type="button" id="loginModeTabSite" onclick="switchLoginGateMode('SITE')" class="py-2.5 px-3 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-1.5 bg-white text-blue-900 shadow-sm border border-blue-200">
+            <span>👷</span>
+            <span>Tim Site (Modul 4 & 5)</span>
+          </button>
+          <button type="button" id="loginModeTabGa" onclick="switchLoginGateMode('GA')" class="py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900">
+            <span>🛡️</span>
+            <span>Dept. GA (5 Modul)</span>
+          </button>
         </div>
 
         <form id="portalLoginForm" onsubmit="handleUnifiedPortalLogin(event)" class="space-y-4">
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1.5">Email PIC Terdaftar *</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap PIC / Staf *</label>
             <div class="relative">
-              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">✉️</span>
-              <input type="email" id="gaLoginEmail" required placeholder="gajkt@gel.co.id atau pic.site01@gel.co.id" class="w-full h-11 pl-10 pr-3.5 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-900 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 outline-none transition" />
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">👤</span>
+              <input type="text" id="gaLoginStaffName" required placeholder="Ketik nama Anda (Misal: PIC Site ARC / Eliza Putri)..." class="w-full h-11 pl-10 pr-3.5 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-900 focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 outline-none transition" />
             </div>
           </div>
 
-          <div>
-            <div class="flex items-center justify-between mb-1.5">
-              <label class="block text-xs font-bold text-slate-700">Password Akun PIC *</label>
-              <span class="text-[10px] font-bold text-slate-500">🔒 Tidak ada pendaftaran umum</span>
+          <!-- Panel Info Khusus Mode Tim Site -->
+          <div id="loginSiteModePanel" class="p-4 rounded-2xl bg-blue-50/90 border border-blue-200 space-y-2">
+            <div class="flex items-center gap-2 text-xs font-black text-blue-950">
+              <span class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs">✓</span>
+              <span>Akses Langsung Operasional Site (Tanpa Kode GA)</span>
+            </div>
+            <p class="text-[11px] text-blue-800 leading-relaxed">
+              Anda akan langsung diarahkan ke <strong>Modul 4 (Monitoring Sewa Kendaraan & Alat)</strong> dan <strong>Modul 5 (Monitoring 14 Katering Site)</strong> untuk menginput, mengedit, menghapus, dan mengunduh laporan Excel.
+            </p>
+          </div>
+
+          <!-- Panel Kode Akses Khusus Mode Departemen GA -->
+          <div id="loginGaModePanel" class="hidden space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-bold text-slate-700">Kode Akses Departemen GA *</label>
+              <span class="text-[10px] font-bold text-slate-500 flex items-center gap-1">🔒 Rahasia Internal GA</span>
             </div>
             <div class="relative">
               <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔑</span>
-              <input type="password" id="gaLoginPasscode" required placeholder="Masukkan password PIC Anda..." class="w-full h-11 pl-10 pr-16 text-xs border border-slate-300 rounded-xl bg-white font-mono font-extrabold tracking-wider focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 outline-none transition" />
+              <input type="password" id="gaLoginPasscode" placeholder="Masukkan kode akses Departemen GA..." class="w-full h-11 pl-10 pr-16 text-xs border border-slate-300 rounded-xl bg-white font-mono font-extrabold tracking-wider focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 outline-none transition" />
               <button type="button" onclick="toggleGatePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-extrabold text-blue-600 hover:underline">
                 Lihat
               </button>
             </div>
-            <p id="gaGateErrorMsg" class="hidden text-[11px] font-bold text-rose-600 mt-1.5">⚠️ Akun PIC tidak terdaftar, nonaktif, atau password salah.</p>
+            <p id="gaGateErrorMsg" class="hidden text-[11px] font-bold text-rose-600 mt-1">⚠️ Kode akses Departemen GA tidak sesuai. Periksa kembali kode Anda.</p>
           </div>
 
-          <button type="submit" id="unifiedLoginSubmitBtn" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-amber-900 hover:from-slate-800 hover:to-amber-800 text-amber-300 text-xs sm:text-sm font-black shadow-xl transition transform active:scale-[0.99]">
-            🔐 Masuk ke Sistem Internal Perusahaan
+          <button type="submit" id="unifiedLoginSubmitBtn" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 hover:from-blue-500 hover:to-indigo-700 text-white text-xs sm:text-sm font-black shadow-xl shadow-blue-600/25 transition transform active:scale-[0.99]">
+            👷 Masuk ke Portal Site (Modul 4 & 5)
           </button>
         </form>
-
-        <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-500">
-          <span>Role otomatis terdeteksi: <strong>GA HO (5 Modul)</strong> / <strong>PIC Site (Modul 4 & 5)</strong></span>
-          <span class="font-bold text-emerald-700">RLS Protected</span>
-        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal Pengaturan Kode Akses Departemen GA -->
+  <div id="gaSecurityModal" class="fixed inset-0 z-50 bg-slate-950/75 hidden items-center justify-center p-4 no-print" onclick="closeGaSecurityModal()">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-base font-black text-slate-900">🔐 Pengaturan Keamanan Departemen GA</h3>
+          <p class="text-[11px] text-slate-500">Ubah kode akses agar hanya tim GA yang dapat membuka portal online.</p>
+        </div>
+        <button type="button" onclick="closeGaSecurityModal()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+      </div>
+      <form onsubmit="saveNewGaPasscode(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Kode Akses Baru Departemen GA *</label>
+          <input type="text" id="newGaPasscodeInput" required minlength="4" placeholder="Contoh: GA-TEAM2026" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl font-mono font-extrabold" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeGaSecurityModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Batal</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold">Simpan Kode Baru</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -579,7 +609,9 @@
             <div id="sidebarSessionRoleBadge" class="text-[9px] font-black uppercase tracking-wider text-emerald-300">● GA Verified Session</div>
             <div id="sidebarActiveStaffLabel" class="text-[11px] font-bold text-white truncate">Tim General Affair</div>
           </div>
-          <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-[9px] font-extrabold text-emerald-300 shrink-0">ACTIVE</span>
+          <button type="button" id="sidebarChangeCodeBtn" onclick="openGaSecurityModal()" title="Ubah Kode Akses GA" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] font-bold text-amber-300 shrink-0">
+            🔐 Kode
+          </button>
         </div>
         <button type="button" id="sidebarLockBtn" onclick="lockGaPortal()" class="w-full py-2 px-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-400/30 text-[11px] font-extrabold text-rose-200 flex items-center justify-center gap-1.5 transition">
           <span>🔒</span>
@@ -610,9 +642,9 @@
                 <span id="headerAccessModeBadge" class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40">
                   General Affair Dept Only
                 </span>
-                <span id="cloudSyncBadge" class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
-                  ☁️ Cloud Synced
-                </span>
+                <button type="button" id="cloudSyncBadge" onclick="openSupabaseConfigModal()" title="Klik untuk atur koneksi Supabase Cloud" class="px-2.5 py-0.5 text-[10px] font-extrabold rounded-full bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-400/40 cursor-pointer transition">
+                  ☁️ Local Mode (Klik Setup Supabase)
+                </button>
               </div>
               <p class="text-[11px] text-slate-400">
                 Modul Aktif: <strong id="activeModuleLabel" class="text-amber-300">1. Ticketing</strong> • PIC: <strong id="headerStaffName" class="text-emerald-300">Tim GA</strong> • Kontrol Penuh GA
@@ -913,9 +945,9 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-start">
                       <div>
-                        <label class="block text-[11px] font-bold text-slate-700 mb-1 whitespace-nowrap">Total Nominal (Rp) *</label>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1 whitespace-nowrap">Nominal Total (Rp) *</label>
                         <input type="number" id="fNominal" required min="0" oninput="recalculateMova(); refreshFormDerivedOutputs();" placeholder="4597900" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-extrabold focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none" />
-                        <p id="nominalPerPaxHint" class="text-[10px] text-blue-700 font-extrabold mt-1">1 Orang • @ Rp 0 / orang</p>
+                        <p id="nominalPerPaxHint" class="text-[10px] text-blue-700 font-bold mt-1">1 Orang • @ Rp 0 / orang</p>
                       </div>
                       <div>
                         <label class="block text-[11px] font-bold text-emerald-800 mb-1 whitespace-nowrap">Est. MOVA (Rp)</label>
@@ -1025,7 +1057,7 @@
               <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
                   <h2 class="text-lg font-extrabold text-slate-900">Rekapitulasi & Rekonsiliasi Debit Card BNI Pak Tony (Per PVR / Per PT)</h2>
-                  <p class="text-xs text-slate-500">Filter & cocokkan total setiap PVR per PT dengan rekening koran Debit Card BNI Pak Tony (1807-6383-59). Transaksi berstatus <strong>PAID</strong> otomatis terkunci & tidak perlu dibuka PVR; hanya <strong>UNPAID</strong> yang wajib dibuka PVR.</p>
+                  <p class="text-xs text-slate-500">Filter & cocokkan total setiap PVR per PT dengan rekening koran Debit Card BNI Pak Tony (1807-6383-59) untuk Traveloka & Tiket.com.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                   <button type="button" onclick="exportCleanRekapExcel()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-sm">
@@ -1075,8 +1107,8 @@
               <div class="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <h3 class="text-xs font-extrabold text-blue-950">Rekonsiliasi Penjumlahan per PVR & per PT (Hanya Transaksi UNPAID yang Wajib Dibuka PVR)</h3>
-                    <p class="text-[11px] text-blue-800">Klik tombol <strong>Buka PVR</strong> pada kartu PT yang masih memiliki transaksi <strong>UNPAID</strong>. Jika seluruh transaksi PT sudah <strong>PAID</strong>, kartu otomatis terkunci.</p>
+                    <h3 class="text-xs font-extrabold text-blue-950">Rekonsiliasi Penjumlahan per PVR & per PT (Hanya UNPAID yang wajib dibuka PVR)</h3>
+                    <p class="text-[11px] text-blue-800">Klik lencana <strong>UNPAID / PAID</strong> pada tabel di bawah untuk mengubah status pembayaran, tanggal bayar, & No. GR.</p>
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-xs font-bold text-slate-700">Total Terfilter:</span>
@@ -1117,14 +1149,14 @@
               <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
                   <span class="inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-extrabold uppercase tracking-wider mb-1">
-                    Format A4 Portrait • KOP Logo Resmi 17 PT (Rata Kiri) • Khusus Transaksi UNPAID
+                    Format A4 Portrait • KOP Logo Resmi 17 PT (Rata Kiri) • GA & CORSEC
                   </span>
-                  <h2 class="text-lg font-extrabold text-slate-900">Generator Pengajuan PVR per PT (Pesawat, Hotel & Kereta Api)</h2>
-                  <p class="text-xs text-slate-500">Otomatis hanya menarik item berstatus <strong>UNPAID</strong> (item yang sudah <strong>PAID</strong> otomatis dikecualikan). Klik langsung pada sel di lembar PVR untuk mengedit manual.</p>
+                  <h2 class="text-lg font-extrabold text-slate-900">Generator Pengajuan PVR per PT & Divisi (Pesawat, Hotel & Kereta Api)</h2>
+                  <p class="text-xs text-slate-500">Transaksi berstatus PAID otomatis terkunci dan tidak masuk ke PVR; hanya UNPAID yang diajukan.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                   <button type="button" onclick="loadWeeklySimulationAllPt()" class="px-3.5 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 text-xs font-extrabold border border-purple-300">
-                    + Simulasi Mingguan (Semua PT)
+                    + Contoh Data MDF
                   </button>
                   <button type="button" onclick="addManualPvrLine()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow-sm">
                     + Tambah Baris Manual di PVR
@@ -1153,34 +1185,27 @@
                   <select id="pvrPtSelect" onchange="onPvrPtSelectChange()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-extrabold"></select>
                 </div>
                 <div>
+                  <label class="block text-xs font-bold text-purple-800 mb-1">Divisi Pengajuan PVR (GA / CORSEC)</label>
+                  <select id="pvrDivisiFilter" onchange="onPvrDivisiFilterChange()" class="w-full px-3 py-2 text-xs border border-purple-300 rounded-xl bg-white font-extrabold text-purple-900">
+                    <option value="ALL">Semua Divisi (GA & CORSEC)</option>
+                    <option value="GA">Khusus General Affair (GA)</option>
+                    <option value="CORSEC">Khusus CORSEC (Corporate Secretary)</option>
+                  </select>
+                </div>
+                <div>
                   <label class="block text-xs font-bold text-blue-700 mb-1">Vendor PVR PT Ini</label>
                   <select id="pvrVendorFilter" onchange="renderPvrPreview(false)" class="w-full px-3 py-2 text-xs border border-blue-300 rounded-xl bg-white font-bold text-blue-900">
-                    <option value="ALL">Semua Vendor (Gabung Traveloka + Tiket.com)</option>
+                    <option value="ALL">Semua Vendor (Traveloka + Tiket.com)</option>
                     <option value="Traveloka">Khusus Traveloka</option>
                     <option value="Tiket.com">Khusus Tiket.com</option>
                   </select>
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Filter Tanggal Order (Opsional)</label>
-                  <select id="pvrDateFilter" onchange="renderPvrPreview(false)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold">
-                    <option value="ALL">Semua Tanggal Order PT Ini</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Filter Status PVR (Default UNPAID)</label>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Filter Status PT Ini</label>
                   <select id="pvrStatusFilter" onchange="renderPvrPreview(false)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold">
-                    <option value="UNPAID" selected>UNPAID Saja (Wajib Buka PVR)</option>
+                    <option value="UNPAID">UNPAID Saja (Wajib PVR)</option>
                     <option value="ALL">Semua Status PT Ini</option>
-                    <option value="PAID">PAID Saja (Arsip Lunas)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="block text-xs font-bold text-purple-800 mb-1">Divisi Pengajuan PVR (GA / CORSEC)</label>
-                  <select id="pvrDivisiFilter" onchange="onPvrDivisiFilterChange()" class="w-full px-3 py-2 text-xs border border-purple-300 rounded-xl bg-purple-50/40 font-extrabold text-purple-950">
-                    <option value="ALL">Semua Divisi (GA & CORSEC)</option>
-                    <option value="GA">Khusus GA (General Affair)</option>
-                    <option value="CORSEC">Khusus CORSEC (Corporate Secretary)</option>
+                    <option value="PAID">PAID Saja</option>
                   </select>
                 </div>
 
@@ -2056,20 +2081,30 @@
 
   <script>
     // =========================================================================
-    // KONFIGURASI SUPABASE TERPUSAT (HO & 14 SITES)
+    // KONFIGURASI SUPABASE (CUKUP ISI URL & ANON KEY DI SINI LALU UPLOAD GITHUB)
     // =========================================================================
-    const SUPABASE_URL = 'https://tucdoqxmjzpeivopmgyv.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_syJd7-c4HSziIFSyP1vooQ_Zo0nOre1';
+    const SUPABASE_DEFAULT_URL = '';      // <-- TEMPEL SUPABASE PROJECT URL DI SINI (Contoh: 'https://xyzcompany.supabase.co')
+    const SUPABASE_DEFAULT_ANON_KEY = ''; // <-- TEMPEL SUPABASE ANON PUBLIC KEY DI SINI
+    const SUPABASE_TABLE_NAME = 'ga_portal_state';
+    const SUPABASE_ROW_ID = 'main_workspace';
+
+    // =========================================================================
+    // STATE & KONSTANTA UTAMA PORTAL (SEMUA 5 MODUL)
+    // =========================================================================
     const STORAGE_KEY = 'ticketing_pvr_mining_v5';
+    const SUPABASE_CFG_KEY = 'ga_supabase_cfg_v1';
+    const GA_PASSCODE_KEY = 'ga_portal_passcode_v1';
     const GA_SESSION_KEY = 'ga_portal_session_v1';
-    const AUTO_LOGOUT_MINUTES = 15;
+    const DEFAULT_GA_PASSCODE = 'GA-GEL2026';
 
     let supabaseClient = null;
-    let currentPicProfile = null;
-    let cloudSyncTimer = null;
-    let inactivityTimer = null;
+    let supabaseRealtimeChannel = null;
+    let supabaseSaveTimer = null;
+    let isApplyingRemoteSync = false;
+    let lastSyncedTimestamp = 0;
 
     let currentAccessRole = 'SITE_USER';
+    let loginGateMode = 'SITE';
     let records = [];
     let ptCustomLogos = {};
     let opsGelRecords = [];
@@ -2156,7 +2191,7 @@
     };
 
     // =========================================================================
-    // HELPER DOM, FORMATTER, WATERMARK & AUTO-LOGOUT
+    // HELPER DOM, FORMATTER, WATERMARK & ACCESS GATE
     // =========================================================================
     const getEl = id => document.getElementById(id);
     const getElVal = (id, fallback = '') => {
@@ -2177,11 +2212,6 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
 
-    const toTitleCaseName = str => String(str || '')
-      .toLowerCase()
-      .replace(/\b\w/g, ch => ch.toUpperCase())
-      .trim();
-
     const getTodayIso = () => new Date().toISOString().slice(0, 10);
     const addDaysIso = (iso, days) => {
       const d = new Date(iso || getTodayIso());
@@ -2201,8 +2231,11 @@
       const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
       const p = String(iso).slice(0, 10).split('-');
       if (p.length !== 3) return iso;
-      return `${String(parseInt(p[2], 10)).padStart(2, '0')} ${months[parseInt(p[1], 10) - 1] || ''} ${p[0]}`;
+      return `${parseInt(p[2], 10)} ${months[parseInt(p[1], 10) - 1] || ''} ${p[0]}`;
     };
+    const toTitleCaseName = str => String(str || '')
+      .toLowerCase()
+      .replace(/\b\w/g, ch => ch.toUpperCase());
 
     function showToast(msg, type = 'info') {
       const box = getEl('toastContainer');
@@ -2252,141 +2285,36 @@
       if (d) d.classList.toggle('hidden');
     }
 
-    function resetInactivityTimer() {
-      clearTimeout(inactivityTimer);
-      const gate = getEl('gaAccessGateOverlay');
-      if (gate && !gate.classList.contains('hidden')) return;
-      inactivityTimer = setTimeout(() => {
-        lockGaPortal();
-        showToast('Sesi otomatis dikunci demi keamanan data (15 menit tanpa aktivitas).', 'warning');
-      }, AUTO_LOGOUT_MINUTES * 60 * 1000);
-    }
+    function switchLoginGateMode(mode) {
+      loginGateMode = mode;
+      const isSite = mode === 'SITE';
+      const tabSite = getEl('loginModeTabSite');
+      const tabGa = getEl('loginModeTabGa');
+      const panelSite = getEl('loginSiteModePanel');
+      const panelGa = getEl('loginGaModePanel');
+      const btn = getEl('unifiedLoginSubmitBtn');
 
-    ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
-      document.addEventListener(evt, resetInactivityTimer, { passive: true });
-    });
-
-    // =========================================================================
-    // KONEKSI SUPABASE CLOUD & AUTHENTICATION WHITELIST PIC
-    // =========================================================================
-    let cloudPollTimer = null;
-
-    function isSandboxedPreview() {
-      try {
-        return window.self !== window.top || window.location.protocol === 'blob:' || window.location.protocol === 'about:';
-      } catch (e) {
-        return true;
+      if (tabSite) {
+        tabSite.className = isSite
+          ? 'py-2.5 px-3 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-1.5 bg-white text-blue-900 shadow-sm border border-blue-200'
+          : 'py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900';
       }
-    }
-
-    function initSupabaseClient() {
-      if (typeof window.supabase === 'undefined') {
-        setElText('cloudStatusBannerText', '⚠️ Gagal memuat library Supabase. Periksa koneksi internet.');
-        return false;
+      if (tabGa) {
+        tabGa.className = !isSite
+          ? 'py-2.5 px-3 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-1.5 bg-slate-900 text-amber-300 shadow-sm'
+          : 'py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900';
       }
-      try {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-          realtime: {
-            params: { eventsPerSecond: 2 }
-          }
-        });
-        subscribeRealtimeWorkspace();
-        return true;
-      } catch (err) {
-        console.error('Supabase init error:', err);
-        return false;
+      if (panelSite) panelSite.classList.toggle('hidden', !isSite);
+      if (panelGa) panelGa.classList.toggle('hidden', isSite);
+      if (btn) {
+        btn.textContent = isSite
+          ? '👷 Masuk ke Portal Site (Modul 4 & 5)'
+          : '🛡️ Masuk Kontrol Penuh Dept. GA (5 Modul)';
+        btn.className = isSite
+          ? 'w-full py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 hover:from-blue-500 hover:to-indigo-700 text-white text-xs sm:text-sm font-black shadow-xl shadow-blue-600/25 transition'
+          : 'w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 text-xs sm:text-sm font-black shadow-xl shadow-amber-500/25 transition';
       }
-    }
-
-    function subscribeRealtimeWorkspace() {
-      if (!supabaseClient) return;
-      // Lingkungan Preview Canvas memblokir WebSocket (wss://), gunakan polling aman saat di Preview
-      if (isSandboxedPreview()) {
-        clearInterval(cloudPollTimer);
-        cloudPollTimer = setInterval(() => {
-          if (currentPicProfile) pullFromSupabaseCloud(true);
-        }, 15000);
-        return;
-      }
-      try {
-        supabaseClient
-          .channel('ga-portal-realtime')
-          .on('postgres_changes', {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'portal_workspace_store',
-            filter: 'store_key=eq.main_portal_data'
-          }, async () => {
-            await pullFromSupabaseCloud(true);
-          })
-          .subscribe();
-      } catch (e) {
-        console.warn('Realtime fallback to polling:', e);
-      }
-    }
-
-    async function pullFromSupabaseCloud(isRealtimeRefresh = false) {
-      if (!supabaseClient) return;
-      try {
-        const { data, error } = await supabaseClient
-          .from('portal_workspace_store')
-          .select('payload')
-          .eq('store_key', 'main_portal_data')
-          .single();
-        if (!error && data && data.payload && Object.keys(data.payload).length > 0) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(data.payload));
-          loadStorage(true);
-          renderRekapTable();
-          renderPvrPreview(false);
-          renderKtpTable();
-          renderSewaLvTable();
-          ctRender();
-          renderStnkTable();
-          renderOpsGelTable();
-          if (isRealtimeRefresh) {
-            setElText('cloudSyncBadge', '☁️ Updated Live');
-          }
-        }
-      } catch (e) {
-        console.warn('Pull cloud warning:', e);
-      }
-    }
-
-    function queuePushToSupabaseCloud(actionSummary = 'Update data portal') {
-      if (!supabaseClient || !currentPicProfile) return;
-      setElText('cloudSyncBadge', '⏳ Menyinkronkan...');
-      clearTimeout(cloudSyncTimer);
-      cloudSyncTimer = setTimeout(async () => {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (!raw) return;
-          const payloadObj = JSON.parse(raw);
-          const staffLabel = currentPicProfile.full_name || 'PIC';
-          const { error } = await supabaseClient
-            .from('portal_workspace_store')
-            .update({
-              payload: payloadObj,
-              updated_by: staffLabel,
-              updated_at: new Date().toISOString()
-            })
-            .eq('store_key', 'main_portal_data');
-
-          if (!error) {
-            setElText('cloudSyncBadge', '☁️ Cloud Synced');
-            await supabaseClient.from('portal_audit_logs').insert({
-              user_email: currentPicProfile.email || '-',
-              user_name: staffLabel,
-              user_role: currentAccessRole,
-              module_name: getEl('activeModuleLabel')?.textContent || 'Portal',
-              action_summary: actionSummary
-            });
-          } else {
-            setElText('cloudSyncBadge', '⚠️ Sync Tertunda');
-          }
-        } catch (err) {
-          setElText('cloudSyncBadge', '⚠️ Offline Cache');
-        }
-      }, 650);
+      getEl('gaGateErrorMsg')?.classList.add('hidden');
     }
 
     function toggleGatePasswordVisibility() {
@@ -2394,7 +2322,7 @@
       if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
     }
 
-    function applyRoleVisibility(role, staffName, assignedSite = 'ALL') {
+    function applyRoleVisibility(role, staffName) {
       currentAccessRole = role;
       const isGa = role === 'GA_ADMIN';
       ['ticketing', 'opsga', 'stnk'].forEach(mod => {
@@ -2402,13 +2330,13 @@
         getEl(`mobBtn-${mod}`)?.classList.toggle('hidden', !isGa);
       });
       getEl('ticketingSubNav')?.classList.toggle('hidden', !isGa);
+      getEl('sidebarChangeCodeBtn')?.classList.toggle('hidden', !isGa);
 
-      const siteTag = (!isGa && assignedSite && assignedSite !== 'ALL') ? ` (${assignedSite})` : '';
-      setElText('sidebarWorkspaceTitle', isGa ? 'Workspace (5 Modul GA)' : `Workspace Site${siteTag}`);
-      setElText('sidebarSessionRoleBadge', isGa ? '● GA HO Verified' : `● PIC Site Verified${siteTag}`);
+      setElText('sidebarWorkspaceTitle', isGa ? 'Workspace (5 Modul GA)' : 'Workspace Site (Modul 4 & 5)');
+      setElText('sidebarSessionRoleBadge', isGa ? '● GA Verified Session' : '● Site Operator Session');
       setElText('sidebarActiveStaffLabel', staffName || (isGa ? 'Tim General Affair' : 'PIC Site'));
-      setElText('headerStaffName', `${staffName || 'PIC'}${siteTag}`);
-      setElText('headerAccessModeBadge', isGa ? 'Kontrol Penuh GA HO (5 Modul)' : `Akses PIC Site${siteTag} (Modul 4 & 5)`);
+      setElText('headerStaffName', staffName || (isGa ? 'Tim GA' : 'PIC Site'));
+      setElText('headerAccessModeBadge', isGa ? 'Kontrol Penuh GA (5 Modul)' : 'Akses Site (Modul 4 & 5)');
 
       const ctRole = getEl('ctRoleSwitch');
       if (ctRole) {
@@ -2420,99 +2348,64 @@
       switchPrimaryModule(isGa ? 'ticketing' : 'sewalv');
     }
 
-    async function handleUnifiedPortalLogin(e) {
+    function handleUnifiedPortalLogin(e) {
       e.preventDefault();
-      const email = getElVal('gaLoginEmail', '').trim().toLowerCase();
-      const password = getElVal('gaLoginPasscode', '').trim();
-      const errEl = getEl('gaGateErrorMsg');
-      const submitBtn = getEl('unifiedLoginSubmitBtn');
-      if (errEl) errEl.classList.add('hidden');
-
-      if (!supabaseClient && !initSupabaseClient()) {
-        if (errEl) {
-          errEl.textContent = '⚠️ Koneksi ke server perusahaan belum siap. Muat ulang halaman.';
-          errEl.classList.remove('hidden');
-        }
-        return;
-      }
-
-      if (submitBtn) submitBtn.textContent = '⏳ Memverifikasi Akun PIC Perusahaan...';
-      try {
-        const { data: authData, error: authErr } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (authErr || !authData?.user) {
-          if (errEl) {
-            errEl.textContent = '⚠️ Login ditolak: Email tidak terdaftar di perusahaan atau password salah.';
-            errEl.classList.remove('hidden');
-          }
-          return;
-        }
-
-        const { data: profile, error: profErr } = await supabaseClient
-          .from('pic_profiles')
-          .select('*')
-          .eq('id', authData.user.id)
-          .single();
-
-        if (profErr || !profile || !profile.is_active) {
-          await supabaseClient.auth.signOut();
-          if (errEl) {
-            errEl.textContent = '⛔ Akun Anda belum diaktifkan oleh Admin HO pada daftar PIC.';
-            errEl.classList.remove('hidden');
-          }
-          return;
-        }
-
-        currentPicProfile = profile;
-        sessionStorage.setItem(GA_SESSION_KEY, JSON.stringify({
-          role: profile.role,
-          staff: profile.full_name,
-          email: profile.email,
-          siteId: profile.site_id || 'ALL'
-        }));
-
-        await pullFromSupabaseCloud(false);
+      const staff = getElVal('gaLoginStaffName', '').trim() || 'PIC Operasional';
+      if (loginGateMode === 'SITE') {
+        sessionStorage.setItem(GA_SESSION_KEY, JSON.stringify({ role: 'SITE_USER', staff }));
         getEl('gaAccessGateOverlay')?.classList.add('hidden');
-        resetInactivityTimer();
-        applyRoleVisibility(profile.role, profile.full_name, profile.site_id || 'ALL');
-        showToast(`Selamat datang ${profile.full_name} (${profile.role === 'GA_ADMIN' ? 'Dept. GA HO' : 'PIC ' + (profile.site_id || 'Site')}).`, 'success');
-      } catch (err) {
-        if (errEl) {
-          errEl.textContent = '⚠️ Gagal terhubung ke server autentikasi. Periksa koneksi internet.';
-          errEl.classList.remove('hidden');
+        applyRoleVisibility('SITE_USER', staff);
+        showToast(`Selamat datang ${staff} (Akses Tim Site: Modul 4 & 5).`, 'success');
+      } else {
+        const expected = localStorage.getItem(GA_PASSCODE_KEY) || DEFAULT_GA_PASSCODE;
+        const entered = getElVal('gaLoginPasscode', '').trim();
+        if (entered !== expected) {
+          getEl('gaGateErrorMsg')?.classList.remove('hidden');
+          return;
         }
-      } finally {
-        if (submitBtn) submitBtn.textContent = '🔐 Masuk ke Sistem Internal Perusahaan';
+        getEl('gaGateErrorMsg')?.classList.add('hidden');
+        sessionStorage.setItem(GA_SESSION_KEY, JSON.stringify({ role: 'GA_ADMIN', staff }));
+        getEl('gaAccessGateOverlay')?.classList.add('hidden');
+        applyRoleVisibility('GA_ADMIN', staff);
+        showToast(`Selamat datang ${staff} — Kontrol Penuh Dept. GA (5 Modul) aktif.`, 'success');
       }
     }
 
-    async function lockGaPortal() {
+    function lockGaPortal() {
       sessionStorage.removeItem(GA_SESSION_KEY);
-      currentPicProfile = null;
-      if (supabaseClient) {
-        try { await supabaseClient.auth.signOut(); } catch (e) {}
-      }
       getEl('gaAccessGateOverlay')?.classList.remove('hidden');
     }
 
-    async function initGaAccessGate() {
-      initSupabaseClient();
+    function openGaSecurityModal() {
+      const m = getEl('gaSecurityModal');
+      if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+    }
+
+    function closeGaSecurityModal() {
+      const m = getEl('gaSecurityModal');
+      if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+    }
+
+    function saveNewGaPasscode(e) {
+      e.preventDefault();
+      const val = getElVal('newGaPasscodeInput', '').trim();
+      if (val.length >= 4) {
+        localStorage.setItem(GA_PASSCODE_KEY, val);
+        closeGaSecurityModal();
+        showToast('Kode akses Departemen GA berhasil diperbarui.', 'success');
+      }
+    }
+
+    function initGaAccessGate() {
+      switchLoginGateMode('SITE');
       try {
-        if (supabaseClient) {
-          const { data: { session } } = await supabaseClient.auth.getSession();
-          if (session?.user) {
-            const { data: profile } = await supabaseClient
-              .from('pic_profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-            if (profile && profile.is_active) {
-              currentPicProfile = profile;
-              await pullFromSupabaseCloud(false);
-              getEl('gaAccessGateOverlay')?.classList.add('hidden');
-              resetInactivityTimer();
-              applyRoleVisibility(profile.role, profile.full_name, profile.site_id || 'ALL');
-              return;
-            }
+        const saved = sessionStorage.getItem(GA_SESSION_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.role) {
+            getEl('gaAccessGateOverlay')?.classList.add('hidden');
+            applyRoleVisibility(parsed.role, parsed.staff);
+            return;
           }
         }
       } catch (e) {}
@@ -2545,7 +2438,7 @@
     }
 
     // =========================================================================
-    // STORAGE & DATA PERSISTENCE (SEMUA 5 MODUL + KUNCI PERMANEN 17 LOGO PT)
+    // STORAGE, KUNCI PERMANEN 17 LOGO PT & SUPABASE REAL-TIME CLOUD SYNC
     // =========================================================================
     function recoverOriginal17PtLogos() {
       const allKeys = [
@@ -2584,7 +2477,7 @@
       });
     }
 
-    function loadStorage(skipCloudPush = false) {
+    function loadStorage() {
       try {
         recoverOriginal17PtLogos();
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -2630,12 +2523,199 @@
         sewaLvRecords = getDefaultSewa2026Records();
       }
       updateNavBadge();
-      if (!skipCloudPush) {
-        queuePushToSupabaseCloud('Sinkronisasi data operasional');
+    }
+
+    function getActiveSupabaseConfig() {
+      let saved = {};
+      try {
+        saved = JSON.parse(localStorage.getItem(SUPABASE_CFG_KEY) || '{}');
+      } catch (e) {}
+      return {
+        url: (SUPABASE_DEFAULT_URL || saved.url || '').trim(),
+        anonKey: (SUPABASE_DEFAULT_ANON_KEY || saved.anonKey || '').trim()
+      };
+    }
+
+    function updateCloudSyncBadge(status, label) {
+      const badge = getEl('cloudSyncBadge');
+      if (!badge) return;
+      const styles = {
+        connected: 'px-2.5 py-0.5 text-[10px] font-extrabold rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 cursor-pointer transition',
+        syncing: 'px-2.5 py-0.5 text-[10px] font-extrabold rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40 cursor-pointer transition',
+        error: 'px-2.5 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-400/40 cursor-pointer transition',
+        local: 'px-2.5 py-0.5 text-[10px] font-extrabold rounded-full bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-400/40 cursor-pointer transition'
+      };
+      badge.className = styles[status] || styles.local;
+      badge.textContent = label;
+    }
+
+    function applyRemoteWorkspacePayload(payload) {
+      if (!payload || typeof payload !== 'object') return;
+      isApplyingRemoteSync = true;
+      try {
+        if (Array.isArray(payload.records)) records = payload.records;
+        if (payload.ptCustomLogos && typeof payload.ptCustomLogos === 'object') {
+          Object.keys(payload.ptCustomLogos).forEach(code => {
+            if (payload.ptCustomLogos[code]) ptCustomLogos[code] = payload.ptCustomLogos[code];
+          });
+        }
+        if (Array.isArray(payload.opsGelRecords)) opsGelRecords = payload.opsGelRecords;
+        if (Array.isArray(payload.stnkRecords)) stnkRecords = payload.stnkRecords;
+        if (Array.isArray(payload.sewaLvRecords)) sewaLvRecords = payload.sewaLvRecords;
+        if (Array.isArray(payload.ktpRecords)) ktpRecords = payload.ktpRecords;
+        if (payload.pvrStateByPt && typeof payload.pvrStateByPt === 'object') pvrStateByPt = payload.pvrStateByPt;
+        if (payload.cateringTowerState && typeof payload.cateringTowerState === 'object') {
+          cateringTowerState = { ...cateringTowerState, ...payload.cateringTowerState };
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          records, ptCustomLogos, opsGelRecords, stnkRecords, sewaLvRecords, ktpRecords, pvrStateByPt, cateringTowerState
+        }));
+        updateNavBadge();
+        renderRekapTable();
+        renderPvrPreview(false);
+        renderKtpTable();
+        renderSewaLvTable();
+        ctRender();
+        renderStnkTable();
+        renderOpsGelTable();
+      } finally {
+        isApplyingRemoteSync = false;
       }
     }
 
-    function saveStorage(actionLabel = 'Update data operasional') {
+    async function pushStateToSupabase() {
+      if (!supabaseClient || isApplyingRemoteSync) return;
+      try {
+        updateCloudSyncBadge('syncing', '☁️ Menyimpan ke Supabase...');
+        const updatedAt = Date.now();
+        lastSyncedTimestamp = updatedAt;
+        const payload = {
+          records, ptCustomLogos, opsGelRecords, stnkRecords, sewaLvRecords, ktpRecords, pvrStateByPt, cateringTowerState
+        };
+        const { error } = await supabaseClient
+          .from(SUPABASE_TABLE_NAME)
+          .upsert({ id: SUPABASE_ROW_ID, payload, updated_at: new Date(updatedAt).toISOString() }, { onConflict: 'id' });
+        if (error) throw error;
+        updateCloudSyncBadge('connected', '☁️ Supabase Online (Tersinkron)');
+      } catch (err) {
+        console.warn('Supabase push warning:', err);
+        updateCloudSyncBadge('error', '⚠️ Gagal Sync Supabase (Cek Tabel)');
+      }
+    }
+
+    async function pullStateFromSupabase() {
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from(SUPABASE_TABLE_NAME)
+          .select('payload, updated_at')
+          .eq('id', SUPABASE_ROW_ID)
+          .maybeSingle();
+        if (error) throw error;
+        if (data && data.payload) {
+          applyRemoteWorkspacePayload(data.payload);
+          updateCloudSyncBadge('connected', '☁️ Supabase Online (Tersinkron)');
+        } else {
+          await pushStateToSupabase();
+        }
+      } catch (err) {
+        console.warn('Supabase pull warning:', err);
+        updateCloudSyncBadge('error', '⚠️ Cek Setup Tabel Supabase');
+      }
+    }
+
+    async function initSupabaseCloudSync() {
+      const cfg = getActiveSupabaseConfig();
+      if (!cfg.url || !cfg.anonKey || typeof window.supabase === 'undefined') {
+        updateCloudSyncBadge('local', '☁️ Local Mode (Klik Setup Supabase)');
+        return;
+      }
+      try {
+        supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
+        updateCloudSyncBadge('syncing', '☁️ Menghubungkan Supabase...');
+        await pullStateFromSupabase();
+        if (supabaseRealtimeChannel) {
+          supabaseClient.removeChannel(supabaseRealtimeChannel);
+        }
+        supabaseRealtimeChannel = supabaseClient
+          .channel('ga_workspace_realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: SUPABASE_TABLE_NAME, filter: `id=eq.${SUPABASE_ROW_ID}` }, payload => {
+            const remoteTs = payload?.new?.updated_at ? new Date(payload.new.updated_at).getTime() : Date.now();
+            if (Math.abs(remoteTs - lastSyncedTimestamp) > 1200 && payload?.new?.payload) {
+              applyRemoteWorkspacePayload(payload.new.payload);
+              showToast('Data diperbarui otomatis dari perangkat lain (Supabase).', 'info');
+            }
+          })
+          .subscribe();
+      } catch (err) {
+        console.warn('Supabase init error:', err);
+        updateCloudSyncBadge('error', '⚠️ Koneksi Supabase Gagal');
+      }
+    }
+
+    function openSupabaseConfigModal() {
+      const cfg = getActiveSupabaseConfig();
+      const sqlSnippet = `create table if not exists public.ga_portal_state (\n  id text primary key,\n  payload jsonb not null default '{}'::jsonb,\n  updated_at timestamptz not null default now()\n);\nalter table public.ga_portal_state enable row level security;\ncreate policy "Allow public read write" on public.ga_portal_state for all using (true) with check (true);`;
+      openUniversalModal(`
+        <div class="space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase">Supabase Cloud Real-Time Sync</span>
+              <h3 class="text-base font-black text-slate-900 mt-1">☁️ Koneksi Database Online (Site ↔ Dept. GA)</h3>
+            </div>
+            <button type="button" onclick="closeUniversalModal()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+          </div>
+          <form onsubmit="saveSupabaseConfigFromModal(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Project URL *</label>
+              <input type="url" id="sbUrlInput" required value="${escapeHtml(cfg.url)}" placeholder="https://xxxxxxxxxxxx.supabase.co" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl font-mono" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Anon Public Key *</label>
+              <input type="text" id="sbKeyInput" required value="${escapeHtml(cfg.anonKey)}" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl font-mono" />
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900 text-slate-100 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold text-amber-300">SQL Setup (Jalankan 1x di SQL Editor Supabase):</span>
+                <button type="button" onclick="copySupabaseSqlSnippet()" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] font-bold text-emerald-300">Salin SQL</button>
+              </div>
+              <pre id="sbSqlPre" class="text-[10px] font-mono text-slate-300 overflow-x-auto whitespace-pre-wrap">${escapeHtml(sqlSnippet)}</pre>
+            </div>
+            <div class="flex flex-wrap justify-between gap-2 pt-2">
+              <button type="button" onclick="pullStateFromSupabase()" class="px-3.5 py-2 rounded-xl bg-blue-50 text-blue-700 text-xs font-extrabold border border-blue-200">↻ Tarik Data Cloud</button>
+              <div class="flex gap-2">
+                <button type="button" onclick="closeUniversalModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Tutup</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow">✓ Hubungkan & Sinkronkan</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      `);
+    }
+
+    function copySupabaseSqlSnippet() {
+      const pre = getEl('sbSqlPre');
+      if (!pre) return;
+      const ta = document.createElement('textarea');
+      ta.value = pre.textContent;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      showToast('Script SQL Supabase berhasil disalin!', 'success');
+    }
+
+    async function saveSupabaseConfigFromModal(e) {
+      e.preventDefault();
+      const url = getElVal('sbUrlInput', '').trim();
+      const anonKey = getElVal('sbKeyInput', '').trim();
+      localStorage.setItem(SUPABASE_CFG_KEY, JSON.stringify({ url, anonKey }));
+      closeUniversalModal();
+      await initSupabaseCloudSync();
+      showToast('Konfigurasi Supabase disimpan & dihubungkan!', 'success');
+    }
+
+    function saveStorage() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           records,
@@ -2653,7 +2733,10 @@
         showToast('Penyimpanan browser hampir penuh. Lakukan Backup JSON secara berkala.', 'warning');
       }
       updateNavBadge();
-      queuePushToSupabaseCloud(actionLabel);
+      if (supabaseClient && !isApplyingRemoteSync) {
+        clearTimeout(supabaseSaveTimer);
+        supabaseSaveTimer = setTimeout(() => { pushStateToSupabase(); }, 700);
+      }
     }
 
     function updateNavBadge() {
@@ -2813,7 +2896,7 @@
         showToast('PO Sewa Kendaraan & Alat baru berhasil disimpan.', 'success');
       }
 
-      saveStorage(`Simpan PO Sewa ${payload.noPo}`);
+      saveStorage();
       resetSewaLvForm();
       renderSewaLvTable();
     }
@@ -2855,7 +2938,7 @@
 
     function deleteSewaLvRecord(id) {
       sewaLvRecords = sewaLvRecords.filter(x => x.id !== id);
-      saveStorage('Hapus data PO Sewa');
+      saveStorage();
       renderSewaLvTable();
       showToast('Data PO Sewa berhasil dihapus.', 'info');
     }
@@ -2864,7 +2947,7 @@
       const item = sewaLvRecords.find(x => x.id === id);
       if (!item) return;
       item.status = newStatus;
-      saveStorage(`Ubah status PO Sewa ${item.noPo} -> ${newStatus}`);
+      saveStorage();
       renderSewaLvTable();
       showToast(`Status kontrak ${item.noPo} diubah menjadi ${newStatus}.`, 'success');
     }
@@ -2900,7 +2983,7 @@
 
     function loadSampleSewaLv() {
       sewaLvRecords = getDefaultSewa2026Records();
-      saveStorage('Muat contoh data PO Sewa 2026');
+      saveStorage();
       renderSewaLvTable();
       showToast('Data PO Sewa Kendaraan & Alat PT GEL Group berhasil dimuat.', 'success');
     }
@@ -3034,7 +3117,7 @@
           });
           if (imported.length) {
             sewaLvRecords = [...imported, ...sewaLvRecords];
-            saveStorage(`Import ${imported.length} PO Sewa`);
+            saveStorage();
             renderSewaLvTable();
             showToast(`Berhasil mengimpor ${imported.length} baris PO Sewa dari Excel.`, 'success');
           }
@@ -3109,7 +3192,7 @@
       site.vendor = getElVal('ctEditSiteVendor', site.vendor).trim();
       site.pic = getElVal('ctEditSitePic', site.pic).trim();
       site.rate = Number(getElVal('ctEditSiteRate', 0)) || 0;
-      saveStorage(`Update master site ${site.name}`);
+      saveStorage();
       closeUniversalModal();
       ctRender();
       showToast(`Identitas ${site.name} berhasil diperbarui.`, 'success');
@@ -3283,7 +3366,7 @@
       const target = Number(getElVal('ctTargetNet', 0)) || 0;
       const produced = Number(getElVal('ctProduced', 0)) || 0;
       const served = Number(getElVal('ctServed', 0)) || 0;
-      const picLabel = currentPicProfile?.full_name || getEl('sidebarActiveStaffLabel')?.textContent || 'PIC Site';
+      const picLabel = getElVal('sidebarActiveStaffLabel', 'PIC Site');
 
       const newReport = {
         id: 'MA-' + Date.now().toString().slice(-7),
@@ -3316,7 +3399,7 @@
         status: 'pending'
       });
 
-      saveStorage(`Input Meal Actual ${siteName}`);
+      saveStorage();
       closeUniversalModal();
       cateringTowerState.currentPage = 'actual';
       ctRender();
@@ -3343,7 +3426,7 @@
 
     function ctDeleteReport(reportId) {
       cateringTowerState.reports = cateringTowerState.reports.filter(r => r.id !== reportId);
-      saveStorage('Hapus laporan katering');
+      saveStorage();
       ctRender();
       showToast('Laporan katering berhasil dihapus.', 'info');
     }
@@ -3359,12 +3442,12 @@
       cateringTowerState.auditLogs.unshift({
         timestamp: `${getTodayIso()} ${new Date().toTimeString().slice(0, 5)}`,
         activity: newStatus === 'approved' ? 'Report Approved by GA' : 'Revision Requested by GA',
-        user: currentPicProfile?.full_name || 'Supervisor GA',
+        user: getElVal('sidebarActiveStaffLabel', 'Supervisor GA'),
         site: rep.site,
         ref: rep.id,
         status: newStatus
       });
-      saveStorage(`Approval katering ${rep.id} -> ${newStatus}`);
+      saveStorage();
       ctRender();
       showToast(`Status laporan ${rep.id} diperbarui menjadi ${newStatus}.`, 'success');
     }
@@ -3617,7 +3700,7 @@
     }
 
     // =========================================================================
-    // MODUL 1, 2, 3 & INIT BOOTSTRAP AGAR SELURUH PORTAL BERJALAN MULUS
+    // MODUL 1, 2, 3 INIT BOOTSTRAP & PVR/TICKETING/KTP FUNCTIONS
     // =========================================================================
     function syncAllPtSelectOptions() {
       const codes = Object.keys(PT_FULL_INFO);
@@ -3677,10 +3760,9 @@
 
     function handleSaveStnk(e) {
       e.preventDefault();
-      const nopol = getElVal('stnkNopol', '').toUpperCase();
       stnkRecords.unshift({
         id: 'STNK-' + Date.now(),
-        nopol,
+        nopol: getElVal('stnkNopol', '').toUpperCase(),
         unit: getElVal('stnkUnit', ''),
         pt: getElVal('stnkPt', 'GEL'),
         type: getElVal('stnkType', ''),
@@ -3690,7 +3772,7 @@
         pic: getElVal('stnkPic', ''),
         photo: currentStnkPhotoData || ''
       });
-      saveStorage(`Simpan STNK ${nopol}`);
+      saveStorage();
       renderStnkTable();
       showToast('Data STNK berhasil disimpan.', 'success');
     }
@@ -3720,7 +3802,7 @@
           <td class="py-2.5 px-3 font-bold text-emerald-700">${escapeHtml(r.status)}</td>
           <td class="py-2.5 px-3 text-right font-bold">${formatRupiah(r.cost)}</td>
           <td class="py-2.5 px-3">${escapeHtml(r.pic)}</td>
-          <td class="py-2.5 px-3 text-center"><button type="button" onclick="stnkRecords.splice(${i},1);saveStorage('Hapus data STNK');renderStnkTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[11px] font-bold">Hapus</button></td>
+          <td class="py-2.5 px-3 text-center"><button type="button" onclick="stnkRecords.splice(${i},1);saveStorage();renderStnkTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[11px] font-bold">Hapus</button></td>
         </tr>
       `).join('') || `<tr><td colspan="11" class="py-6 text-center text-slate-400">Belum ada data STNK.</td></tr>`;
     }
@@ -3751,7 +3833,7 @@
           <td class="py-2.5 px-3 text-center">
             <div class="flex items-center justify-center gap-1">
               <button type="button" onclick="renderOpsGelPvrSheet(${i})" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-extrabold">Buka PVR</button>
-              <button type="button" onclick="opsGelRecords.splice(${i},1);saveStorage('Hapus data Ops GEL');renderOpsGelTable();renderOpsGelPvrSheet(0);" class="px-2 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
+              <button type="button" onclick="opsGelRecords.splice(${i},1);saveStorage();renderOpsGelTable();renderOpsGelPvrSheet(0);" class="px-2 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
             </div>
           </td>
         </tr>
@@ -3938,7 +4020,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         records.unshift(item);
         showToast(`Data ${item.pt} (${item.nama}) tersimpan ke Rekap & PVR!`, 'success');
       }
-      saveStorage(`Simpan Tiket ${item.pt} (${item.invoice})`);
+      saveStorage();
       renderRekapTable();
       renderPvrPreview(true);
       resetBookingForm();
@@ -4136,7 +4218,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       r.noGr = newNoGr;
       r.paidDate = newStatus === 'PAID' ? (newPaidDate || getTodayIso()) : '';
 
-      saveStorage(`Update status Tiket ${r.invoice} -> ${newStatus}`);
+      saveStorage();
       closeUniversalModal();
       renderRekapTable();
       renderPvrPreview(false);
@@ -4148,16 +4230,20 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       );
     }
 
+    function toggleRecordPaid(id) {
+      openStatusAndGrModal(id);
+    }
+
     function deleteBookingRecord(id) {
       records = records.filter(x => x.id !== id);
-      saveStorage('Hapus data rekap tiket');
+      saveStorage();
       renderRekapTable();
       renderPvrPreview(true);
     }
 
     function clearAllRecordsConfirm() {
       records = [];
-      saveStorage('Kosongkan data rekap tiket');
+      saveStorage();
       renderRekapTable();
       renderPvrPreview(true);
       showToast('Semua data rekap ticketing dikosongkan.', 'info');
@@ -4223,12 +4309,31 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       if (typeof ExcelJS !== 'undefined') {
         try {
           const wb = new ExcelJS.Workbook();
-          const ws = wb.addWorksheet('Rekap Tiket & Hotel', { views: [{ showGridLines: true }] });
+          const ws = wb.addWorksheet('Rekap Tiket & Hotel', {
+            views: [{ showGridLines: true }]
+          });
+
           ws.columns = [
-            { width: 6 }, { width: 18 }, { width: 18 }, { width: 20 }, { width: 10 }, { width: 26 },
-            { width: 16 }, { width: 24 }, { width: 22 }, { width: 24 }, { width: 14 }, { width: 18 },
-            { width: 18 }, { width: 20 }, { width: 22 }, { width: 18 }, { width: 15 }, { width: 22 }
+            { width: 6 },   // A: No.
+            { width: 18 },  // B: Tanggal Order
+            { width: 18 },  // C: Nomor Invoice
+            { width: 20 },  // D: Payment Method
+            { width: 10 },  // E: PT
+            { width: 26 },  // F: Nama
+            { width: 16 },  // G: Keperluan
+            { width: 24 },  // H: Rute/ Hotel
+            { width: 22 },  // I: Tanggal Penerbangan/ Ci-Co
+            { width: 24 },  // J: Maskapai/ Hotel
+            { width: 14 },  // K: Vendor
+            { width: 18 },  // L: Nominal
+            { width: 18 },  // M: Status Pengajuan
+            { width: 20 },  // N: Tujuan Pembayaran
+            { width: 22 },  // O: No. GR
+            { width: 18 },  // P: Status Pembayaran
+            { width: 15 },  // Q: Status
+            { width: 22 }   // R: Estimasi Pendapatan MOVA
           ];
+
           const thinBorder = {
             top: { style: 'thin', color: { argb: 'FF000000' } },
             left: { style: 'thin', color: { argb: 'FF000000' } },
@@ -4261,6 +4366,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           ws.getCell('P1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
           ws.getCell('P1').border = thinBorder;
           ws.getCell('Q1').border = thinBorder;
+
           ws.getCell('R1').value = { formula: `SUM(L${startDataRow}:L${endDataRow})` };
           ws.getCell('R1').font = { name: 'Calibri', size: 10, bold: true };
           ws.getCell('R1').numFmt = numFmtRp;
@@ -4272,6 +4378,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           ws.getCell('P2').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
           ws.getCell('P2').border = thinBorder;
           ws.getCell('Q2').border = thinBorder;
+
           ws.getCell('R2').value = { formula: `SUM(R${startDataRow}:R${endDataRow})` };
           ws.getCell('R2').font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF047857' } };
           ws.getCell('R2').numFmt = numFmtRp;
@@ -4313,9 +4420,15 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
                 horizontal: (cIdx === 0 || cIdx === 4 || cIdx === 10 || cIdx === 15) ? 'center' : (cIdx === 11 || cIdx === 17 ? 'right' : 'left'),
                 wrapText: true
               };
-              if (cIdx === 11 || cIdx === 17) cell.numFmt = numFmtRp;
+              if (cIdx === 11 || cIdx === 17) {
+                cell.numFmt = numFmtRp;
+              }
               if (cIdx === 15) {
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: v === 'PAID' ? 'FFD1FAE5' : 'FFFEF3C7' } };
+                cell.fill = {
+                  type: 'pattern',
+                  pattern: 'solid',
+                  fgColor: { argb: v === 'PAID' ? 'FFD1FAE5' : 'FFFEF3C7' }
+                };
               }
             });
           });
@@ -4326,9 +4439,11 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           totRow.getCell(1).value = 'TOTAL KESELURUHAN';
           totRow.getCell(1).font = { name: 'Calibri', size: 10, bold: true };
           totRow.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
           totRow.getCell(12).value = { formula: `SUM(L${startDataRow}:L${endDataRow})` };
           totRow.getCell(12).font = { name: 'Calibri', size: 10, bold: true };
           totRow.getCell(12).numFmt = numFmtRp;
+
           totRow.getCell(18).value = { formula: `SUM(R${startDataRow}:R${endDataRow})` };
           totRow.getCell(18).font = { name: 'Calibri', size: 10, bold: true };
           totRow.getCell(18).numFmt = numFmtRp;
@@ -4338,6 +4453,60 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } };
             cell.border = thinBorder;
           }
+
+          const wsSum = wb.addWorksheet('Ringkasan per PT', {
+            views: [{ showGridLines: true }]
+          });
+          wsSum.columns = [
+            { width: 6 },
+            { width: 14 },
+            { width: 32 },
+            { width: 14 },
+            { width: 20 },
+            { width: 20 },
+            { width: 20 },
+            { width: 20 }
+          ];
+          wsSum.mergeCells('A1:H1');
+          wsSum.getCell('A1').value = 'RINGKASAN REKAPITULASI PER ENTITAS PT & REKONSILIASI BNI';
+          wsSum.getCell('A1').font = { name: 'Calibri', size: 12, bold: true };
+
+          const sumHeaders = ['No.', 'Kode PT', 'Nama Perusahaan', 'Jml Pax', 'Total UNPAID', 'Total PAID', 'Total Keseluruhan', 'Estimasi MOVA'];
+          const sHeadRow = wsSum.getRow(3);
+          sHeadRow.height = 25;
+          sumHeaders.forEach((h, i) => {
+            const c = sHeadRow.getCell(i + 1);
+            c.value = h;
+            c.font = { name: 'Calibri', size: 10, bold: true };
+            c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00B0F0' } };
+            c.alignment = { vertical: 'middle', horizontal: 'center' };
+            c.border = thinBorder;
+          });
+
+          const byPtMap = {};
+          expandedRows.forEach(row => {
+            if (!byPtMap[row.pt]) byPtMap[row.pt] = { pax: 0, unpaid: 0, paid: 0, total: 0, mova: 0 };
+            byPtMap[row.pt].pax += 1;
+            byPtMap[row.pt].total += row.nominal;
+            byPtMap[row.pt].mova += row.mova;
+            if (row.statusBayar === 'PAID') byPtMap[row.pt].paid += row.nominal;
+            else byPtMap[row.pt].unpaid += row.nominal;
+          });
+
+          Object.keys(byPtMap).forEach((ptCode, idx) => {
+            const st = byPtMap[ptCode];
+            const r = wsSum.getRow(4 + idx);
+            r.height = 20;
+            const vals = [idx + 1, ptCode, PT_FULL_INFO[ptCode]?.fullName || ptCode, st.pax, st.unpaid, st.paid, st.total, st.mova];
+            vals.forEach((v, ci) => {
+              const c = r.getCell(ci + 1);
+              c.value = v;
+              c.font = { name: 'Calibri', size: 10, bold: ci === 1 || ci === 6 };
+              c.border = thinBorder;
+              c.alignment = { vertical: 'middle', horizontal: (ci === 0 || ci === 1 || ci === 3) ? 'center' : (ci >= 4 ? 'right' : 'left') };
+              if (ci >= 4) c.numFmt = numFmtRp;
+            });
+          });
 
           const buffer = await wb.xlsx.writeBuffer();
           const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -4353,6 +4522,33 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           console.warn('ExcelJS fallback ke XLSX:', err);
         }
       }
+
+      if (typeof XLSX === 'undefined') return;
+      const fallbackRows = expandedRows.map((r, i) => ({
+        'No.': i + 1,
+        'Tanggal Order': r.tanggalOrder,
+        'Nomor Invoice': r.invoice,
+        'Payment Method': r.payment,
+        'PT': r.pt,
+        'Nama': r.nama,
+        'Keperluan': r.keperluan,
+        'Rute/ Hotel': r.rute,
+        'Tanggal Penerbangan/ Ci-Co': r.tglTerbang,
+        'Maskapai/ Hotel': r.maskapai,
+        'Vendor': r.vendor,
+        'Nominal': r.nominal,
+        'Status Pengajuan': r.statusPengajuan,
+        'Tujuan Pembayaran': r.tujuan,
+        'No. GR': r.noGr,
+        'Status Pembayaran': r.statusBayar,
+        'Status': r.statusKet,
+        'Estimasi Pendapatan MOVA': r.mova
+      }));
+      const ws = XLSX.utils.json_to_sheet(fallbackRows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Rekap Tiket & Hotel');
+      XLSX.writeFile(wb, `REKAPITULASI_TIKET_HOTEL_${getTodayIso()}.xlsx`);
+      showToast('File Excel Rekap GA berhasil diunduh.', 'success');
     }
 
     function backupJsonData() {
@@ -4369,12 +4565,13 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       reader.onload = ev => {
         try {
           localStorage.setItem(STORAGE_KEY, ev.target.result);
-          loadStorage(false);
+          loadStorage();
+          saveStorage();
           renderRekapTable();
           renderSewaLvTable();
           ctRender();
           renderKtpTable();
-          showToast('Restore JSON & sinkronisasi berhasil!', 'success');
+          showToast('Restore JSON berhasil!', 'success');
         } catch (err) {
           showToast('File JSON tidak valid.', 'error');
         }
@@ -4418,7 +4615,13 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       faceCanvas.width = fw;
       faceCanvas.height = fh;
       const fctx = faceCanvas.getContext('2d');
-      fctx.drawImage(imgElement, Math.round(natW * 0.68), Math.round(natH * 0.22), fw, fh, 0, 0, fw, fh);
+      fctx.drawImage(imgElement,
+        Math.round(natW * 0.68),
+        Math.round(natH * 0.22),
+        fw,
+        fh,
+        0, 0, fw, fh
+      );
 
       return {
         ocrDataUrl: canvas.toDataURL('image/png'),
@@ -4561,6 +4764,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
               showToast('Foto KTP & Pas Foto terpasang. Silakan cek/lengkapi NIK & Nama.', 'warning');
             }
           } catch (err) {
+            console.warn('KTP OCR error:', err);
             showToast('Foto KTP terpasang. Silakan lengkapi NIK & Nama secara manual.', 'info');
           } finally {
             if (progressBox) progressBox.classList.add('hidden');
@@ -4576,6 +4780,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
     }
 
     function buildPtKopLogoMarkup(ptCode) {
+      const info = PT_FULL_INFO[ptCode] || { fullName: ptCode, sub: '' };
       if (ptCustomLogos && ptCustomLogos[ptCode]) {
         return `
           <div class="flex items-center justify-start text-left">
@@ -4600,10 +4805,84 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
               <img src="https://gelgroup.co.id/images/logo-gel.png" alt="Logo GEL" onerror="this.onerror=null;this.src='https://placehold.co/140x56/101d32/f59e0b?text=PT+GEL';" class="h-14 w-auto object-contain block" />
             </div>
           `;
+        case 'GSM':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-sky-900 text-amber-300 font-black text-base flex items-center justify-center border-2 border-amber-400">GSM</div>
+            </div>
+          `;
+        case 'GSJ':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-blue-950 text-sky-300 font-black text-base flex items-center justify-center border-2 border-sky-400">GSJ</div>
+            </div>
+          `;
+        case 'KMC':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-amber-600 text-white font-black text-base flex items-center justify-center">KMC</div>
+            </div>
+          `;
+        case 'QIN':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-emerald-900 text-amber-300 font-black text-base flex items-center justify-center">QIN</div>
+            </div>
+          `;
+        case 'BSPC':
+        case 'BSPC-PORT':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-slate-900 text-amber-400 font-black text-sm flex items-center justify-center border border-amber-400">${escapeHtml(ptCode)}</div>
+            </div>
+          `;
+        case 'SIP':
+        case 'SIP-PORT':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-cyan-900 text-white font-black text-sm flex items-center justify-center">${escapeHtml(ptCode)}</div>
+            </div>
+          `;
+        case 'TER':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-orange-800 text-amber-200 font-black text-base flex items-center justify-center">TER</div>
+            </div>
+          `;
+        case 'MDF':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-green-800 text-yellow-200 font-black text-base flex items-center justify-center">MDF</div>
+            </div>
+          `;
+        case 'KKS':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-indigo-900 text-amber-300 font-black text-base flex items-center justify-center">KKS</div>
+            </div>
+          `;
+        case 'MI':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-red-900 text-amber-200 font-black text-base flex items-center justify-center">MI</div>
+            </div>
+          `;
+        case 'GK':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-stone-900 text-amber-400 font-black text-base flex items-center justify-center">GK</div>
+            </div>
+          `;
+        case 'ARC':
+          return `
+            <div class="flex items-center justify-start text-left">
+              <div class="px-4 h-12 rounded-xl bg-amber-900 text-amber-200 font-black text-base flex items-center justify-center">ARC</div>
+            </div>
+          `;
         default:
           return `
             <div class="flex items-center justify-start text-left">
-              <div class="px-4 h-12 rounded-xl bg-slate-900 text-amber-300 font-black text-base flex items-center justify-center border border-amber-400">${escapeHtml(ptCode)}</div>
+              <div class="px-4 h-12 rounded-xl bg-slate-900 text-white font-black text-base flex items-center justify-center">${escapeHtml(ptCode)}</div>
             </div>
           `;
       }
@@ -4618,7 +4897,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       }
       compressImageToDataUrl(files[0], url => {
         ptCustomLogos[pt] = url;
-        saveStorage(`Upload logo PT ${pt}`);
+        saveStorage();
         renderPvrPreview(false);
         showToast(`Logo resmi ${pt} berhasil disimpan & dikunci permanen.`, 'success');
       }, 650, 0.88);
@@ -4631,7 +4910,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           <div class="flex items-center justify-between border-b pb-2">
             <div>
               <h3 class="text-base font-black text-slate-900">🎨 Galeri 17 Logo PT Resmi (Terkunci Permanen & Download JPG)</h3>
-              <p class="text-[11px] text-slate-500">Seluruh 17 Logo PT dikunci permanen. Klik <strong>⬇ JPG</strong> untuk mengunduh gambar logo.</p>
+              <p class="text-[11px] text-slate-500">Seluruh 17 Logo PT dikunci permanen sesuai versi asli Anda. Klik <strong>⬇ JPG</strong> untuk mengunduh gambar logo.</p>
             </div>
             <button type="button" onclick="closeUniversalModal()" class="text-slate-500 font-bold">✕</button>
           </div>
@@ -4688,28 +4967,61 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         return;
       }
 
+      const paletteMap = {
+        EPM: { bg: '#1d4ed8', fg: '#ffffff', accent: '#7f1d1d' },
+        GEL: { bg: '#101d32', fg: '#f59e0b', accent: '#d97706' },
+        'GEL-PKU': { bg: '#101d32', fg: '#f59e0b', accent: '#d97706' },
+        GSM: { bg: '#0c4a6e', fg: '#fde047', accent: '#38bdf8' },
+        GSJ: { bg: '#172554', fg: '#7dd3fc', accent: '#0284c7' },
+        KMC: { bg: '#d97706', fg: '#ffffff', accent: '#78350f' },
+        QIN: { bg: '#064e3b', fg: '#fde047', accent: '#10b981' },
+        BSPC: { bg: '#0f172a', fg: '#fbbf24', accent: '#f59e0b' },
+        'BSPC-PORT': { bg: '#0f172a', fg: '#fbbf24', accent: '#f59e0b' },
+        SIP: { bg: '#164e63', fg: '#ffffff', accent: '#06b6d4' },
+        'SIP-PORT': { bg: '#164e63', fg: '#ffffff', accent: '#06b6d4' },
+        TER: { bg: '#9a3412', fg: '#fde68a', accent: '#ea580c' },
+        MDF: { bg: '#166534', fg: '#fef08a', accent: '#22c55e' },
+        KKS: { bg: '#312e81', fg: '#fde047', accent: '#6366f1' },
+        MI: { bg: '#7f1d1d', fg: '#fde68a', accent: '#dc2626' },
+        GK: { bg: '#1c1917', fg: '#fbbf24', accent: '#d97706' },
+        ARC: { bg: '#78350f', fg: '#fde68a', accent: '#f59e0b' }
+      };
+      const pal = paletteMap[ptCode] || { bg: '#0f172a', fg: '#fbbf24', accent: '#2563eb' };
+
       const canvas = document.createElement('canvas');
       canvas.width = 1100;
       canvas.height = 260;
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#0f172a';
+
+      ctx.fillStyle = pal.bg;
       ctx.beginPath();
       ctx.roundRect(36, 48, 148, 148, 24);
       ctx.fill();
-      ctx.fillStyle = '#fbbf24';
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = pal.accent;
+      ctx.stroke();
+
+      ctx.fillStyle = pal.fg;
       ctx.font = '900 32px Arial, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(ptCode.replace('-PORT', '').replace('-PKU', ''), 110, 122);
+      const shortBadge = ptCode.replace('-PORT', '').replace('-PKU', '');
+      ctx.fillText(shortBadge, 110, 122);
+
       ctx.textAlign = 'left';
       ctx.fillStyle = '#0f172a';
       ctx.font = '900 34px Arial, sans-serif';
       ctx.fillText(info.fullName, 212, 102);
+
       ctx.fillStyle = '#475569';
       ctx.font = 'bold 18px Arial, sans-serif';
       ctx.fillText(info.sub || '', 212, 148);
+
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(36, 224, 1028, 4);
+
       triggerDownload(canvas.toDataURL('image/jpeg', 0.95));
     }
 
@@ -4743,8 +5055,13 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       renderPvrPreview(false);
     }
 
-    function onCustomBankInputChange() { renderPvrPreview(false); }
-    function syncPvrMetaInputs() { renderPvrPreview(false); }
+    function onCustomBankInputChange() {
+      renderPvrPreview(false);
+    }
+
+    function syncPvrMetaInputs() {
+      renderPvrPreview(false);
+    }
 
     function renderPvrPreview(resetDates = false) {
       const pt = getElVal('pvrPtSelect', 'EPM');
@@ -4852,14 +5169,23 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       renderPvrPreview(false);
     }
 
-    function resetPvrTableEdits() { renderPvrPreview(false); }
+    function resetPvrTableEdits() {
+      renderPvrPreview(false);
+    }
+
     function onTaxCellBlur() {}
     function onEditReimbursementHeader() {}
     function onEditRekeningLines() {}
     function onEditDocDeskripsi() {}
-    function loadWeeklySimulationAllPt() { loadSampleMdfFromUserPdf(); }
-    function exportSinglePtPvrExcel() { exportCleanRekapExcel(); }
-    function exportAllPtsPvrExcel() { exportCleanRekapExcel(); }
+    function loadWeeklySimulationAllPt() {
+      loadSampleMdfFromUserPdf();
+    }
+    function exportSinglePtPvrExcel() {
+      exportCleanRekapExcel();
+    }
+    function exportAllPtsPvrExcel() {
+      exportCleanRekapExcel();
+    }
 
     function resetKtpScannerForm() {
       setElVal('ktpNikInput', '');
@@ -4896,7 +5222,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         photo: currentKtpPhotoData,
         facePhoto: currentKtpFaceData
       });
-      saveStorage(`Simpan KTP ${nama}`);
+      saveStorage();
       renderKtpTable();
       showToast(`Data KTP a/n ${nama} berhasil disimpan ke database.`, 'success');
     }
@@ -4948,7 +5274,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           <td class="py-2.5 px-3 text-center">
             <div class="flex items-center justify-center gap-1">
               <button type="button" onclick="applySavedKtpToTicket('${k.id}')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-extrabold">Pakai Tiket</button>
-              <button type="button" onclick="ktpRecords=ktpRecords.filter(x=>x.id!=='${k.id}');saveStorage('Hapus data KTP');renderKtpTable();" class="px-2 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
+              <button type="button" onclick="ktpRecords=ktpRecords.filter(x=>x.id!=='${k.id}');saveStorage();renderKtpTable();" class="px-2 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
             </div>
           </td>
         </tr>
@@ -5077,7 +5403,6 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         price: Number(tr.querySelector('.ops-item-price')?.value || 0)
       })).filter(it => it.name) : [];
       const total = recalcOpsDraftTotal();
-      const titleVal = getElVal('opsTitle', '');
       opsGelRecords.unshift({
         id: 'GEL-' + Date.now(),
         date: getElVal('opsDate', getTodayIso()),
@@ -5087,11 +5412,11 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         rekNo: getElVal('opsRekNo', ''),
         rekName: getElVal('opsRekName', ''),
         rekBank: getElVal('opsRekBank', ''),
-        title: titleVal,
+        title: getElVal('opsTitle', ''),
         items,
         total
       });
-      saveStorage(`Simpan Ops GA PT GEL (${titleVal || 'ATK'})`);
+      saveStorage();
       renderOpsGelTable();
       resetOpsGelForm();
       showToast('Pengajuan Operasional GA PT GEL tersimpan & PVR A4 diperbarui.', 'success');
@@ -5123,7 +5448,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
     function resetStnkForm() { getEl('stnkForm')?.reset(); setElVal('stnkDueDate', getTodayIso()); }
     function loadSampleStnk() {
       stnkRecords.unshift({ id: 'STNK-SMP', nopol: 'B 9124 KXA', unit: 'Toyota Hilux 4x4 DC', pt: 'GEL', type: 'Pajak Tahunan (1 Thn)', dueDate: addDaysIso(getTodayIso(), 20), status: 'Segera Perpanjang', cost: 4850000, pic: 'Site Kalimantan', photo: '' });
-      saveStorage('Muat contoh data STNK');
+      saveStorage();
       renderStnkTable();
     }
     function exportStnkExcel() {
@@ -5328,7 +5653,10 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       refreshFormDerivedOutputs();
     }
 
-    function onPtChange() { refreshFormDerivedOutputs(); }
+    function onPtChange() {
+      refreshFormDerivedOutputs();
+    }
+
     function onPaymentMethodChange() {
       const pay = getElVal('fPayment', 'DC BNI Pak Tony');
       setElVal('fTujuan', pay);
@@ -5389,6 +5717,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         }
         return fullText.trim();
       } catch (err) {
+        console.warn('PDF extract warning:', err);
         return '';
       }
     }
@@ -5444,12 +5773,25 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       const fnMatch = combined.match(/\b(GA|ID|IU|QG|JT|SJ|IP|IN|IW)[-\s]?(\d{2,4})\b/i);
       if (fnMatch) parsed.flightNo = `${fnMatch[1].toUpperCase()}-${fnMatch[2]}`;
 
+      const pnrBlacklist = /^(?:CODE|NUMBER|NOMOR|ID|BOOKING|FLIGHT|TICKET|STATUS|REFUND|ADULT|DEWASA|TRAVEL|CLASS|CABIN|ECONOMY|BUSINESS|PASSENGER|ISSUED|DATE|TIME)$/i;
       const pnrInline = combined.match(/(?:PNR|AIRLINE\s*BOOKING\s*CODE|BOOKING\s*(?:CODE|ID)|KODE\s*BOOKING)\s*(?:\(PNR\))?\s*[:#\-]?\s*([A-Z0-9]{5,7})\b/i);
-      if (pnrInline && /[A-Z]/i.test(pnrInline[1])) {
+      if (pnrInline && !pnrBlacklist.test(pnrInline[1]) && /[A-Z]/i.test(pnrInline[1])) {
         parsed.pnr = pnrInline[1].toUpperCase();
+      } else {
+        for (let i = 0; i < lines.length; i++) {
+          if (/AIRLINE\s*BOOKING\s*CODE|KODE\s*BOOKING|BOOKING\s*CODE|\bPNR\b/i.test(lines[i])) {
+            const nextWin = `${lines[i]} ${lines[i + 1] || ''} ${lines[i + 2] || ''}`;
+            const candMatches = [...nextWin.matchAll(/\b([A-Z0-9]{6})\b/g)];
+            const validPnr = candMatches.map(m => m[1]).find(c => !pnrBlacklist.test(c) && /[A-Z]/.test(c) && !/^\d{6}$/.test(c));
+            if (validPnr) {
+              parsed.pnr = validPnr.toUpperCase();
+              break;
+            }
+          }
+        }
       }
 
-      const iataBlacklist = new Set(['MR', 'MRS', 'MDF', 'EPM', 'GEL', 'GSM', 'GSJ', 'KMC', 'QIN', 'SIP', 'TER', 'KKS', 'ARC', 'PNR', 'PDF', 'JAN', 'FEB', 'MAR', 'APR', 'MEI', 'MAY', 'JUN', 'JUL', 'AGU', 'AUG', 'SEP', 'OKT', 'OCT', 'NOV', 'DES', 'DEC', 'WIB', 'WITA', 'WIT', 'IDR', 'TAX', 'PPN', 'PPH', 'GA', 'JT', 'QG', 'ID', 'IU']);
+      const iataBlacklist = new Set(['MR', 'MRS', 'MDF', 'EPM', 'GEL', 'GSM', 'GSJ', 'KMC', 'QIN', 'SIP', 'TER', 'KKS', 'ARC', 'PNR', 'PDF', 'JAN', 'FEB', 'MAR', 'APR', 'MEI', 'MAY', 'JUN', 'JUL', 'AGU', 'AUG', 'SEP', 'OKT', 'OCT', 'NOV', 'DES', 'DEC', 'WIB', 'WITA', 'WIT', 'IDR', 'TAX', 'PPN', 'PPH', 'GA', 'JT', 'QG', 'ID', 'IU', 'VIA', 'NON', 'ALL', 'FOR', 'THE', 'AND', 'PER', 'DIN', 'KTT', 'HO']);
       const iataMatches = [...upper.matchAll(/\b([A-Z]{3})\s*(?:-|–|—|→|TO|KE|\s+-\s+)\s*([A-Z]{3})\b/g)];
       for (const m of iataMatches) {
         if (!iataBlacklist.has(m[1]) && !iataBlacklist.has(m[2]) && m[1] !== m[2]) {
@@ -5457,16 +5799,133 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           break;
         }
       }
+      if (!parsed.rute) {
+        const cityToIata = {
+          JAKARTA: 'CGK', CENGKARENG: 'CGK', SOEKARNO: 'CGK',
+          PONTIANAK: 'PNK', SUPADIO: 'PNK',
+          PEKANBARU: 'PKU', PALEMBANG: 'PLM', BALIKPAPAN: 'BPN', BANJARMASIN: 'BDJ',
+          SURABAYA: 'SUB', MEDAN: 'KNO', PADANG: 'PDG', JAMBI: 'DJB',
+          BENGKULU: 'BKS', LAMPUNG: 'TKG', MAKASSAR: 'UPG', MANADO: 'MDC',
+          DENPASAR: 'DPS', YOGYAKARTA: 'YIA', SEMARANG: 'SRG', BATAM: 'BTH',
+          'TANJUNG PINANG': 'TNJ', SAMARINDA: 'AAP', BERAU: 'BEJ', TARAKAN: 'TRK'
+        };
+        const foundCities = [];
+        const cityRegex = new RegExp(`\\b(${Object.keys(cityToIata).join('|')})\\b`, 'g');
+        for (const cm of upper.matchAll(cityRegex)) {
+          const code = cityToIata[cm[1]];
+          if (code && (!foundCities.length || foundCities[foundCities.length - 1] !== code)) {
+            foundCities.push(code);
+          }
+          if (foundCities.length >= 2) break;
+        }
+        if (foundCities.length >= 2) {
+          parsed.rute = `${foundCities[0]} - ${foundCities[1]}`;
+        } else if (foundCities.length === 1 && parsed.jenis === 'HOTEL') {
+          parsed.rute = IATA_CITY_MAP[foundCities[0]]?.name || foundCities[0];
+        }
+      }
 
-      const any19Match = combined.match(/#?\b(\d{19})\b/);
-      if (any19Match) parsed.receiptCode = any19Match[1];
+      if (parsed.vendor === 'Tiket.com') {
+        let tiketOrderId = '';
+        const orderMatch = combined.match(/ORDER\s*ID\s*[:#\-]?\s*#?\s*(\d{7,15})\b/i);
+        if (orderMatch) {
+          tiketOrderId = orderMatch[1];
+        } else {
+          for (let i = 0; i < lines.length; i++) {
+            if (/ORDER\s*ID|NO\.?\s*PESANAN|INVOICE/i.test(lines[i])) {
+              const win = `${lines[i]} ${lines[i + 1] || ''}`;
+              const m = win.match(/#?\s*(\d{7,15})\b/);
+              if (m) { tiketOrderId = m[1]; break; }
+            }
+          }
+        }
+        if (tiketOrderId) {
+          parsed.invoice = tiketOrderId;
+          parsed.receiptCode = tiketOrderId;
+        }
+      } else {
+        let trvBookingId = '';
+        const trvBookMatch = combined.match(/(?:TRAVELOKA\s*BOOKING\s*ID|NO\.?\s*PESANAN\s*TRAVELOKA|BOOKING\s*ID|NO\.?\s*PESANAN)\s*[:#\-]?\s*#?\s*(\d{8,14})\b/i);
+        if (trvBookMatch) {
+          trvBookingId = trvBookMatch[1];
+        } else {
+          for (let i = 0; i < lines.length; i++) {
+            if (/TRAVELOKA\s*BOOKING\s*ID|NO\.?\s*PESANAN\s*TRAVELOKA|BOOKING\s*ID/i.test(lines[i])) {
+              const win = `${lines[i]} ${lines[i + 1] || ''} ${lines[i + 2] || ''}`;
+              const m = win.match(/\b(\d{8,14})\b/);
+              if (m) { trvBookingId = m[1]; break; }
+            }
+          }
+        }
+        if (!trvBookingId) {
+          const fallbackInv = combined.match(/\b(1\d{8,11})\b/);
+          if (fallbackInv) trvBookingId = fallbackInv[1];
+        }
+        if (trvBookingId) parsed.invoice = trvBookingId;
 
-      const fallbackInv = combined.match(/\b(1\d{8,11})\b/);
-      if (fallbackInv) parsed.invoice = fallbackInv[1];
+        let trvReceipt19 = '';
+        const rec19LabelMatch = combined.match(/(?:NUMBER|NOMOR|RECEIPT)\s*[:#\-]?\s*#?\s*(\d{19})\b/i);
+        if (rec19LabelMatch) {
+          trvReceipt19 = rec19LabelMatch[1];
+        } else {
+          const any19Match = combined.match(/#?\b(\d{19})\b/);
+          if (any19Match) trvReceipt19 = any19Match[1];
+        }
+        if (trvReceipt19) parsed.receiptCode = trvReceipt19;
+      }
+
+      const monthMap = {
+        JAN: '01', JANUARI: '01', JANUARY: '01',
+        FEB: '02', FEBRUARI: '02', FEBRUARY: '02',
+        MAR: '03', MARET: '03', MARCH: '03',
+        APR: '04', APRIL: '04',
+        MEI: '05', MAY: '05',
+        JUN: '06', JUNI: '06', JUNE: '06',
+        JUL: '07', JULI: '07', JULY: '07',
+        AGU: '08', AGUSTUS: '08', AUG: '08', AUGUST: '08',
+        SEP: '09', SEPTEMBER: '09',
+        OKT: '10', OKTOBER: '10', OCT: '10', OCTOBER: '10',
+        NOV: '11', NOVEMBER: '11',
+        DES: '12', DESEMBER: '12', DEC: '12', DECEMBER: '12'
+      };
+      const orderDateMatch = combined.match(/(?:DATE|TANGGAL)\s*[:\-]\s*(\d{1,2})\s+(JAN(?:UARI|UARY)?|FEB(?:RUARI|RUARY)?|MAR(?:ET|CH)?|APR(?:IL)?|MEI|MAY|JUN(?:I|E)?|JUL(?:I|Y)?|AGU(?:STUS)?|AUG(?:UST)?|SEP(?:TEMBER)?|OKT(?:OBER)?|OCT(?:OBER)?|NOV(?:EMBER)?|DES(?:EMBER)?|DEC(?:EMBER)?)\s+(202\d)/i);
+      if (orderDateMatch) {
+        parsed.tanggalOrder = `${orderDateMatch[3]}-${monthMap[orderDateMatch[2].toUpperCase()] || '01'}-${String(orderDateMatch[1]).padStart(2, '0')}`;
+      }
+
+      const dateMatches = [...combined.matchAll(/\b(\d{1,2})\s+(JAN(?:UARI|UARY)?|FEB(?:RUARI|RUARY)?|MAR(?:ET|CH)?|APR(?:IL)?|MEI|MAY|JUN(?:I|E)?|JUL(?:I|Y)?|AGU(?:STUS)?|AUG(?:UST)?|SEP(?:TEMBER)?|OKT(?:OBER)?|OCT(?:OBER)?|NOV(?:EMBER)?|DES(?:EMBER)?|DEC(?:EMBER)?)\s+(202\d)\b/gi)];
+      const uniqueDates = [];
+      dateMatches.forEach(dm => {
+        const iso = `${dm[3]}-${monthMap[dm[2].toUpperCase()] || '01'}-${String(dm[1]).padStart(2, '0')}`;
+        if (!uniqueDates.includes(iso)) uniqueDates.push(iso);
+      });
+      if (uniqueDates.length) {
+        const flightDates = uniqueDates.filter(d => d !== parsed.tanggalOrder);
+        const targetDates = flightDates.length ? flightDates : uniqueDates;
+        parsed.departDate = targetDates[0];
+        if (targetDates.length > 1 && targetDates[1] > targetDates[0]) {
+          parsed.returnDate = targetDates[1];
+        }
+      }
 
       const receiptPayMatch = combined.match(/(?:TOTAL\s*PAYMENT|TOTAL\s*PEMBAYARAN|AMOUNT\s*PAID|TOTAL\s*BAYAR)\s*[:\-]?\s*(?:RP\.?|IDR)?\s*([\d]{1,3}(?:[.,]\d{3})+)/i);
       if (receiptPayMatch) {
         parsed.nominal = Number(receiptPayMatch[1].replace(/[^\d]/g, '')) || 0;
+      } else {
+        const moneyMatches = [...combined.matchAll(/(?:GRAND\s*TOTAL|TOTAL|RP\.?|IDR)\s*[:\-]?\s*(?:RP\.?|IDR)?\s*([\d]{1,3}(?:[.,]\d{3})+)/gi)];
+        if (moneyMatches.length) {
+          const vals = moneyMatches.map(m => Number(m[1].replace(/[^\d]/g, '')) || 0).filter(v => v >= 50000 && v <= 250000000);
+          if (vals.length) parsed.nominal = Math.max(...vals);
+        }
+      }
+
+      let docJabatan = '';
+      const jabMatch = combined.match(/(?:JABATAN|POSITION|DIVISI\s*\/\s*JABATAN)\s*[:\-]\s*([A-Z0-9\s\/&().-]{2,45}?)(?=\r?\n|NIK|DEPARTEMEN|TUJUAN|KEPERLUAN|TANGGAL|$)/i);
+      if (jabMatch) {
+        const cleanJab = jabMatch[1].replace(/\s+/g, ' ').trim();
+        if (cleanJab && !/^(?:NAMA|NIK|TANGGAL|TUJUAN)$/i.test(cleanJab)) {
+          docJabatan = cleanJab;
+        }
       }
 
       const paxMatches = [...combined.matchAll(/\b(MR|MRS|MS|TUAN|NYONYA)\.?\s+([A-Z][A-Z\s'.]{3,40}?)(?=\s*(?:\(|,|\n|\d|NIK|JABATAN|DIVISI|DEPART|FLIGHT|ETICKET|$))/gi)];
@@ -5477,9 +5936,16 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         const name = m[2].replace(/\s+/g, ' ').trim().toUpperCase();
         if (name.length >= 4 && !seen.has(name) && !/GARUDA|INDONESIA|TRAVELOKA|PERDIN|FORM|SURAT|GLOBAL|ENERGI|LESTARI/.test(name)) {
           seen.add(name);
-          parsed.passengers.push({ title, name, role: '' });
+          parsed.passengers.push({ title, name, role: docJabatan });
         }
       });
+
+      if (!parsed.passengers.length && fileName) {
+        const fnName = fileName.replace(/\.pdf$/i, '').replace(/^(?:FORM\s*PERDIN|SURAT\s*CUTI|ETICKET|RECEIPT)\s*[-–]\s*/i, '').split(/[-–]/)[0].trim().toUpperCase();
+        if (fnName.length >= 4 && /^[A-Z\s'.]+$/.test(fnName) && !/^(?:CC|GRD|MDF|EPM|GEL|GSM)/.test(fnName)) {
+          parsed.passengers.push({ title: 'Mr.', name: fnName, role: docJabatan });
+        }
+      }
 
       return parsed;
     }
@@ -5523,8 +5989,11 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         for (const file of list) {
           const text = await extractTextFromPdfFile(file);
           const parsed = parseTravelPdfText(text, file.name);
-          if (slotNum === 3) pairedSlots[3].push(parsed);
-          else pairedSlots[slotNum] = parsed;
+          if (slotNum === 3) {
+            pairedSlots[3].push(parsed);
+          } else {
+            pairedSlots[slotNum] = parsed;
+          }
           pdfQueue.push(parsed);
         }
 
@@ -5561,6 +6030,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         setElText('pairedSlotStatusText', `Terbaca (${allParsed.length} dok): ${list[list.length - 1].name}`);
         showToast(`Dokumen Slot 0${slotNum} berhasil dibaca & digabungkan ke form.`, 'success');
       } catch (err) {
+        console.error('Slot upload error:', err);
         setElText('pairedSlotStatusText', 'Gagal membaca PDF. Coba lagi.');
         showToast('Terjadi kendala saat membaca file PDF.', 'error');
       } finally {
@@ -5618,12 +6088,19 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           if (p.returnDate) mergedData.returnDate = p.returnDate;
           if (p.invoice) mergedData.invoice = p.invoice;
           if (p.receiptCode) mergedData.receiptCode = p.receiptCode;
-          if (p.nominal > 0) mergedData.nominal = p.nominal;
+          if (/RECEIPT|ETICKET|E-TICKET|CC\s|GRD/i.test(file.name) && p.nominal > 0) {
+            mergedData.nominal = p.nominal;
+          } else if (!mergedData.nominal && p.nominal > 0) {
+            mergedData.nominal = p.nominal;
+          }
         }
         (p.passengers || []).forEach(px => {
           const existing = mergedPaxMap.get(px.name);
-          if (!existing) mergedPaxMap.set(px.name, { ...px });
-          else if (!existing.role && px.role) existing.role = px.role;
+          if (!existing) {
+            mergedPaxMap.set(px.name, { ...px });
+          } else if (!existing.role && px.role) {
+            existing.role = px.role;
+          }
         });
       }
 
@@ -5648,7 +6125,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           id: 'REC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
           tanggalOrder: p.tanggalOrder || getTodayIso(),
           issueTime: '11:00',
-          divisi: 'GA',
+          divisi: p.divisi || 'GA',
           jenis: p.jenis || 'FLIGHT',
           pt: p.pt || 'EPM',
           keperluan: p.keperluan || 'Perdin',
@@ -5679,7 +6156,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       });
       pdfQueue = [];
       renderPdfQueueList();
-      saveStorage('Simpan semua antrian PDF ke Rekap');
+      saveStorage();
       renderRekapTable();
       renderPvrPreview(true);
       showToast('Seluruh antrian PDF berhasil disimpan ke Rekap!', 'success');
@@ -5690,7 +6167,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
     // =========================================================================
     window.addEventListener('DOMContentLoaded', () => {
       try {
-        loadStorage(true);
+        loadStorage();
         syncAllPtSelectOptions();
         setElVal('fTanggalOrder', getTodayIso());
         setElVal('fDepartDate', getTodayIso());
@@ -5713,6 +6190,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         renderStnkTable();
         renderOpsGelTable();
         initGaAccessGate();
+        initSupabaseCloudSync();
       } catch (err) {
         console.error('Init error:', err);
       }
