@@ -2306,6 +2306,35 @@
       showToast('File aplikasi GA_GEL_App.html berhasil diunduh ke perangkat Anda!', 'success');
     }
 
+    function downloadDesktopAppLauncher(osType) {
+      const targetUrl = window.location.href.split('#')[0];
+      if (!targetUrl.startsWith('http')) {
+        showToast('Buka dulu link GitHub Pages (https://...) agar shortcut mengarah ke URL online Anda.', 'warning');
+        return;
+      }
+      if (osType === 'windows') {
+        const winIni = `[InternetShortcut]\r\nURL=${targetUrl}\r\nIconIndex=0\r\n`;
+        const blob = new Blob([winIni], { type: 'application/internet-shortcut' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'GA GEL.url';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast('Shortcut Windows "GA GEL.url" berhasil diunduh ke Desktop!', 'success');
+      } else if (osType === 'mac') {
+        const weblocXml = `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>URL</key>\n\t<string>${targetUrl}</string>\n</dict>\n</plist>\n`;
+        const blob = new Blob([weblocXml], { type: 'application/x-apple-aspen-config' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'GA GEL.webloc';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast('Launcher macOS "GA GEL.webloc" berhasil diunduh!', 'success');
+      }
+    }
+
     async function triggerInstallPwaApp() {
       if (deferredPwaPrompt) {
         deferredPwaPrompt.prompt();
@@ -2323,29 +2352,41 @@
             <div class="flex items-center gap-2.5">
               <img src="https://gelgroup.co.id/images/logo-gel.png" alt="Logo GA GEL" onerror="this.onerror=null;this.src='https://placehold.co/48x48/0b1628/f59e0b?text=GEL';" class="w-9 h-9 object-contain rounded-xl border border-amber-300 p-0.5" />
               <div>
-                <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black uppercase">Aplikasi Native (PWA)</span>
+                <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black uppercase">Multi-Platform App (Android • Windows • macOS)</span>
                 <h3 class="text-base font-black text-slate-900">Install Aplikasi "GA GEL"</h3>
               </div>
             </div>
             <button type="button" onclick="closeUniversalModal()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
           </div>
-          ${isIos ? `
-            <div class="p-4 rounded-2xl bg-sky-50 border border-sky-200 text-xs text-sky-950 space-y-1.5">
-              <div class="font-black">🍎 Langkah Cepat di iPhone / iPad (Safari):</div>
-              <p>1. Ketuk ikon <strong>Share (kotak dengan panah ke atas)</strong> di bagian bawah browser.</p>
-              <p>2. Pilih <strong>"Add to Home Screen" (Tambah ke Layar Utama)</strong> → ketuk <strong>Add</strong>. Ikon <strong>GA GEL</strong> langsung terpasang.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+            <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1.5">
+              <div class="font-black text-emerald-950">🤖 HP Android</div>
+              <p class="text-[11px] text-emerald-900">Buka link GitHub Pages di <strong>Chrome</strong> → ketuk <strong>⋮ → Tambahkan ke Layar Utama / Install app</strong>. Ikon <strong>GA GEL</strong> terpasang seperti WhatsApp.</p>
             </div>
-          ` : `
-            <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 space-y-2">
-              <div class="font-black">📲 Install Langsung ke HP & Laptop:</div>
-              <p>1. Jika membuka dari link <strong>GitHub Pages (https://...github.io/...)</strong>, klik ikon <strong>Install</strong> di ujung kanan kolom URL browser untuk memasang ikon <strong>GA GEL</strong> langsung ke layar utama.</p>
-              <p>2. Atau klik tombol di bawah untuk langsung mengunduh file aplikasi offline-ready <strong>GA_GEL_App.html</strong> ke perangkat Anda:</p>
-              <button type="button" onclick="downloadStandaloneAppHtmlFile()" class="mt-1 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow">
-                ⬇ Download Langsung GA_GEL_App.html
+            <div class="p-3.5 rounded-2xl bg-sky-50 border border-sky-200 space-y-2">
+              <div class="font-black text-sky-950">🪟 Laptop Windows</div>
+              <p class="text-[11px] text-sky-900">Klik ikon <strong>Install</strong> di kanan URL Chrome/Edge, atau unduh shortcut Desktop:</p>
+              <button type="button" onclick="downloadDesktopAppLauncher('windows')" class="w-full py-1.5 px-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-extrabold shadow-xs">
+                ⬇ Download GA GEL (Windows)
               </button>
             </div>
-          `}
-          <div class="flex justify-end">
+            <div class="p-3.5 rounded-2xl bg-slate-100 border border-slate-300 space-y-2">
+              <div class="font-black text-slate-900">🍎 MacBook / macOS</div>
+              <p class="text-[11px] text-slate-700">Di Safari klik <strong>File → Add to Dock</strong>, atau unduh launcher Dock macOS:</p>
+              <button type="button" onclick="downloadDesktopAppLauncher('mac')" class="w-full py-1.5 px-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-[11px] font-extrabold shadow-xs">
+                ⬇ Download GA GEL (macOS)
+              </button>
+            </div>
+          </div>
+          ${isIos ? `
+            <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] text-amber-950">
+              <strong>📱 iPhone / iPad:</strong> Ketuk ikon <strong>Share (kotak panah atas)</strong> di Safari → pilih <strong>Add to Home Screen</strong>.
+            </div>
+          ` : ''}
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+            <button type="button" onclick="downloadStandaloneAppHtmlFile()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow">
+              ⬇ Download File Aplikasi Offline (GA_GEL_App.html)
+            </button>
             <button type="button" onclick="closeUniversalModal()" class="px-5 py-2 rounded-xl bg-slate-900 text-white text-xs font-extrabold">Tutup</button>
           </div>
         </div>
