@@ -1,9 +1,14 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GA Operations & Service Portal — 5 Modul</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0b1628" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="GA GEL" />
+  <meta name="application-name" content="GA GEL" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link id="dynamicPwaManifest" rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22GA%20GEL%22%2C%22short_name%22%3A%22GA%20GEL%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230b1628%22%2C%22theme_color%22%3A%22%230b1628%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fgelgroup.co.id%2Fimages%2Flogo-gel.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fgelgroup.co.id%2Fimages%2Flogo-gel.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D" />
+  <link id="dynamicAppleIcon" rel="apple-touch-icon" href="https://gelgroup.co.id/images/logo-gel.png" />
+  <link id="dynamicFavicon" rel="icon" type="image/png" href="https://gelgroup.co.id/images/logo-gel.png" />
+  <title>GA GEL</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -644,6 +649,10 @@
                 </span>
                 <button type="button" id="cloudSyncBadge" onclick="openSupabaseConfigModal()" title="Klik untuk atur koneksi Supabase Cloud" class="px-2.5 py-0.5 text-[10px] font-extrabold rounded-full bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-400/40 cursor-pointer transition">
                   ☁️ Local Mode (Klik Setup Supabase)
+                </button>
+                <button type="button" id="installPwaAppBtn" onclick="triggerInstallPwaApp()" title="Install Aplikasi GA GEL ke Layar Utama" class="px-3 py-0.5 text-[10px] font-extrabold rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-sm cursor-pointer transition flex items-center gap-1">
+                  <span>📲</span>
+                  <span>Install GA GEL</span>
                 </button>
               </div>
               <p class="text-[11px] text-slate-400">
@@ -2074,6 +2083,27 @@
     </div>
   </div>
 
+  <!-- Floating Native Install Prompt Banner for GA GEL App -->
+  <div id="pwaFloatingInstallBanner" class="no-print hidden fixed bottom-4 right-4 z-50 max-w-sm w-[calc(100%-2rem)] bg-slate-950/95 backdrop-blur-xl border border-amber-400/60 text-white rounded-2xl p-3.5 shadow-2xl flex items-center justify-between gap-3">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div class="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 ring-2 ring-amber-400">
+        <img src="https://gelgroup.co.id/images/logo-gel.png" alt="Logo GA GEL" onerror="this.onerror=null;this.src='https://placehold.co/48x48/0b1628/f59e0b?text=GEL';" class="w-full h-full object-contain" />
+      </div>
+      <div class="min-w-0">
+        <div class="text-xs font-black text-amber-300 truncate">Install Aplikasi GA GEL</div>
+        <div class="text-[10px] text-slate-300 truncate">Pasang ke layar utama seperti WA</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-1.5 shrink-0">
+      <button type="button" onclick="triggerInstallPwaApp()" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black shadow">
+        Install
+      </button>
+      <button type="button" onclick="getEl('pwaFloatingInstallBanner')?.classList.add('hidden')" class="px-2 py-1.5 rounded-lg text-slate-400 hover:text-white text-xs font-bold">
+        ✕
+      </button>
+    </div>
+  </div>
+
   <!-- Modal Universal untuk Pratinjau Lampiran, Edit Site Katering, & Entri Katering -->
   <div id="universalModalOverlay" class="fixed inset-0 z-50 bg-slate-950/75 hidden items-center justify-center p-4 no-print" onclick="closeUniversalModal()">
     <div id="universalModalCard" class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()"></div>
@@ -2081,18 +2111,15 @@
 
   <script>
     // =========================================================================
-    // KONFIGURASI SUPABASE (CUKUP ISI URL & ANON KEY DI SINI LALU UPLOAD GITHUB)
+    // KONFIGURASI SUPABASE CLOUD SYNC & STATE GLOBAL PORTAL (5 MODUL)
     // =========================================================================
-    const SUPABASE_DEFAULT_URL = '';      // <-- TEMPEL SUPABASE PROJECT URL DI SINI (Contoh: 'https://xyzcompany.supabase.co')
-    const SUPABASE_DEFAULT_ANON_KEY = ''; // <-- TEMPEL SUPABASE ANON PUBLIC KEY DI SINI
+    const SUPABASE_DEFAULT_URL = '';
+    const SUPABASE_DEFAULT_ANON_KEY = '';
+    const SUPABASE_CFG_KEY = 'ga_portal_supabase_cfg_v1';
     const SUPABASE_TABLE_NAME = 'ga_portal_state';
     const SUPABASE_ROW_ID = 'main_workspace';
 
-    // =========================================================================
-    // STATE & KONSTANTA UTAMA PORTAL (SEMUA 5 MODUL)
-    // =========================================================================
     const STORAGE_KEY = 'ticketing_pvr_mining_v5';
-    const SUPABASE_CFG_KEY = 'ga_supabase_cfg_v1';
     const GA_PASSCODE_KEY = 'ga_portal_passcode_v1';
     const GA_SESSION_KEY = 'ga_portal_session_v1';
     const DEFAULT_GA_PASSCODE = 'GAJKT2026!';
@@ -2102,6 +2129,23 @@
     let supabaseSaveTimer = null;
     let isApplyingRemoteSync = false;
     let lastSyncedTimestamp = 0;
+    let deferredPwaPrompt = null;
+
+    // Tangkap event install native browser sedini mungkin sebelum DOM selesai dimuat
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPwaPrompt = e;
+      const btn = document.getElementById('installPwaAppBtn');
+      if (btn) btn.innerHTML = '<span>📲</span><span>Install GA GEL Sekarang</span>';
+      const banner = document.getElementById('pwaFloatingInstallBanner');
+      if (banner) banner.classList.remove('hidden');
+      // Otomatis memunculkan dialog install aplikasi native saat halaman pertama dibuka
+      setTimeout(() => {
+        if (deferredPwaPrompt) {
+          deferredPwaPrompt.prompt();
+        }
+      }, 900);
+    });
 
     let currentAccessRole = 'SITE_USER';
     let loginGateMode = 'SITE';
@@ -2122,6 +2166,191 @@
     let currentStnkPhotoData = '';
     let currentSewaAttachments = { poPdf: '', poName: '', baPdf: '', baName: '', photo: '', photoName: '' };
     let ctDraftMealPhotos = { pagi: [], siang: [], malam: [], tengahMalam: [] };
+
+    // =========================================================================
+    // PROGRESSIVE WEB APP (PWA) — APLIKASI "GA GEL" DENGAN LOGO RESMI GEL
+    // =========================================================================
+    function buildGelAppIconDataUrl() {
+      return new Promise(resolve => {
+        const iconCanvas = document.createElement('canvas');
+        iconCanvas.width = 512;
+        iconCanvas.height = 512;
+        const ctx = iconCanvas.getContext('2d');
+
+        // Latar belakang putih bersih berbingkai emas korporat PT GEL
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(0, 0, 512, 512, 112);
+        ctx.fill();
+        ctx.lineWidth = 16;
+        ctx.strokeStyle = '#f59e0b';
+        ctx.stroke();
+
+        const drawFallbackEmblem = () => {
+          ctx.fillStyle = '#0b1628';
+          ctx.beginPath();
+          ctx.roundRect(24, 24, 464, 464, 96);
+          ctx.fill();
+          ctx.fillStyle = '#fde047';
+          ctx.font = '900 124px Arial, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('GA', 256, 205);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 84px Arial, sans-serif';
+          ctx.fillText('GEL', 256, 330);
+          resolve(iconCanvas.toDataURL('image/png'));
+        };
+
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          try {
+            const pad = 64;
+            const maxW = 512 - pad * 2;
+            const maxH = 340;
+            const scale = Math.min(maxW / (img.naturalWidth || 300), maxH / (img.naturalHeight || 300));
+            const w = Math.round((img.naturalWidth || 300) * scale);
+            const h = Math.round((img.naturalHeight || 300) * scale);
+            ctx.drawImage(img, Math.round((512 - w) / 2), Math.round((400 - h) / 2) + 12, w, h);
+
+            // Label "GA GEL" di bagian bawah ikon
+            ctx.fillStyle = '#0b1628';
+            ctx.beginPath();
+            ctx.roundRect(116, 396, 280, 68, 22);
+            ctx.fill();
+            ctx.fillStyle = '#fde047';
+            ctx.font = '900 40px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('GA GEL', 256, 431);
+
+            resolve(iconCanvas.toDataURL('image/png'));
+          } catch (e) {
+            drawFallbackEmblem();
+          }
+        };
+        img.onerror = drawFallbackEmblem;
+
+        // Gunakan logo GEL yang sudah ada di portal (custom/locked atau logo resmi GEL)
+        if (ptCustomLogos && ptCustomLogos['GEL']) {
+          img.src = ptCustomLogos['GEL'];
+        } else {
+          img.src = 'https://gelgroup.co.id/images/logo-gel.png';
+        }
+      });
+    }
+
+    async function initPwaAppExperience() {
+      try {
+        const iconDataUrl = await buildGelAppIconDataUrl();
+        const appleLink = getEl('dynamicAppleIcon');
+        if (appleLink) appleLink.href = iconDataUrl;
+        const favLink = getEl('dynamicFavicon');
+        if (favLink) favLink.href = iconDataUrl;
+
+        const manifestObj = {
+          id: './ga-gel-app',
+          name: 'GA GEL',
+          short_name: 'GA GEL',
+          description: 'Aplikasi Operasional GA GEL & Site Control Tower.',
+          start_url: window.location.href.split('#')[0],
+          scope: './',
+          display: 'standalone',
+          orientation: 'any',
+          background_color: '#0b1628',
+          theme_color: '#0b1628',
+          icons: [
+            { src: iconDataUrl, sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: iconDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any' }
+          ]
+        };
+        const manifestDataUri = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestObj));
+        const manifestLink = getEl('dynamicPwaManifest');
+        if (manifestLink) manifestLink.href = manifestDataUri;
+
+        window.addEventListener('appinstalled', () => {
+          deferredPwaPrompt = null;
+          getEl('pwaFloatingInstallBanner')?.classList.add('hidden');
+          const btn = getEl('installPwaAppBtn');
+          if (btn) btn.innerHTML = '<span>✅</span><span>GA GEL Terinstall</span>';
+          showToast('Aplikasi GA GEL berhasil diinstall ke layar utama!', 'success');
+        });
+
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+          const swCode = `
+            self.addEventListener('install', e => self.skipWaiting());
+            self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+            self.addEventListener('fetch', e => {
+              if (e.request.method !== 'GET') return;
+              e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+            });
+          `;
+          const swBlob = new Blob([swCode], { type: 'application/javascript' });
+          navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+        }
+      } catch (err) {
+        console.warn('PWA init info:', err);
+      }
+    }
+
+    function downloadStandaloneAppHtmlFile() {
+      const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'GA_GEL_App.html';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showToast('File aplikasi GA_GEL_App.html berhasil diunduh ke perangkat Anda!', 'success');
+    }
+
+    async function triggerInstallPwaApp() {
+      if (deferredPwaPrompt) {
+        deferredPwaPrompt.prompt();
+        const { outcome } = await deferredPwaPrompt.userChoice;
+        if (outcome === 'accepted') {
+          deferredPwaPrompt = null;
+          getEl('pwaFloatingInstallBanner')?.classList.add('hidden');
+        }
+        return;
+      }
+      const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      openUniversalModal(`
+        <div class="space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2.5">
+              <img src="https://gelgroup.co.id/images/logo-gel.png" alt="Logo GA GEL" onerror="this.onerror=null;this.src='https://placehold.co/48x48/0b1628/f59e0b?text=GEL';" class="w-9 h-9 object-contain rounded-xl border border-amber-300 p-0.5" />
+              <div>
+                <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black uppercase">Aplikasi Native (PWA)</span>
+                <h3 class="text-base font-black text-slate-900">Install Aplikasi "GA GEL"</h3>
+              </div>
+            </div>
+            <button type="button" onclick="closeUniversalModal()" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+          </div>
+          ${isIos ? `
+            <div class="p-4 rounded-2xl bg-sky-50 border border-sky-200 text-xs text-sky-950 space-y-1.5">
+              <div class="font-black">🍎 Langkah Cepat di iPhone / iPad (Safari):</div>
+              <p>1. Ketuk ikon <strong>Share (kotak dengan panah ke atas)</strong> di bagian bawah browser.</p>
+              <p>2. Pilih <strong>"Add to Home Screen" (Tambah ke Layar Utama)</strong> → ketuk <strong>Add</strong>. Ikon <strong>GA GEL</strong> langsung terpasang.</p>
+            </div>
+          ` : `
+            <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 space-y-2">
+              <div class="font-black">📲 Install Langsung ke HP & Laptop:</div>
+              <p>1. Jika membuka dari link <strong>GitHub Pages (https://...github.io/...)</strong>, klik ikon <strong>Install</strong> di ujung kanan kolom URL browser untuk memasang ikon <strong>GA GEL</strong> langsung ke layar utama.</p>
+              <p>2. Atau klik tombol di bawah untuk langsung mengunduh file aplikasi offline-ready <strong>GA_GEL_App.html</strong> ke perangkat Anda:</p>
+              <button type="button" onclick="downloadStandaloneAppHtmlFile()" class="mt-1 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow">
+                ⬇ Download Langsung GA_GEL_App.html
+              </button>
+            </div>
+          `}
+          <div class="flex justify-end">
+            <button type="button" onclick="closeUniversalModal()" class="px-5 py-2 rounded-xl bg-slate-900 text-white text-xs font-extrabold">Tutup</button>
+          </div>
+        </div>
+      `);
+    }
 
     const ROMAN_MONTHS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
 
@@ -6191,6 +6420,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         renderOpsGelTable();
         initGaAccessGate();
         initSupabaseCloudSync();
+        initPwaAppExperience();
       } catch (err) {
         console.error('Init error:', err);
       }
