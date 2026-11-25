@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="GA GEL" />
   <title>GA GEL — PT Global Energi Lestari</title>
 
-  <link id="dynamicPwaManifest" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22GA%20GEL%20%E2%80%94%20PT%20Global%20Energi%20Lestari%22%2C%22short_name%22%3A%22GA%20GEL%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23fffdf7%22%2C%22theme_color%22%3A%22%23b45309%22%7D" />
+  <link id="dynamicPwaManifest" rel="manifest" href="./manifest.json" />
   <link id="appFaviconLink" rel="icon" type="image/png" href="https://gelgroup.co.id/images/logo-gel.png" />
   <link id="appleTouchIconLink" rel="apple-touch-icon" href="https://gelgroup.co.id/images/logo-gel.png" />
 
@@ -22,23 +22,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <script>
-    // Pastikan ikon aplikasi menggunakan Logo Resmi PT GEL persis seperti di halaman Login
+    // Kunci ikon PWA, favicon, dan manifest menggunakan Logo Asli PT GEL (https://gelgroup.co.id/images/logo-gel.png) tanpa diubah
+    window.__OFFICIAL_GEL_LOGO_URL = 'https://gelgroup.co.id/images/logo-gel.png';
+    window.__GEL_ICON_PNG_DATA_URL = '';
     (function bootstrapOfficialGelLogoIcon() {
-      const GEL_LOGO_URL = 'https://gelgroup.co.id/images/logo-gel.png';
-      const applyManifestWithIcon = (iconSrc) => {
-        const fav = document.getElementById('appFaviconLink');
-        const app = document.getElementById('appleTouchIconLink');
-        if (fav) { fav.type = 'image/png'; fav.href = iconSrc; }
-        if (app) { app.href = iconSrc; }
-
-        const startUrl = window.location.href.split('#')[0].split('?')[0];
+      const startUrl = window.location.href.split('#')[0].split('?')[0];
+      const setManifestWithIcon = (iconSrc) => {
         const manifestObj = {
           id: startUrl,
           name: 'GA GEL — PT Global Energi Lestari',
           short_name: 'GA GEL',
-          description: 'Portal Operasional General Affair & Site — PT Global Energi Lestari',
           start_url: startUrl,
-          scope: window.location.origin + '/',
           display: 'standalone',
           background_color: '#fffdf7',
           theme_color: '#b45309',
@@ -47,35 +41,40 @@
             { src: iconSrc, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
           ]
         };
-        const mEl = document.getElementById('dynamicPwaManifest');
-        if (mEl) {
-          mEl.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestObj));
+        if (!/github\.io/i.test(window.location.hostname)) {
+          const mEl = document.getElementById('dynamicPwaManifest');
+          if (mEl) mEl.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestObj));
         }
       };
 
-      // Pasang URL resmi langsung pada milidetik pertama, lalu konversi ke PNG 512x512 berbingkai putih agar tidak jatuh ke huruf G
-      applyManifestWithIcon(GEL_LOGO_URL);
-      try {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
+      // Pasang langsung URL Logo Resmi PT GEL sebagai manifest awal
+      setManifestWithIcon(window.__OFFICIAL_GEL_LOGO_URL);
+
+      // Konversi Logo Asli PT GEL (tanpa modifikasi) menjadi PNG 512x512 untuk unduhan file lokal GitHub
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
           const c = document.createElement('canvas');
           c.width = 512;
           c.height = 512;
           const ctx = c.getContext('2d');
           ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.roundRect(12, 12, 488, 488, 108);
-          ctx.fill();
-          ctx.lineWidth = 18;
-          ctx.strokeStyle = '#d97706';
-          ctx.stroke();
-          ctx.drawImage(img, 64, 64, 384, 384);
-          const dataPng = c.toDataURL('image/png');
-          if (dataPng && dataPng.length > 200) applyManifestWithIcon(dataPng);
-        };
-        img.src = GEL_LOGO_URL;
-      } catch (e) {}
+          ctx.fillRect(0, 0, 512, 512);
+          const scale = Math.min(440 / img.width, 440 / img.height);
+          const w = img.width * scale;
+          const h = img.height * scale;
+          ctx.drawImage(img, (512 - w) / 2, (512 - h) / 2, w, h);
+          const pngUrl = c.toDataURL('image/png');
+          window.__GEL_ICON_PNG_DATA_URL = pngUrl;
+          const fav = document.getElementById('appFaviconLink');
+          const app = document.getElementById('appleTouchIconLink');
+          if (fav) { fav.type = 'image/png'; fav.href = pngUrl; }
+          if (app) { app.href = pngUrl; }
+          setManifestWithIcon(pngUrl);
+        } catch (e) {}
+      };
+      img.src = window.__OFFICIAL_GEL_LOGO_URL;
     })();
   </script>
 
@@ -3826,9 +3825,14 @@
               <input type="text" id="sbKeyInput" required value="${escapeHtml(cfg.anonKey)}" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl font-mono" />
             </div>
             <div class="flex flex-wrap justify-between items-center gap-2 pt-1">
-              <button type="button" onclick="downloadGitHubReadyHtml()" class="px-3.5 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-950 text-xs font-extrabold">
-                📥 Download index.html (Siap GitHub)
-              </button>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" onclick="downloadGitHubReadyHtml()" class="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-950 text-xs font-extrabold">
+                  📥 1. Download index.html
+                </button>
+                <button type="button" onclick="downloadGitHubManifestFiles()" class="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold">
+                  🎨 2. Download manifest.json &amp; Logo PNG
+                </button>
+              </div>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="pushStateToSupabase()" class="px-3.5 py-2 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-900 text-xs font-extrabold">🔄 Sync Sekarang</button>
                 <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow">✓ Simpan &amp; Hubungkan</button>
@@ -3870,7 +3874,40 @@
       document.body.appendChild(a);
       a.click();
       a.remove();
-      showToast('File index.html (dengan Logo PT GEL & Config Supabase) berhasil diunduh! Siap diunggah ke GitHub.', 'success');
+      showToast('File index.html berhasil diunduh! Jangan lupa juga klik "Download manifest.json & Logo PNG" agar ikon Windows tampil Logo PT GEL.', 'success');
+    }
+
+    function downloadGitHubManifestFiles() {
+      const pngDataUrl = window.__GEL_ICON_PNG_DATA_URL;
+      if (pngDataUrl && pngDataUrl.startsWith('data:image/png')) {
+        const aIcon = document.createElement('a');
+        aIcon.href = pngDataUrl;
+        aIcon.download = 'logo-gel-512.png';
+        document.body.appendChild(aIcon);
+        aIcon.click();
+        aIcon.remove();
+      }
+      const iconRef = (pngDataUrl && pngDataUrl.startsWith('data:image/png')) ? './logo-gel-512.png' : 'https://gelgroup.co.id/images/logo-gel.png';
+      const manifestJson = JSON.stringify({
+        name: 'GA GEL — PT Global Energi Lestari',
+        short_name: 'GA GEL',
+        start_url: './',
+        scope: './',
+        display: 'standalone',
+        background_color: '#fffdf7',
+        theme_color: '#b45309',
+        icons: [
+          { src: iconRef, sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: iconRef, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+        ]
+      }, null, 2);
+      const aMan = document.createElement('a');
+      aMan.href = URL.createObjectURL(new Blob([manifestJson], { type: 'application/manifest+json' }));
+      aMan.download = 'manifest.json';
+      document.body.appendChild(aMan);
+      aMan.click();
+      aMan.remove();
+      showToast('File manifest.json & logo asli PT GEL terunduh! Upload bersama index.html ke GitHub repo Anda.', 'success');
     }
 
     async function triggerInstallPwaApp() {
@@ -5450,23 +5487,9 @@
       }
       if (code === 'GEL' || code === 'GEL-PKU') {
         return `
-          <div style="display:inline-flex;flex-direction:column;align-items:center;padding:4px 0;">
-            <svg width="54" height="46" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g transform="translate(60,50)" stroke="#c59632" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M0,-38 C18,-22 18,-4 0,9 C-18,-4 -18,-22 0,-38 Z"/>
-                <path d="M0,-38 C18,-22 18,-4 0,9 C-18,-4 -18,-22 0,-38 Z" transform="rotate(120)"/>
-                <path d="M0,-38 C18,-22 18,-4 0,9 C-18,-4 -18,-22 0,-38 Z" transform="rotate(240)"/>
-                <circle cx="0" cy="0" r="6" fill="#ffffff" stroke="#c59632" stroke-width="4"/>
-              </g>
-            </svg>
-            <div style="display:flex;align-items:center;gap:8px;width:100%;margin-top:1px;">
-              <span style="flex:1;height:1px;background:#c59632;"></span>
-              <span style="font-family:Georgia,serif;font-size:10pt;font-weight:700;letter-spacing:2px;color:#b88628;">GEL</span>
-              <span style="flex:1;height:1px;background:#c59632;"></span>
-            </div>
-            <div style="font-family:Georgia,serif;font-size:8.5pt;font-weight:700;letter-spacing:1.2px;color:#b88628;margin-top:2px;">
-              ${escapeHtml(info.fullName)}
-            </div>
+          <div style="display:inline-flex;flex-direction:column;align-items:flex-start;padding:2px 0;">
+            <img src="https://gelgroup.co.id/images/logo-gel.png" alt="${escapeHtml(info.fullName)}" style="height:64px;width:auto;object-fit:contain;" />
+            ${code === 'GEL-PKU' ? `<div style="font-size:8.5pt;font-weight:700;color:#78350f;margin-top:2px;">CABANG PEKANBARU • RIAU</div>` : ''}
           </div>
         `;
       }
