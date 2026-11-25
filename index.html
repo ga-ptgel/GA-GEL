@@ -204,14 +204,28 @@
     }
 
     /* Lembar PVR A4 Portrait */
+    .pvr-side-preview-box {
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .pvr-side-scale-wrap {
+      width: 210mm;
+      transform-origin: top left;
+      transition: transform 0.15s ease-out;
+      margin: 0 auto;
+    }
     .pvr-a4-sheet,
     .pvr-paper {
       width: 210mm;
       min-height: 297mm;
       background: #ffffff;
       color: #000000;
-      padding: 14mm 15mm;
-      margin: 0 auto;
+      padding: 13mm 14mm;
+      margin: 0;
+      border-radius: 16px;
+      border: 1px solid #fde68a;
       box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16);
       font-family: Arial, Helvetica, sans-serif;
       font-size: 10.5pt;
@@ -250,6 +264,22 @@
       .no-print,
       .ga-sidebar {
         display: none !important;
+      }
+      .pvr-side-preview-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .pvr-side-scale-wrap {
+        transform: none !important;
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
       }
       .pvr-a4-sheet,
       .pvr-paper {
@@ -353,10 +383,9 @@
           </button>
         </form>
 
-        <!-- Copyright Eksklusif di Halaman Login (Proporsional dengan Ukuran Kartu Login) -->
-        <div class="mt-6 pt-3.5 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-1.5 text-[11px] text-slate-500">
-          <span class="font-bold text-slate-700">PT GLOBAL ENERGI LESTARI</span>
-          <span class="font-semibold">Copyright &copy; 2026 <strong class="font-extrabold text-amber-800">Charles Billy Sirait - GA GEL</strong></span>
+        <!-- Copyright Eksklusif di Halaman Login -->
+        <div class="mt-6 pt-3.5 border-t border-slate-200/80 flex items-center justify-center text-center text-[11px] text-slate-600">
+          <span class="font-bold">Copyright &copy; 2026 <strong class="font-black text-amber-800">Charles Billy Sirait - GA GEL</strong></span>
         </div>
       </div>
     </div>
@@ -524,7 +553,7 @@
       </div>
 
       <!-- MAIN CONTENT CONTAINER -->
-      <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+      <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6">
 
         <!-- =====================================================================
              MODUL 1: TICKETING & SCAN KTP (SAMA PERSIS DENGAN REFERENSI)
@@ -637,15 +666,15 @@
               <form id="bookingForm" onsubmit="handleSaveForm(event)" class="bg-white/95 backdrop-blur-md rounded-3xl shadow-lg border border-amber-200 overflow-hidden">
                 <div class="px-6 py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-yellow-600 text-white border-b border-amber-300/60 flex flex-wrap items-center justify-between gap-3">
                   <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-white/20 border border-white/40 text-white flex items-center justify-center font-black text-base shadow-xs">
+                    <div class="w-9 h-9 rounded-xl bg-white/20 border border-white/35 text-amber-50 flex items-center justify-center font-black text-base">
                       ✦
                     </div>
                     <div>
                       <h2 class="text-base font-black tracking-tight text-white">Form Pemesanan Tiket / Hotel / KAI &amp; Data PVR</h2>
-                      <p class="text-[11px] font-medium text-amber-100">Periksa hasil ekstraksi PDF atau isi manual sebelum menyimpan ke Rekap &amp; PVR.</p>
+                      <p class="text-[11px] text-amber-50/90">Periksa hasil ekstraksi PDF atau isi manual sebelum menyimpan ke Rekap &amp; PVR.</p>
                     </div>
                   </div>
-                  <button type="button" onclick="resetBookingForm()" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/30 text-xs font-extrabold transition shadow-2xs">
+                  <button type="button" onclick="resetBookingForm()" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/30 text-xs font-bold transition">
                     ↻ Reset Form
                   </button>
                 </div>
@@ -653,7 +682,7 @@
                 <div class="p-5 sm:p-6 space-y-5">
                   <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-3.5">
                     <div class="flex items-center justify-between">
-                      <span class="text-[11px] font-black uppercase tracking-wider text-slate-700">1. Identitas Order, Layanan & Entitas PT</span>
+                      <span class="text-[11px] font-black uppercase tracking-wider text-slate-700">1. Identitas Order, Layanan &amp; Entitas PT</span>
                       <span id="ptGrHint" class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black">GR: EPM</span>
                     </div>
 
@@ -713,8 +742,8 @@
                   <div class="p-4 rounded-2xl bg-purple-50/60 border border-purple-200 space-y-3">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                       <div>
-                        <h3 class="text-xs font-black uppercase tracking-wider text-purple-950">2. Daftar Penumpang / Tamu & Jabatan Masing-Masing *</h3>
-                        <p class="text-[11px] text-purple-800">Jika lebih dari 1 orang, masing-masing otomatis memiliki Title & Jabatan sendiri dari PDF Perdin/Cuti.</p>
+                        <h3 class="text-xs font-black uppercase tracking-wider text-purple-950">2. Daftar Penumpang / Tamu &amp; Jabatan Masing-Masing *</h3>
+                        <p class="text-[11px] text-purple-800">Jika lebih dari 1 orang, masing-masing otomatis memiliki Title &amp; Jabatan sendiri dari PDF Perdin/Cuti.</p>
                       </div>
                       <button type="button" onclick="addPassengerRow()" class="px-3.5 py-1.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-extrabold shadow-sm transition">
                         + Tambah Orang
@@ -724,7 +753,7 @@
                   </div>
 
                   <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-3.5">
-                    <div class="text-[11px] font-black uppercase tracking-wider text-slate-700">3. Detail Dokumen, Rute & Jadwal Perjalanan</div>
+                    <div class="text-[11px] font-black uppercase tracking-wider text-slate-700">3. Detail Dokumen, Rute &amp; Jadwal Perjalanan</div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                       <div>
@@ -774,7 +803,7 @@
                   </div>
 
                   <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-3.5">
-                    <div class="text-[11px] font-black uppercase tracking-wider text-slate-700">4. Nominal, Pembayaran & Status GR / PVR</div>
+                    <div class="text-[11px] font-black uppercase tracking-wider text-slate-700">4. Nominal, Pembayaran &amp; Status GR / PVR</div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-start">
                       <div>
@@ -835,7 +864,7 @@
 
                   <div class="p-4 rounded-2xl bg-blue-50/50 border border-blue-200 space-y-2">
                     <div class="flex items-center justify-between">
-                      <label class="text-xs font-extrabold text-blue-950">Kalimat Baku KETERANGAN PVR (Otomatis & Dapat Diedit)</label>
+                      <label class="text-xs font-extrabold text-blue-950">Kalimat Baku KETERANGAN PVR (Otomatis &amp; Dapat Diedit)</label>
                       <button type="button" onclick="resetCustomPvrText()" class="text-[11px] font-extrabold text-blue-600 hover:underline">
                         ↻ Reset Kalimat Otomatis
                       </button>
@@ -923,7 +952,7 @@
                   <option value="Reimbursement Karyawan">Reimbursement Karyawan</option>
                 </select>
                 <select id="filterDivisi" onchange="renderRekapTable()" class="px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold">
-                  <option value="ALL">Semua Divisi (GA & CORSEC)</option>
+                  <option value="ALL">Semua Divisi (GA &amp; CORSEC)</option>
                   <option value="GA">General Affair (GA)</option>
                   <option value="CORSEC">CORSEC</option>
                 </select>
@@ -953,11 +982,11 @@
                       <th class="py-3 px-3 text-left">Tgl Order</th>
                       <th class="py-3 px-3 text-left">No. Invoice</th>
                       <th class="py-3 px-3 text-left">PT / Div</th>
-                      <th class="py-3 px-3 text-left">Nama Penumpang & PIC Req</th>
+                      <th class="py-3 px-3 text-left">Nama Penumpang &amp; PIC Req</th>
                       <th class="py-3 px-3 text-left">Keperluan</th>
-                      <th class="py-3 px-3 text-left">Maskapai / Hotel & Rute</th>
+                      <th class="py-3 px-3 text-left">Maskapai / Hotel &amp; Rute</th>
                       <th class="py-3 px-3 text-left">Jadwal</th>
-                      <th class="py-3 px-3 text-left">Vendor & Payment</th>
+                      <th class="py-3 px-3 text-left">Vendor &amp; Payment</th>
                       <th class="py-3 px-3 text-right">Nominal</th>
                       <th class="py-3 px-3 text-left">No. GR / PVR</th>
                       <th class="py-3 px-3 text-center">Status</th>
@@ -970,257 +999,262 @@
             </div>
           </section>
 
-          <!-- SECTION 3: GENERATOR PENGAJUAN PVR PER PT (A4 PORTRAIT) -->
-          <section id="sectionPvr" class="hidden space-y-6">
-            <div class="no-print bg-white/95 backdrop-blur rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 space-y-4">
-              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                <h2 class="text-lg font-black text-slate-900">Pengajuan PVR per PT (A4)</h2>
-                <div class="flex flex-wrap items-center gap-2">
-                  <button type="button" onclick="addManualPvrLine()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow-sm">
-                    + Tambah Baris Manual
-                  </button>
-                  <button type="button" onclick="openLogoManagerModal()" class="px-3.5 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-extrabold border border-amber-300">
-                    🎨 Galeri 17 Logo PT
-                  </button>
-                  <button type="button" onclick="document.getElementById('ptLogoFileInput').click()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold border border-slate-300">
-                    Upload Logo PT
-                  </button>
-                  <button type="button" onclick="window.print()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold shadow-sm">
-                    Print / PDF (A4)
-                  </button>
-                  <button type="button" onclick="exportSinglePtPvrExcel()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold shadow-sm">
-                    Download PVR (.XLSX)
-                  </button>
-                  <button type="button" onclick="exportAllPtsPvrExcel()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-sm">
-                    Download Semua PT (.XLSX)
-                  </button>
+          <!-- SECTION 3: GENERATOR PENGAJUAN PVR PER PT (A4 PORTRAIT) — SIDE-BY-SIDE -->
+          <section id="sectionPvr" class="hidden">
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+              <!-- Panel Kontrol Kiri (5 Kolom) -->
+              <div class="xl:col-span-5 no-print bg-white/95 backdrop-blur rounded-3xl shadow-lg border border-amber-200 p-5 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3.5">
+                  <h2 class="text-base font-black text-slate-900">Pengajuan PVR per PT (A4)</h2>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <button type="button" onclick="addManualPvrLine()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-extrabold shadow-xs">
+                      + Baris Manual
+                    </button>
+                    <button type="button" onclick="openLogoManagerModal()" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-extrabold border border-amber-300">
+                      🎨 17 Logo PT
+                    </button>
+                    <button type="button" onclick="document.getElementById('ptLogoFileInput').click()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold border border-slate-300">
+                      Upload Logo
+                    </button>
+                    <button type="button" onclick="window.print()" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-extrabold shadow-xs">
+                      🖨️ Print / PDF
+                    </button>
+                    <button type="button" onclick="exportSinglePtPvrExcel()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-extrabold shadow-xs">
+                      PVR (.XLSX)
+                    </button>
+                    <button type="button" onclick="exportAllPtsPvrExcel()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-extrabold shadow-xs">
+                      Semua PT (.XLSX)
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Pilih PT Pengajuan *</label>
+                    <select id="pvrPtSelect" onchange="onPvrPtSelectChange()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-extrabold"></select>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-blue-700 mb-1">Vendor PVR PT Ini</label>
+                    <select id="pvrVendorFilter" onchange="renderPvrPreview(false)" class="w-full px-3 py-2 text-xs border border-blue-300 rounded-xl bg-white font-bold text-blue-900">
+                      <option value="ALL">Semua Vendor (Traveloka + Tiket.com)</option>
+                      <option value="Traveloka">Khusus Traveloka</option>
+                      <option value="Tiket.com">Khusus Tiket.com</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Filter Tanggal Order</label>
+                    <select id="pvrDateFilter" onchange="renderPvrPreview(false)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold">
+                      <option value="ALL">Semua Tanggal Order PT Ini</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Filter Status PVR</label>
+                    <select id="pvrStatusFilter" onchange="renderPvrPreview(false)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold">
+                      <option value="UNPAID" selected>UNPAID Saja (Wajib Buka PVR)</option>
+                      <option value="ALL">Semua Status PT Ini</option>
+                      <option value="PAID">PAID Saja (Arsip Lunas)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-bold text-purple-800 mb-1">Divisi Pengajuan PVR</label>
+                    <select id="pvrDivisiFilter" onchange="onPvrDivisiFilterChange()" class="w-full px-3 py-2 text-xs border border-purple-300 rounded-xl bg-purple-50/40 font-extrabold text-purple-950">
+                      <option value="ALL">Semua Divisi (GA &amp; CORSEC)</option>
+                      <option value="GA">Khusus GA (General Affair)</option>
+                      <option value="CORSEC">Khusus CORSEC</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">No. PVR</label>
+                    <input type="text" id="pvrNoDoc" oninput="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-mono font-bold" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Tanggal Pengajuan</label>
+                    <input type="date" id="pvrTglPengajuan" onchange="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Due Date Pembayaran</label>
+                    <input type="date" id="pvrDueDate" onchange="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Rekening Tujuan Transfer</label>
+                    <select id="pvrBankAccount" onchange="onPvrBankPresetChange()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold text-emerald-800">
+                      <option value="BNI_TONY">BNI Pak Tony (1807-6383-59)</option>
+                      <option value="BCA_TONY">BCA Pak Tony (0221-568-710)</option>
+                      <option value="CUSTOM_EMPLOYEE">Reimbursement Karyawan / Rek. Lain (Custom)</option>
+                    </select>
+                  </div>
+
+                  <div id="customBankInputsBox" class="hidden sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 rounded-xl bg-emerald-50/80 border border-emerald-300">
+                    <div>
+                      <label class="block text-[10px] font-bold text-emerald-950 mb-1">Nomor Rekening *</label>
+                      <input type="text" id="pvrCustomRekNo" oninput="onCustomBankInputChange()" placeholder="2033512417" class="w-full px-2.5 py-1.5 text-xs border border-emerald-300 rounded-lg bg-white font-mono font-bold" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-bold text-emerald-950 mb-1">Atas Nama (A/N) *</label>
+                      <input type="text" id="pvrCustomRekName" oninput="onCustomBankInputChange()" placeholder="MOCHAMAD RIZAL" class="w-full px-2.5 py-1.5 text-xs border border-emerald-300 rounded-lg bg-white font-bold uppercase" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-bold text-emerald-950 mb-1">Nama Bank *</label>
+                      <input type="text" id="pvrCustomRekBank" oninput="onCustomBankInputChange()" placeholder="BANK BNI / MANDIRI" class="w-full px-2.5 py-1.5 text-xs border border-emerald-300 rounded-lg bg-white font-bold uppercase" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Dibuat Oleh (Maker)</label>
+                    <input type="text" id="pvrSignMaker" oninput="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Diketahui Oleh (Reviewer)</label>
+                    <input type="text" id="pvrSignReviewer" oninput="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Disetujui Oleh (Approver)</label>
+                    <input type="text" id="pvrSignApprover" oninput="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
+                  </div>
+                </div>
+
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <label class="text-xs font-extrabold text-slate-800">DESKRIPSI PVR</label>
+                    <div class="flex items-center gap-3">
+                      <button type="button" onclick="regeneratePvrDeskripsiBtn()" class="text-[11px] font-extrabold text-blue-600 hover:underline">Generate Ulang</button>
+                      <button type="button" onclick="resetPvrTableEdits()" class="text-[11px] font-extrabold text-rose-600 hover:underline">Reset Tabel</button>
+                    </div>
+                  </div>
+                  <input type="text" id="pvrDeskripsiInput" oninput="customPvrDeskripsiEdited = true; syncPvrMetaInputs();" class="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-xl bg-white font-medium" />
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Pilih PT Pengajuan *</label>
-                  <select id="pvrPtSelect" onchange="onPvrPtSelectChange()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-extrabold"></select>
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-blue-700 mb-1">Vendor PVR PT Ini</label>
-                  <select id="pvrVendorFilter" onchange="renderPvrPreview(false)" class="w-full px-3 py-2 text-xs border border-blue-300 rounded-xl bg-white font-bold text-blue-900">
-                    <option value="ALL">Semua Vendor (Traveloka + Tiket.com)</option>
-                    <option value="Traveloka">Khusus Traveloka</option>
-                    <option value="Tiket.com">Khusus Tiket.com</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Filter Tanggal Order</label>
-                  <select id="pvrDateFilter" onchange="renderPvrPreview(false)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold">
-                    <option value="ALL">Semua Tanggal Order PT Ini</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Filter Status PVR</label>
-                  <select id="pvrStatusFilter" onchange="renderPvrPreview(false)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold">
-                    <option value="UNPAID" selected>UNPAID Saja (Wajib Buka PVR)</option>
-                    <option value="ALL">Semua Status PT Ini</option>
-                    <option value="PAID">PAID Saja (Arsip Lunas)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="block text-xs font-bold text-purple-800 mb-1">Divisi Pengajuan PVR (GA / CORSEC)</label>
-                  <select id="pvrDivisiFilter" onchange="onPvrDivisiFilterChange()" class="w-full px-3 py-2 text-xs border border-purple-300 rounded-xl bg-purple-50/40 font-extrabold text-purple-950">
-                    <option value="ALL">Semua Divisi (GA & CORSEC)</option>
-                    <option value="GA">Khusus GA (General Affair)</option>
-                    <option value="CORSEC">Khusus CORSEC (Corporate Secretary)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">No. PVR</label>
-                  <input type="text" id="pvrNoDoc" oninput="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-mono font-bold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Pengajuan</label>
-                  <input type="date" id="pvrTglPengajuan" onchange="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Due Date Pembayaran</label>
-                  <input type="date" id="pvrDueDate" onchange="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Rekening Tujuan Transfer</label>
-                  <select id="pvrBankAccount" onchange="onPvrBankPresetChange()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-bold text-emerald-800">
-                    <option value="BNI_TONY">BNI Pak Tony (1807-6383-59)</option>
-                    <option value="BCA_TONY">BCA Pak Tony (0221-568-710)</option>
-                    <option value="CUSTOM_EMPLOYEE">Reimbursement Karyawan / Rek. Lain (Custom)</option>
-                  </select>
-                </div>
-
-                <div id="customBankInputsBox" class="hidden sm:col-span-2 lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-300">
-                  <div>
-                    <label class="block text-[11px] font-bold text-emerald-950 mb-1">Nomor Rekening Karyawan / Tujuan *</label>
-                    <input type="text" id="pvrCustomRekNo" oninput="onCustomBankInputChange()" placeholder="Contoh: 2033512417" class="w-full px-3 py-1.5 text-xs border border-emerald-300 rounded-lg bg-white font-mono font-bold" />
+              <!-- Lembar PVR A4 di Sebelah Kanan (7 Kolom) -->
+              <div id="printAreaWrapper" class="xl:col-span-7 pvr-side-preview-box">
+                <div id="pvrA4ScaleWrap" class="pvr-side-scale-wrap">
+                  <div id="pvrA4Sheet" class="pvr-a4-sheet">
+                    <div id="pvrKopHeader" class="text-left pb-3 mb-3 border-b-2 border-black"></div>
+                  <div class="text-center mb-4">
+                    <div class="font-bold underline text-[12pt] tracking-wide">PENGAJUAN PVR (PAYMENT VOUCHER REQUEST)</div>
+                    <div class="font-bold text-[10.5pt] mt-0.5">NO : <span id="docPvrNo">GSM/GA/GR-____/XI/2026</span></div>
                   </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-emerald-950 mb-1">Atas Nama (A/N) *</label>
-                    <input type="text" id="pvrCustomRekName" oninput="onCustomBankInputChange()" placeholder="Contoh: MOCHAMAD RIZAL" class="w-full px-3 py-1.5 text-xs border border-emerald-300 rounded-lg bg-white font-bold uppercase" />
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-emerald-950 mb-1">Nama Bank *</label>
-                    <input type="text" id="pvrCustomRekBank" oninput="onCustomBankInputChange()" placeholder="Contoh: BANK NEGARA INDONESIA / MANDIRI" class="w-full px-3 py-1.5 text-xs border border-emerald-300 rounded-lg bg-white font-bold uppercase" />
-                  </div>
-                </div>
 
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Dibuat Oleh (Maker)</label>
-                  <input type="text" id="pvrSignMaker" oninput="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Diketahui Oleh (Reviewer)</label>
-                  <input type="text" id="pvrSignReviewer" oninput="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Disetujui Oleh (Approver)</label>
-                  <input type="text" id="pvrSignApprover" oninput="syncPvrMetaInputs()" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
-                </div>
-              </div>
+                  <table class="w-full text-[10pt] mb-3">
+                    <tr>
+                      <td class="w-36 font-bold py-0.5">Kepada</td>
+                      <td class="font-bold py-0.5">: <span id="docKepada">Finance PT GSM</span></td>
+                    </tr>
+                    <tr>
+                      <td class="font-bold py-0.5">Dari</td>
+                      <td class="font-bold py-0.5">: <span id="docDari">Eliza Putri Nadya</span></td>
+                    </tr>
+                    <tr>
+                      <td class="font-bold py-0.5">Departement</td>
+                      <td class="font-bold py-0.5">: <span id="docDepartement">General Affair</span></td>
+                    </tr>
+                    <tr>
+                      <td class="font-bold py-0.5">Tanggal</td>
+                      <td class="font-bold py-0.5">: <span id="docTanggal">23 November 2026</span></td>
+                    </tr>
+                    <tr>
+                      <td class="font-bold py-0.5">Due Date</td>
+                      <td class="font-bold py-0.5">: <span id="docDueDate">7 Desember 2026</span></td>
+                    </tr>
+                  </table>
 
-              <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                  <label class="text-xs font-extrabold text-slate-800">DESKRIPSI PVR</label>
-                  <div class="flex items-center gap-3">
-                    <button type="button" onclick="regeneratePvrDeskripsiBtn()" class="text-[11px] font-extrabold text-blue-600 hover:underline">Generate Ulang</button>
-                    <button type="button" onclick="resetPvrTableEdits()" class="text-[11px] font-extrabold text-rose-600 hover:underline">Reset Tabel</button>
-                  </div>
-                </div>
-                <input type="text" id="pvrDeskripsiInput" oninput="customPvrDeskripsiEdited = true; syncPvrMetaInputs();" class="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-xl bg-white font-medium" />
-              </div>
-            </div>
+                  <p class="mb-2 text-[10pt]">Dengan ini kami mengajukan pembayaran untuk :</p>
 
-            <div id="printAreaWrapper" class="overflow-x-auto pb-8">
-              <div id="pvrA4Sheet" class="pvr-a4-sheet">
-                <div id="pvrKopHeader" class="text-left pb-3 mb-3 border-b-2 border-black"></div>
+                  <table class="pvr-table text-[9.5pt]">
+                    <thead>
+                      <tr>
+                        <th class="w-10">NO.</th>
+                        <th>KETERANGAN</th>
+                        <th class="w-20">QUANTITY</th>
+                        <th class="w-28">HARGA</th>
+                        <th class="w-24">ADJUSTMENT</th>
+                        <th class="w-32">JUMLAH</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td></td>
+                        <td colspan="5" class="font-bold uppercase" contenteditable="true" id="docReimbursementHeader" onblur="onEditReimbursementHeader(this.innerText)">
+                          REIMBURSEMENT - TONY
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody id="docPvrLinesBody"></tbody>
+                    <tbody>
+                      <tr>
+                        <td colspan="5" class="text-center font-bold">SUBTOTAL</td>
+                        <td class="text-right font-bold" id="docSubtotal">Rp 0</td>
+                      </tr>
+                      <tr>
+                        <td colspan="3" rowspan="8" class="align-top p-2">
+                          <div class="font-bold underline mb-1">KETERANGAN :</div>
+                          <div id="docRekeningLines" contenteditable="true" onblur="onEditRekeningLines(this.innerText)" class="font-bold leading-snug whitespace-pre-line"></div>
+                        </td>
+                        <td colspan="2" class="text-right font-bold text-[8.5pt]">BIAYA ADMIN</td>
+                        <td class="text-right" contenteditable="true" id="taxAdmin" onblur="onTaxCellBlur('admin', this.innerText)">Rp -</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" class="text-right font-bold text-[8.5pt]">PPN 11%</td>
+                        <td class="text-right" contenteditable="true" id="taxPpn" onblur="onTaxCellBlur('ppn', this.innerText)">Rp -</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 4 AYAT 2 (10%)</td>
+                        <td class="text-right" contenteditable="true" id="taxPph4" onblur="onTaxCellBlur('pph4', this.innerText)">Rp -</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 21 (2.5%)</td>
+                        <td class="text-right" contenteditable="true" id="taxPph21" onblur="onTaxCellBlur('pph21', this.innerText)">Rp -</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 15 (1.5%)</td>
+                        <td class="text-right" contenteditable="true" id="taxPph15" onblur="onTaxCellBlur('pph15', this.innerText)">Rp -</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 23 (2%)</td>
+                        <td class="text-right" contenteditable="true" id="taxPph23" onblur="onTaxCellBlur('pph23', this.innerText)">Rp -</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 22 (1.5%)</td>
+                        <td class="text-right" contenteditable="true" id="taxPph22" onblur="onTaxCellBlur('pph22', this.innerText)">Rp -</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" class="text-right font-bold">GRAND TOTAL</td>
+                        <td class="text-right font-bold" id="docGrandTotal">Rp 0</td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" class="p-2">
+                          <span class="font-bold underline">DESKRIPSI :</span>
+                          <span id="docDeskripsiText" contenteditable="true" onblur="onEditDocDeskripsi(this.innerText)"></span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
 
-                <div class="text-center mb-4">
-                  <div class="font-bold underline text-[12pt] tracking-wide">PENGAJUAN PVR (PAYMENT VOUCHER REQUEST)</div>
-                  <div class="font-bold text-[10.5pt] mt-0.5">NO : <span id="docPvrNo">GSM/GA/GR-____/XI/2026</span></div>
-                </div>
-
-                <table class="w-full text-[10pt] mb-3">
-                  <tr>
-                    <td class="w-36 font-bold py-0.5">Kepada</td>
-                    <td class="font-bold py-0.5">: <span id="docKepada">Finance PT GSM</span></td>
-                  </tr>
-                  <tr>
-                    <td class="font-bold py-0.5">Dari</td>
-                    <td class="font-bold py-0.5">: <span id="docDari">Eliza Putri Nadya</span></td>
-                  </tr>
-                  <tr>
-                    <td class="font-bold py-0.5">Departement</td>
-                    <td class="font-bold py-0.5">: <span id="docDepartement">General Affair</span></td>
-                  </tr>
-                  <tr>
-                    <td class="font-bold py-0.5">Tanggal</td>
-                    <td class="font-bold py-0.5">: <span id="docTanggal">23 November 2026</span></td>
-                  </tr>
-                  <tr>
-                    <td class="font-bold py-0.5">Due Date</td>
-                    <td class="font-bold py-0.5">: <span id="docDueDate">7 Desember 2026</span></td>
-                  </tr>
-                </table>
-
-                <p class="mb-2 text-[10pt]">Dengan ini kami mengajukan pembayaran untuk :</p>
-
-                <table class="pvr-table text-[9.5pt]">
-                  <thead>
-                    <tr>
-                      <th class="w-10">NO.</th>
-                      <th>KETERANGAN</th>
-                      <th class="w-20">QUANTITY</th>
-                      <th class="w-28">HARGA</th>
-                      <th class="w-24">ADJUSTMENT</th>
-                      <th class="w-32">JUMLAH</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td></td>
-                      <td colspan="5" class="font-bold uppercase" contenteditable="true" id="docReimbursementHeader" onblur="onEditReimbursementHeader(this.innerText)">
-                        REIMBURSEMENT - TONY
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tbody id="docPvrLinesBody"></tbody>
-                  <tbody>
-                    <tr>
-                      <td colspan="5" class="text-center font-bold">SUBTOTAL</td>
-                      <td class="text-right font-bold" id="docSubtotal">Rp 0</td>
-                    </tr>
-                    <tr>
-                      <td colspan="3" rowspan="8" class="align-top p-2">
-                        <div class="font-bold underline mb-1">KETERANGAN :</div>
-                        <div id="docRekeningLines" contenteditable="true" onblur="onEditRekeningLines(this.innerText)" class="font-bold leading-snug whitespace-pre-line"></div>
-                      </td>
-                      <td colspan="2" class="text-right font-bold text-[8.5pt]">BIAYA ADMIN</td>
-                      <td class="text-right" contenteditable="true" id="taxAdmin" onblur="onTaxCellBlur('admin', this.innerText)">Rp -</td>
-                    </tr>
-                    <tr>
-                      <td colspan="2" class="text-right font-bold text-[8.5pt]">PPN 11%</td>
-                      <td class="text-right" contenteditable="true" id="taxPpn" onblur="onTaxCellBlur('ppn', this.innerText)">Rp -</td>
-                    </tr>
-                    <tr>
-                      <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 4 AYAT 2 (10%)</td>
-                      <td class="text-right" contenteditable="true" id="taxPph4" onblur="onTaxCellBlur('pph4', this.innerText)">Rp -</td>
-                    </tr>
-                    <tr>
-                      <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 21 (2.5%)</td>
-                      <td class="text-right" contenteditable="true" id="taxPph21" onblur="onTaxCellBlur('pph21', this.innerText)">Rp -</td>
-                    </tr>
-                    <tr>
-                      <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 15 (1.5%)</td>
-                      <td class="text-right" contenteditable="true" id="taxPph15" onblur="onTaxCellBlur('pph15', this.innerText)">Rp -</td>
-                    </tr>
-                    <tr>
-                      <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 23 (2%)</td>
-                      <td class="text-right" contenteditable="true" id="taxPph23" onblur="onTaxCellBlur('pph23', this.innerText)">Rp -</td>
-                    </tr>
-                    <tr>
-                      <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 22 (1.5%)</td>
-                      <td class="text-right" contenteditable="true" id="taxPph22" onblur="onTaxCellBlur('pph22', this.innerText)">Rp -</td>
-                    </tr>
-                    <tr>
-                      <td colspan="2" class="text-right font-bold">GRAND TOTAL</td>
-                      <td class="text-right font-bold" id="docGrandTotal">Rp 0</td>
-                    </tr>
-                    <tr>
-                      <td colspan="6" class="p-2">
-                        <span class="font-bold underline">DESKRIPSI :</span>
-                        <span id="docDeskripsiText" contenteditable="true" onblur="onEditDocDeskripsi(this.innerText)"></span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <table class="pvr-table text-[9.5pt] mt-4">
-                  <thead>
-                    <tr>
-                      <th class="w-1/3">Dibuat Oleh,</th>
-                      <th class="w-1/3">Diketahui Oleh,</th>
-                      <th class="w-1/3">Disetujui Oleh,</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="h-20"></td>
-                      <td class="h-20"></td>
-                      <td class="h-20"></td>
-                    </tr>
-                    <tr>
+                  <table class="pvr-table text-[9.5pt] mt-4">
+                    <thead>
+                      <tr>
+                        <th class="w-1/3">Dibuat Oleh,</th>
+                        <th class="w-1/3">Diketahui Oleh,</th>
+                        <th class="w-1/3">Disetujui Oleh,</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="h-20"></td>
+                        <td class="h-20"></td>
+                        <td class="h-20"></td>
+                      </tr>
+                      <tr>
                       <td class="text-center font-bold" id="docSignMaker">Eliza Putri Nadya</td>
                       <td class="text-center font-bold" id="docSignReviewer">Eunike Priskila</td>
                       <td class="text-center font-bold" id="docSignApprover">Tony</td>
                     </tr>
                   </tbody>
                 </table>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -1357,272 +1391,175 @@
         </div>
 
         <!-- ============================================================== -->
-        <!-- MODUL 2: OPERASIONAL GA PT. GEL (UNIT KHUSUS ATK SAJA)          -->
+        <!-- MODUL 2: OPERASIONAL GA PT. GEL (SIDE-BY-SIDE DENGAN PVR KANAN) -->
         <!-- ============================================================== -->
-        <div id="moduleWrapperOpsga" class="hidden space-y-6">
-          <div class="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-amber-200 overflow-hidden no-print">
-            <div class="px-6 py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-yellow-600 text-white border-b border-amber-300/60 flex flex-wrap items-center justify-between gap-3">
-              <h2 class="text-base sm:text-lg font-black text-white">Operasional GA — PT. Global Energi Lestari</h2>
-              <div class="flex flex-wrap items-center gap-2">
-                <button type="button" onclick="loadSampleOpsGel()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-amber-50 text-amber-950 text-xs font-extrabold transition shadow-xs">
-                  + Contoh Data
-                </button>
-                <button type="button" onclick="exportOpsGelExcel()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition shadow-xs">
-                  Export Excel (.XLSX)
-                </button>
-                <button type="button" onclick="printOpsGelPvr()" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-extrabold border border-white/30 transition shadow-2xs">
-                  🖨️ Print / PDF PVR
-                </button>
-              </div>
-            </div>
-
-            <form id="opsGelForm" onsubmit="handleSaveOpsGel(event)" class="p-5 sm:p-6 space-y-4">
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Pengajuan *</label>
-                  <input type="date" id="opsDate" required class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Kategori Operasional *</label>
-                  <select id="opsKategori" onchange="onOpsKategoriChange()" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold">
-                    <option value="Tagihan ATK & Perlengkapan">Tagihan ATK &amp; Perlengkapan</option>
-                    <option value="Pengajuan Petty Cash GA">Pengajuan Petty Cash GA</option>
-                    <option value="Kebutuhan Pantry & Kebersihan">Kebutuhan Pantry &amp; Kebersihan</option>
-                    <option value="Maintenance & Perbaikan Kantor">Maintenance &amp; Perbaikan Kantor</option>
-                    <option value="Kurir, Dokumen & Legalitas">Kurir, Dokumen &amp; Legalitas</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Nama Yang Mengajukan *</label>
-                  <input type="text" id="opsApplicant" required placeholder="Contoh: Eliza Putri Nadya" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">No. Invoice / Kwitansi</label>
-                  <input type="text" id="opsInvoice" placeholder="INV-ATK-2026-01" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">No. Rekening Tujuan *</label>
-                  <input type="text" id="opsRekNo" required placeholder="Nomor rekening..." class="w-full h-10 px-3 text-xs border border-emerald-300 rounded-xl bg-emerald-50/40 font-extrabold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Atas Nama (A/N) *</label>
-                  <input type="text" id="opsRekName" required placeholder="Nama pemilik rekening..." class="w-full h-10 px-3 text-xs border border-emerald-300 rounded-xl bg-emerald-50/40 font-extrabold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Nama Bank *</label>
-                  <input type="text" id="opsRekBank" required placeholder="BCA / BNI / MANDIRI / BRI..." class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Judul / Ringkasan Pengajuan</label>
-                  <input type="text" id="opsTitle" placeholder="Contoh: Pembelian ATK Kantor HO" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
+        <div id="moduleWrapperOpsga" class="hidden">
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+            <!-- Panel Form & Rekap Operasional Kiri (5 Kolom) -->
+            <div class="xl:col-span-5 bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-amber-200 overflow-hidden no-print">
+              <div class="px-5 py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-yellow-600 text-white border-b border-amber-300/60 flex flex-wrap items-center justify-between gap-2">
+                <h2 class="text-sm sm:text-base font-black text-white">Operasional GA — PT. GEL</h2>
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <button type="button" onclick="loadSampleOpsGel()" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-amber-50 text-amber-950 text-[11px] font-extrabold transition shadow-xs">
+                    + Contoh
+                  </button>
+                  <button type="button" onclick="exportOpsGelExcel()" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-extrabold transition shadow-xs">
+                    Excel (.XLSX)
+                  </button>
+                  <button type="button" onclick="printOpsGelPvr()" class="px-2.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-[11px] font-extrabold border border-white/30 transition shadow-2xs">
+                    🖨️ Print PVR
+                  </button>
                 </div>
               </div>
 
-              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                <div class="flex flex-wrap items-center justify-between gap-2">
+              <form id="opsGelForm" onsubmit="handleSaveOpsGel(event)" class="p-4 sm:p-5 space-y-3.5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <span id="opsItemsSectionTitle" class="text-xs font-extrabold text-slate-800">Rincian Daftar Item Barang / ATK</span>
-                    <span id="opsDraftTotalLabel" class="ml-2 px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[11px] font-black">Total: Rp 0</span>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Tanggal Pengajuan *</label>
+                    <input type="date" id="opsDate" required class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
                   </div>
-                  <div class="flex flex-wrap items-center gap-1.5">
-                    <button type="button" onclick="addOpsInputRow()" class="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-extrabold">+ 1 Item</button>
-                    <button type="button" onclick="addMultipleOpsInputRows(5)" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-extrabold">+ 5 Item</button>
-                    <button type="button" onclick="toggleBulkPasteOpsModal(true)" class="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-extrabold">📋 Paste dari Excel</button>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Kategori Operasional *</label>
+                    <select id="opsKategori" onchange="onOpsKategoriChange()" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold">
+                      <option value="Tagihan ATK & Perlengkapan">Tagihan ATK &amp; Perlengkapan</option>
+                      <option value="Pengajuan Petty Cash GA">Pengajuan Petty Cash GA</option>
+                      <option value="Kebutuhan Pantry & Kebersihan">Kebutuhan Pantry &amp; Kebersihan</option>
+                      <option value="Maintenance & Perbaikan Kantor">Maintenance &amp; Perbaikan Kantor</option>
+                      <option value="Kurir, Dokumen & Legalitas">Kurir, Dokumen &amp; Legalitas</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Nama Yang Mengajukan *</label>
+                    <input type="text" id="opsApplicant" required placeholder="Eliza Putri Nadya" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">No. Invoice / Kwitansi</label>
+                    <input type="text" id="opsInvoice" placeholder="INV-ATK-2026-01" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">No. Rekening Tujuan *</label>
+                    <input type="text" id="opsRekNo" required placeholder="Nomor rekening..." class="w-full h-9 px-3 text-xs border border-emerald-300 rounded-xl bg-emerald-50/40 font-extrabold" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Atas Nama (A/N) *</label>
+                    <input type="text" id="opsRekName" required placeholder="Nama pemilik rekening..." class="w-full h-9 px-3 text-xs border border-emerald-300 rounded-xl bg-emerald-50/40 font-extrabold" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Nama Bank *</label>
+                    <input type="text" id="opsRekBank" required placeholder="BCA / BNI / MANDIRI" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Judul Pengajuan</label>
+                    <input type="text" id="opsTitle" placeholder="Pembelian ATK Kantor HO" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
                   </div>
                 </div>
 
-                <div class="overflow-x-auto max-h-72 overflow-y-auto border border-slate-200 rounded-xl bg-white">
-                  <table class="w-full text-left border-collapse text-xs">
-                    <thead class="bg-slate-100 text-slate-700 font-extrabold sticky top-0">
-                      <tr>
-                        <th class="py-2 px-2.5 w-10">No.</th>
-                        <th id="opsThItemName" class="py-2 px-2.5">Nama Item / Uraian Barang ATK *</th>
-                        <th class="py-2 px-2.5 w-20">Qty *</th>
-                        <th id="opsThUnit" class="py-2 px-2.5 w-24">Unit *</th>
-                        <th class="py-2 px-2.5 w-36">Harga Satuan (Rp) *</th>
-                        <th class="py-2 px-2.5 w-36 text-right">Subtotal</th>
-                        <th class="py-2 px-2.5 w-12 text-center">Hapus</th>
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <span id="opsItemsSectionTitle" class="text-xs font-extrabold text-slate-800">Rincian Item Barang / ATK</span>
+                      <span id="opsDraftTotalLabel" class="ml-1.5 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black">Total: Rp 0</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1">
+                      <button type="button" onclick="addOpsInputRow()" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-extrabold">+ 1</button>
+                      <button type="button" onclick="addMultipleOpsInputRows(5)" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-extrabold">+ 5</button>
+                      <button type="button" onclick="toggleBulkPasteOpsModal(true)" class="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 text-[10px] font-extrabold">📋 Paste</button>
+                    </div>
+                  </div>
+
+                  <div class="overflow-x-auto max-h-60 overflow-y-auto border border-slate-200 rounded-xl bg-white">
+                    <table class="w-full text-left border-collapse text-xs">
+                      <thead class="bg-slate-100 text-slate-700 font-extrabold sticky top-0">
+                        <tr>
+                          <th class="py-1.5 px-2 w-8">No.</th>
+                          <th id="opsThItemName" class="py-1.5 px-2">Nama Item / Uraian *</th>
+                          <th class="py-1.5 px-2 w-16">Qty *</th>
+                          <th id="opsThUnit" class="py-1.5 px-2 w-20">Unit *</th>
+                          <th class="py-1.5 px-2 w-28">Harga (Rp) *</th>
+                          <th class="py-1.5 px-2 w-28 text-right">Subtotal</th>
+                          <th class="py-1.5 px-2 w-8 text-center">✕</th>
+                        </tr>
+                      </thead>
+                      <tbody id="opsInputItemsBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <input type="hidden" id="editingOpsId" value="" />
+                <div class="flex justify-end gap-2">
+                  <button type="button" onclick="resetOpsGelForm()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Reset</button>
+                  <button type="submit" id="btnSubmitOpsGel" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow">
+                    ✓ Simpan &amp; Tampilkan di PVR
+                  </button>
+                </div>
+              </form>
+
+              <div class="px-4 sm:px-5 pb-5">
+                <div class="overflow-x-auto rounded-2xl border border-slate-200">
+                  <table class="w-full text-left border-collapse whitespace-nowrap text-xs">
+                    <thead>
+                      <tr class="bg-sky-500 text-white text-[10px] font-extrabold uppercase">
+                        <th class="py-2.5 px-2.5">No.</th>
+                        <th class="py-2.5 px-2.5">Tanggal</th>
+                        <th class="py-2.5 px-2.5">Pengaju &amp; Kategori</th>
+                        <th class="py-2.5 px-2.5 text-right">Total</th>
+                        <th class="py-2.5 px-2.5 text-center">Aksi</th>
                       </tr>
                     </thead>
-                    <tbody id="opsInputItemsBody" class="divide-y divide-slate-100"></tbody>
+                    <tbody id="opsGelTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
                   </table>
                 </div>
               </div>
+            </div>
 
-              <input type="hidden" id="editingOpsId" value="" />
-              <div class="flex justify-end gap-2">
-                <button type="button" onclick="resetOpsGelForm()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Reset Form</button>
-                <button type="submit" id="btnSubmitOpsGel" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow">
-                  ✓ Simpan ke Rekap &amp; PVR PT. GEL
-                </button>
-              </div>
-            </form>
-
-            <div class="px-6 pb-6">
-              <div class="overflow-x-auto rounded-2xl border border-slate-200">
-                <table class="w-full text-left border-collapse whitespace-nowrap text-xs">
-                  <thead>
-                    <tr class="bg-sky-500 text-white text-[11px] font-extrabold uppercase">
-                      <th class="py-3 px-3">No.</th>
-                      <th class="py-3 px-3">Tanggal</th>
-                      <th class="py-3 px-3">PT</th>
-                      <th class="py-3 px-3">Pengaju &amp; Kategori</th>
-                      <th class="py-3 px-3">Rincian Item &amp; Qty</th>
-                      <th class="py-3 px-3">Rekening Tujuan</th>
-                      <th class="py-3 px-3 text-right">Total Nominal</th>
-                      <th class="py-3 px-3">No. GR / PVR</th>
-                      <th class="py-3 px-3">Status</th>
-                      <th class="py-3 px-3 text-center">Aksi</th>
+            <!-- Lembar PVR A4 PT. GEL di Sebelah Kanan (7 Kolom) -->
+            <div class="xl:col-span-7 pvr-side-preview-box">
+              <div id="opsGelPvrScaleWrap" class="pvr-side-scale-wrap">
+                <div id="opsGelPvrSheet" class="pvr-paper">
+                  <div id="opsGelKopContainer" class="mb-3"></div>
+                <div class="text-center mb-4">
+                  <div class="text-sm font-bold underline tracking-wide">PENGAJUAN PVR (PAYMENT VOUCHER REQUEST)</div>
+                  <div class="text-xs font-bold mt-1">NO : <span id="opsDocNoDisplay" contenteditable="true" class="px-1">GEL/GA/GR-____/XI/2026</span></div>
+                </div>
+                <table class="w-full text-xs mb-3" style="border:none;">
+                  <tr><td style="width:140px;padding:2px 0;font-weight:700;">Kepada</td><td style="padding:2px 0;font-weight:700;">: Finance PT GEL</td></tr>
+                  <tr><td style="padding:2px 0;font-weight:700;">Dari</td><td style="padding:2px 0;font-weight:700;">: <span id="opsDocFrom" contenteditable="true" class="px-1">Eliza Putri Nadya</span></td></tr>
+                  <tr><td style="padding:2px 0;font-weight:700;">Departement</td><td style="padding:2px 0;font-weight:700;">: General Affair</td></tr>
+                  <tr><td style="padding:2px 0;font-weight:700;">Tanggal</td><td style="padding:2px 0;font-weight:700;">: <span id="opsDocDate">25 November 2026</span></td></tr>
+                  <tr><td style="padding:2px 0;font-weight:700;">Due Date</td><td style="padding:2px 0;font-weight:700;">: <span id="opsDocDueDate">09 Desember 2026</span></td></tr>
+                </table>
+                <div class="text-xs mb-2">Dengan ini kami mengajukan pembayaran untuk :</div>
+                <table class="pvr-table text-xs">
+                  <thead id="opsGelPvrHead">
+                    <tr>
+                      <th style="width:38px;">NO.</th>
+                      <th>KETERANGAN</th>
+                      <th style="width:74px;">QUANTITY</th>
+                      <th id="opsPvrThUnit" style="width:68px;">UNIT</th>
+                      <th style="width:105px;">HARGA</th>
+                      <th style="width:115px;">JUMLAH</th>
                     </tr>
                   </thead>
-                  <tbody id="opsGelTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
+                  <tbody id="opsGelPvrBody"></tbody>
                 </table>
-              </div>
-            </div>
-          </div>
-
-          <div id="opsGelPvrSheet" class="pvr-paper">
-            <div id="opsGelKopContainer" class="mb-3"></div>
-            <div class="border-t-2 border-black mb-4"></div>
-            <div class="text-center mb-4">
-              <div class="text-sm font-bold underline tracking-wide">SUBMISSION OF PVR (PAYMENT VOUCHER REQUEST)</div>
-              <div class="text-xs font-bold mt-1">NO: <span id="opsDocNoDisplay" contenteditable="true" class="px-1">GEL/GA/GR-____/XI/2026</span></div>
-            </div>
-            <table class="w-full text-xs mb-3" style="border:none;">
-              <tr><td style="width:140px;padding:2px 0;font-weight:700;">To</td><td style="padding:2px 0;font-weight:700;">: Finance PT GEL</td></tr>
-              <tr><td style="padding:2px 0;font-weight:700;">From</td><td style="padding:2px 0;font-weight:700;">: <span id="opsDocFrom" contenteditable="true" class="px-1">Eliza Putri Nadya</span></td></tr>
-              <tr><td style="padding:2px 0;font-weight:700;">Department</td><td style="padding:2px 0;font-weight:700;">: General Affair</td></tr>
-              <tr><td style="padding:2px 0;font-weight:700;">Date</td><td style="padding:2px 0;font-weight:700;">: <span id="opsDocDate">November 23, 2026</span></td></tr>
-              <tr><td style="padding:2px 0;font-weight:700;">Due Date</td><td style="padding:2px 0;font-weight:700;">: <span id="opsDocDueDate">December 7, 2026</span></td></tr>
-            </table>
-            <div class="text-xs mb-2">Hereby we request payment for:</div>
-            <table class="pvr-table text-xs">
-              <thead id="opsGelPvrHead">
-                <tr>
-                  <th style="width:38px;">NO.</th>
-                  <th>KETERANGAN</th>
-                  <th style="width:74px;">QUANTITY</th>
-                  <th id="opsPvrThUnit" style="width:68px;">UNIT</th>
-                  <th style="width:105px;">HARGA</th>
-                  <th style="width:115px;">JUMLAH</th>
-                </tr>
-              </thead>
-              <tbody id="opsGelPvrBody"></tbody>
-            </table>
-            <table class="pvr-table text-xs mt-4">
-              <thead>
-                <tr>
-                  <th style="width:33.33%;">Prepared By,</th>
-                  <th style="width:33.33%;">Checked By,</th>
-                  <th style="width:33.33%;">Approved By,</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td style="height:68px;"></td><td style="height:68px;"></td><td style="height:68px;"></td></tr>
-                <tr>
-                  <td class="text-center font-bold"><span contenteditable="true" class="px-1">Eliza Putri Nadya</span></td>
-                  <td class="text-center font-bold"><span contenteditable="true" class="px-1">Eunike Priskila</span></td>
-                  <td class="text-center font-bold"><span contenteditable="true" class="px-1">Tony</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- ============================================================== -->
-        <!-- MODUL 3: PERPANJANGAN STNK KENDARAAN + LAMPIRAN FOTO UNIT      -->
-        <!-- ============================================================== -->
-        <div id="moduleWrapperStnk" class="hidden space-y-6">
-          <div class="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-amber-200 overflow-hidden">
-            <div class="px-6 py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-yellow-600 text-white border-b border-amber-300/60 flex flex-wrap items-center justify-between gap-3">
-              <h2 class="text-base sm:text-lg font-black text-white">Perpanjangan STNK Kendaraan</h2>
-              <div class="flex flex-wrap items-center gap-2">
-                <button type="button" onclick="loadSampleStnk()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-amber-50 text-amber-950 text-xs font-extrabold shadow-xs">+ Contoh Data STNK</button>
-                <button type="button" onclick="exportStnkExcel()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-xs">Export STNK (.XLSX)</button>
-              </div>
-            </div>
-
-            <form id="stnkForm" onsubmit="handleSaveStnk(event)" class="p-5 sm:p-6 space-y-4">
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Polisi *</label>
-                  <input type="text" id="stnkNopol" required placeholder="B 9124 KXA" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-black uppercase" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Tipe / Merk Kendaraan *</label>
-                  <input type="text" id="stnkUnit" required placeholder="Toyota Hilux 4x4 DC" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Entitas PT *</label>
-                  <select id="stnkPt" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-extrabold"></select>
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Perpanjangan</label>
-                  <select id="stnkType" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold">
-                    <option value="Pajak Tahunan (1 Thn)">Pajak Tahunan (1 Thn)</option>
-                    <option value="Ganti Plat & STNK (5 Thn)">Ganti Plat &amp; STNK (5 Thn)</option>
-                    <option value="Mutasi / Balik Nama">Mutasi / Balik Nama</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Jatuh Tempo STNK *</label>
-                  <input type="date" id="stnkDueDate" required class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Status Masa Berlaku</label>
-                  <select id="stnkManualStatus" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold">
-                    <option value="AUTO">Otomatis dari Jatuh Tempo</option>
-                    <option value="Aktif">Aktif</option>
-                    <option value="Segera Perpanjang">Segera Perpanjang</option>
-                    <option value="Proses Perpanjangan">Proses Perpanjangan</option>
-                    <option value="Lewat Jatuh Tempo">Lewat Jatuh Tempo</option>
-                    <option value="Sudah Diperpanjang">Sudah Diperpanjang</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Estimasi Biaya (Rp) *</label>
-                  <input type="number" id="stnkCost" required value="0" min="0" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-extrabold" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">PIC Pengguna / Lokasi Site</label>
-                  <input type="text" id="stnkPic" placeholder="Pool HO Jakarta / Site Kalimantan" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
-                </div>
-                <div class="sm:col-span-2 lg:col-span-4">
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Lampiran Foto Mobil / STNK (Opsional)</label>
-                  <div class="flex flex-wrap items-center gap-3 p-3 rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/40">
-                    <input type="file" id="stnkPhotoInput" accept="image/*" onchange="handleStnkPhotoSelect(event)" class="text-xs font-semibold text-slate-600" />
-                    <img id="stnkPhotoPreview" src="" alt="Preview Unit" class="hidden w-14 h-14 object-cover rounded-xl border border-slate-300 shadow-sm" />
-                  </div>
-                </div>
-              </div>
-
-              <input type="hidden" id="editingStnkId" value="" />
-              <div class="flex justify-end gap-2">
-                <button type="button" onclick="resetStnkForm()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Reset</button>
-                <button type="submit" id="btnSubmitStnk" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow">+ Simpan STNK</button>
-              </div>
-            </form>
-
-            <div class="px-6 pb-6">
-              <div class="overflow-x-auto rounded-2xl border border-slate-200">
-                <table class="w-full text-left border-collapse whitespace-nowrap text-xs">
+                <table class="pvr-table text-xs mt-4">
                   <thead>
-                    <tr class="bg-sky-500 text-white text-[11px] font-extrabold uppercase">
-                      <th class="py-3 px-3">No.</th>
-                      <th class="py-3 px-3">Foto Unit</th>
-                      <th class="py-3 px-3">No. Polisi</th>
-                      <th class="py-3 px-3">Tipe Kendaraan</th>
-                      <th class="py-3 px-3">PT</th>
-                      <th class="py-3 px-3">Jenis Pajak</th>
-                      <th class="py-3 px-3">Jatuh Tempo</th>
-                      <th class="py-3 px-3">Status Masa Berlaku</th>
-                      <th class="py-3 px-3 text-right">Estimasi Biaya</th>
-                      <th class="py-3 px-3">PIC / Lokasi</th>
-                      <th class="py-3 px-3 text-center">Aksi</th>
+                    <tr>
+                      <th style="width:33.33%;">Dibuat Oleh,</th>
+                      <th style="width:33.33%;">Diketahui Oleh,</th>
+                      <th style="width:33.33%;">Disetujui Oleh,</th>
                     </tr>
                   </thead>
-                  <tbody id="stnkTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
+                  <tbody>
+                    <tr><td style="height:68px;"></td><td style="height:68px;"></td><td style="height:68px;"></td></tr>
+                    <tr>
+                      <td class="text-center font-bold"><span contenteditable="true" class="px-1">Eliza Putri Nadya</span></td>
+                      <td class="text-center font-bold"><span contenteditable="true" class="px-1">Eunike Priskila</span></td>
+                      <td class="text-center font-bold"><span contenteditable="true" class="px-1">Tony</span></td>
+                    </tr>
+                  </tbody>
                 </table>
+                </div>
               </div>
             </div>
           </div>
@@ -1870,6 +1807,107 @@
             </div>
 
             <div id="ctDynamicContent" class="p-5 sm:p-6"></div>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- MODUL 3: PERPANJANGAN STNK & PAJAK KENDARAAN                   -->
+        <!-- ============================================================== -->
+        <div id="moduleWrapperStnk" class="hidden space-y-6">
+          <div class="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-amber-200 overflow-hidden">
+            <div class="px-6 py-4 bg-gradient-to-r from-amber-700 via-amber-600 to-yellow-600 text-white border-b border-amber-300/60 flex flex-wrap items-center justify-between gap-3">
+              <h2 class="text-base sm:text-lg font-black text-white uppercase tracking-wide">PERPANJANGAN STNK &amp; PAJAK KENDARAAN</h2>
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="loadSampleStnk()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-amber-50 text-amber-950 text-xs font-extrabold transition shadow-xs">
+                  + Contoh Data STNK
+                </button>
+                <button type="button" onclick="exportStnkExcel()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition shadow-xs">
+                  Export STNK (.XLSX)
+                </button>
+              </div>
+            </div>
+
+            <form id="stnkForm" onsubmit="handleSaveStnk(event)" class="p-5 sm:p-6 space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Polisi *</label>
+                  <input type="text" id="stnkNopol" required placeholder="B 9124 KXA" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-mono font-black uppercase" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Merk / Tipe Unit *</label>
+                  <input type="text" id="stnkUnit" required placeholder="Toyota Hilux 4x4 DC" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Entitas PT *</label>
+                  <select id="stnkPt" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-extrabold"></select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Perpanjangan *</label>
+                  <select id="stnkType" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold">
+                    <option value="Pajak Tahunan (1 Thn)">Pajak Tahunan (1 Thn)</option>
+                    <option value="Ganti Kaleng / 5 Tahunan">Ganti Kaleng / 5 Tahunan</option>
+                    <option value="KIR / Uji Berkala">KIR / Uji Berkala</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Jatuh Tempo STNK *</label>
+                  <input type="date" id="stnkDueDate" required class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Status Pengurusan</label>
+                  <select id="stnkManualStatus" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-bold">
+                    <option value="Segera Perpanjang">Segera Perpanjang</option>
+                    <option value="Proses Biro Jasa">Proses Biro Jasa</option>
+                    <option value="Selesai / Lunas">Selesai / Lunas</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Estimasi Biaya (Rp)</label>
+                  <input type="number" id="stnkCost" min="0" value="0" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-extrabold" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">PIC / Lokasi Site</label>
+                  <input type="text" id="stnkPic" placeholder="HO Jakarta / Site ARC" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-semibold" />
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                <div class="flex items-center gap-2">
+                  <label class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold border border-slate-300 cursor-pointer">
+                    📷 Upload Foto STNK / Unit
+                    <input type="file" accept="image/*" onchange="handleStnkPhotoSelect(event)" class="hidden" />
+                  </label>
+                  <img id="stnkPhotoPreview" src="" alt="STNK" class="hidden w-10 h-10 rounded-lg object-cover border border-amber-400" />
+                </div>
+                <div class="flex gap-2">
+                  <button type="button" onclick="resetStnkForm()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Reset</button>
+                  <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow">✓ Simpan Data STNK</button>
+                </div>
+              </div>
+            </form>
+
+            <div class="px-6 pb-6">
+              <div class="overflow-x-auto rounded-2xl border border-slate-200">
+                <table class="w-full text-left border-collapse whitespace-nowrap text-xs">
+                  <thead>
+                    <tr class="bg-sky-500 text-white text-[11px] font-extrabold uppercase">
+                      <th class="py-3 px-3">No.</th>
+                      <th class="py-3 px-3">Foto</th>
+                      <th class="py-3 px-3">No. Polisi</th>
+                      <th class="py-3 px-3">Unit Kendaraan</th>
+                      <th class="py-3 px-3">PT</th>
+                      <th class="py-3 px-3">Jenis</th>
+                      <th class="py-3 px-3">Jatuh Tempo</th>
+                      <th class="py-3 px-3">Status</th>
+                      <th class="py-3 px-3 text-right">Biaya</th>
+                      <th class="py-3 px-3">PIC / Site</th>
+                      <th class="py-3 px-3 text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="stnkTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2228,27 +2266,41 @@
         getEl(`modBtn-${k}`)?.classList.toggle('active', k === modName);
       });
       getEl('ticketingSubNav')?.classList.toggle('hidden', modName !== 'ticketing' || currentAccessRole !== 'GA_ADMIN');
+      requestAnimationFrame(fitPvrSheetsToViewport);
     }
 
-    // =========================================================================
-    // PWA APP (GA GEL) & SUPABASE CLOUD SYNC
-    // =========================================================================
+    function fitPvrSheetsToViewport() {
+      const pairs = [
+        { wrapId: 'pvrA4ScaleWrap', sheetId: 'pvrA4Sheet' },
+        { wrapId: 'opsGelPvrScaleWrap', sheetId: 'opsGelPvrSheet' }
+      ];
+      pairs.forEach(({ wrapId, sheetId }) => {
+        const wrap = getEl(wrapId);
+        const sheet = getEl(sheetId);
+        const box = wrap?.parentElement;
+        if (!wrap || !sheet || !box || box.offsetParent === null) return;
+        const availW = Math.max(280, box.clientWidth - 4);
+        const naturalW = sheet.offsetWidth || 794;
+        const scale = Math.min(1, availW / naturalW);
+        wrap.style.transform = `scale(${scale.toFixed(4)})`;
+        wrap.style.width = `${Math.floor(naturalW * scale)}px`;
+        wrap.style.height = `${Math.ceil(sheet.offsetHeight * scale)}px`;
+      });
+    }
+
+    window.addEventListener('resize', fitPvrSheetsToViewport);
+
     function initPwaAppExperience() {
       try {
-        const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect x="24" y="24" width="464" height="464" rx="112" fill="#ffffff" stroke="#d4a017" stroke-width="20"/><g transform="translate(256,256)" fill="none" stroke="#d4a017" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"><path d="M0,-125 C55,-75 55,-15 0,25 C-55,-15 -55,-75 0,-125 Z"/><path d="M0,-125 C55,-75 55,-15 0,25 C-55,-15 -55,-75 0,-125 Z" transform="rotate(120)"/><path d="M0,-125 C55,-75 55,-15 0,25 C-55,-15 -55,-75 0,-125 Z" transform="rotate(240)"/><circle cx="0" cy="0" r="22" fill="#ffffff" stroke="#d4a017" stroke-width="18"/></g></svg>`;
-        const iconUrl = 'data:image/svg+xml,' + encodeURIComponent(iconSvg);
+        const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect x='24' y='24' width='464' height='464' rx='112' fill='%23ffffff' stroke='%23d4a017' stroke-width='20'/%3E%3Cg transform='translate(256,256)' fill='none' stroke='%23d4a017' stroke-width='22' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M0,-125 C55,-75 55,-15 0,25 C-55,-15 -55,-75 0,-125 Z'/%3E%3Cpath d='M0,-125 C55,-75 55,-15 0,25 C-55,-15 -55,-75 0,-125 Z' transform='rotate(120)'/%3E%3Cpath d='M0,-125 C55,-75 55,-15 0,25 C-55,-15 -55,-75 0,-125 Z' transform='rotate(240)'/%3E%3Ccircle cx='0' cy='0' r='22' fill='%23ffffff' stroke='%23d4a017' stroke-width='18'/%3E%3C/g%3E%3C/svg%3E";
         const manifestObj = {
-          id: 'ga-gel-emblem-v2',
           name: 'GA GEL — PT Global Energi Lestari',
           short_name: 'GA GEL',
-          start_url: window.location.href,
+          start_url: '.',
           display: 'standalone',
-          background_color: '#0b1628',
-          theme_color: '#0b1628',
-          icons: [
-            { src: iconUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
-            { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
-          ]
+          background_color: '#fffdf7',
+          theme_color: '#b45309',
+          icons: [{ src: iconSvg, sizes: '512x512', type: 'image/svg+xml' }]
         };
         const mLink = getEl('dynamicPwaManifest');
         if (mLink) {
@@ -2473,42 +2525,111 @@
     function loadStorage() {
       try {
         recoverOriginal17PtLogos();
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          records = Array.isArray(parsed.records) ? parsed.records : [];
-          if (parsed.ptCustomLogos && typeof parsed.ptCustomLogos === 'object') {
-            Object.keys(parsed.ptCustomLogos).forEach(code => {
-              if (parsed.ptCustomLogos[code] && !ptCustomLogos[code]) {
-                ptCustomLogos[code] = parsed.ptCustomLogos[code];
-              }
-            });
+        const candidateKeys = [
+          STORAGE_KEY,
+          'ticketing_pvr_mining_v4',
+          'ticketing_pvr_mining_v3',
+          'ticketing_pvr_mining_v2',
+          'ticketing_pvr_mining_v1'
+        ];
+        try {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && /ticketing_pvr|ga_portal/i.test(k) && !candidateKeys.includes(k)) {
+              candidateKeys.push(k);
+            }
           }
-          opsGelRecords = Array.isArray(parsed.opsGelRecords) ? parsed.opsGelRecords : [];
-          stnkRecords = Array.isArray(parsed.stnkRecords) ? parsed.stnkRecords : [];
-          sewaLvRecords = Array.isArray(parsed.sewaLvRecords) ? parsed.sewaLvRecords : [];
-          ktpRecords = Array.isArray(parsed.ktpRecords) ? parsed.ktpRecords : [];
-          pvrStateByPt = parsed.pvrStateByPt || {};
-          if (parsed.cateringTowerState && typeof parsed.cateringTowerState === 'object') {
-            cateringTowerState = {
-              ...cateringTowerState,
-              ...parsed.cateringTowerState,
-              sites: Array.isArray(parsed.cateringTowerState.sites) && parsed.cateringTowerState.sites.length
-                ? parsed.cateringTowerState.sites
-                : cateringTowerState.sites,
-              reports: Array.isArray(parsed.cateringTowerState.reports)
-                ? parsed.cateringTowerState.reports
-                : cateringTowerState.reports,
-              entriesByTab: {
-                ...cateringTowerState.entriesByTab,
-                ...(parsed.cateringTowerState.entriesByTab || {})
-              },
-              auditLogs: Array.isArray(parsed.cateringTowerState.auditLogs)
-                ? parsed.cateringTowerState.auditLogs
-                : cateringTowerState.auditLogs
-            };
-          }
-        }
+        } catch (e) {}
+
+        const seenRecIds = new Set();
+        const seenKtpNiks = new Set();
+        const seenOpsIds = new Set();
+        const seenStnkIds = new Set();
+        const seenSewaIds = new Set();
+
+        candidateKeys.forEach(k => {
+          const raw = localStorage.getItem(k);
+          if (!raw) return;
+          try {
+            const parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== 'object') return;
+
+            if (Array.isArray(parsed.records)) {
+              parsed.records.forEach(r => {
+                const key = r?.id || `${r?.invoice}-${r?.nama}-${r?.tanggalOrder}`;
+                if (r && !seenRecIds.has(key)) {
+                  seenRecIds.add(key);
+                  records.push(r);
+                }
+              });
+            }
+            if (parsed.ptCustomLogos && typeof parsed.ptCustomLogos === 'object') {
+              Object.keys(parsed.ptCustomLogos).forEach(code => {
+                if (parsed.ptCustomLogos[code] && !ptCustomLogos[code]) {
+                  ptCustomLogos[code] = parsed.ptCustomLogos[code];
+                }
+              });
+            }
+            if (Array.isArray(parsed.opsGelRecords)) {
+              parsed.opsGelRecords.forEach(o => {
+                const key = o?.id || `${o?.date}-${o?.applicant}-${o?.total}`;
+                if (o && !seenOpsIds.has(key)) {
+                  seenOpsIds.add(key);
+                  opsGelRecords.push(o);
+                }
+              });
+            }
+            if (Array.isArray(parsed.stnkRecords)) {
+              parsed.stnkRecords.forEach(s => {
+                const key = s?.id || `${s?.nopol}-${s?.dueDate}`;
+                if (s && !seenStnkIds.has(key)) {
+                  seenStnkIds.add(key);
+                  stnkRecords.push(s);
+                }
+              });
+            }
+            if (Array.isArray(parsed.sewaLvRecords)) {
+              parsed.sewaLvRecords.forEach(lv => {
+                const key = lv?.id || `${lv?.noPo}-${lv?.unit}`;
+                if (lv && !seenSewaIds.has(key)) {
+                  seenSewaIds.add(key);
+                  sewaLvRecords.push(lv);
+                }
+              });
+            }
+            if (Array.isArray(parsed.ktpRecords)) {
+              parsed.ktpRecords.forEach(ktp => {
+                const key = ktp?.nik || ktp?.id;
+                if (ktp && !seenKtpNiks.has(key)) {
+                  seenKtpNiks.add(key);
+                  ktpRecords.push(ktp);
+                }
+              });
+            }
+            if (parsed.pvrStateByPt && typeof parsed.pvrStateByPt === 'object') {
+              pvrStateByPt = { ...parsed.pvrStateByPt, ...pvrStateByPt };
+            }
+            if (parsed.cateringTowerState && typeof parsed.cateringTowerState === 'object') {
+              cateringTowerState = {
+                ...cateringTowerState,
+                ...parsed.cateringTowerState,
+                sites: Array.isArray(parsed.cateringTowerState.sites) && parsed.cateringTowerState.sites.length
+                  ? parsed.cateringTowerState.sites
+                  : cateringTowerState.sites,
+                reports: Array.isArray(parsed.cateringTowerState.reports) && parsed.cateringTowerState.reports.length
+                  ? parsed.cateringTowerState.reports
+                  : cateringTowerState.reports,
+                entriesByTab: {
+                  ...cateringTowerState.entriesByTab,
+                  ...(parsed.cateringTowerState.entriesByTab || {})
+                },
+                auditLogs: Array.isArray(parsed.cateringTowerState.auditLogs) && parsed.cateringTowerState.auditLogs.length
+                  ? parsed.cateringTowerState.auditLogs
+                  : cateringTowerState.auditLogs
+              };
+            }
+          } catch (parseErr) {}
+        });
       } catch (e) {
         console.warn('loadStorage fallback:', e);
       }
@@ -3520,6 +3641,7 @@
             : 'px-4 py-2 rounded-xl text-xs font-bold transition text-amber-950 hover:bg-white/80 flex items-center gap-1.5';
         }
       });
+      if (tabName === 'pvr') requestAnimationFrame(fitPvrSheetsToViewport);
     }
 
     function addPassengerRow(defaultData = {}) {
@@ -3628,32 +3750,21 @@
       if (!tbody) return;
       tbody.innerHTML = opsGelRecords.map((r, i) => `
         <tr class="hover:bg-slate-50">
-          <td class="py-2.5 px-3">${i + 1}</td>
-          <td class="py-2.5 px-3">${formatDateShort(r.date)}</td>
-          <td class="py-2.5 px-3 font-bold">GEL</td>
-          <td class="py-2.5 px-3">
+          <td class="py-2 px-2.5">${i + 1}</td>
+          <td class="py-2 px-2.5">${formatDateShort(r.date)}</td>
+          <td class="py-2 px-2.5">
             <div class="font-bold text-slate-900">${escapeHtml(r.applicant)}</div>
-            <div class="text-[10px] text-slate-500">${escapeHtml(r.kategori || '')}</div>
+            <div class="text-[10px] text-slate-500">${escapeHtml(r.kategori || '')} (${Array.isArray(r.items) ? r.items.length + ' item' : '1 item'})</div>
           </td>
-          <td class="py-2.5 px-3">
-            <div class="font-semibold text-slate-800">${escapeHtml(r.title || r.kategori)}</div>
-            <div class="text-[10px] text-blue-700 font-bold">${Array.isArray(r.items) ? r.items.length + ' item rincian' : '1 item'}</div>
-          </td>
-          <td class="py-2.5 px-3 text-[11px]">
-            <div class="font-mono font-bold">${escapeHtml(r.rekNo)}</div>
-            <div class="text-slate-500">${escapeHtml(r.rekName || '')} (${escapeHtml(r.rekBank || '')})</div>
-          </td>
-          <td class="py-2.5 px-3 text-right font-black text-emerald-800">${formatRupiah(r.total)}</td>
-          <td class="py-2.5 px-3 font-mono text-[11px]">${escapeHtml(r.noGr || '-')}</td>
-          <td class="py-2.5 px-3 font-bold text-emerald-700">Saved</td>
-          <td class="py-2.5 px-3 text-center">
+          <td class="py-2 px-2.5 text-right font-black text-emerald-800">${formatRupiah(r.total)}</td>
+          <td class="py-2 px-2.5 text-center">
             <div class="flex items-center justify-center gap-1">
-              <button type="button" onclick="renderOpsGelPvrSheet(${i})" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-extrabold">Buka PVR</button>
+              <button type="button" onclick="renderOpsGelPvrSheet(${i})" class="px-2 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-extrabold">Buka PVR</button>
               <button type="button" onclick="opsGelRecords.splice(${i},1);saveStorage();renderOpsGelTable();renderOpsGelPvrSheet(0);" class="px-2 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
             </div>
           </td>
         </tr>
-      `).join('') || `<tr><td colspan="10" class="py-6 text-center text-slate-400">Belum ada pengajuan Operasional PT GEL.</td></tr>`;
+      `).join('') || `<tr><td colspan="5" class="py-6 text-center text-slate-400">Belum ada pengajuan Operasional PT GEL.</td></tr>`;
       renderOpsGelPvrSheet(0);
     }
 
@@ -4407,7 +4518,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
     function preprocessKtpImageForOcr(imgElement) {
       const natW = imgElement.naturalWidth || 1500;
       const natH = imgElement.naturalHeight || 950;
-      const targetW = Math.max(1600, Math.min(2400, natW));
+      const targetW = Math.max(1800, Math.min(2600, natW));
       const scale = targetW / natW;
 
       const canvas = document.createElement('canvas');
@@ -4419,17 +4530,18 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const d = imgData.data;
       for (let i = 0; i < d.length; i += 4) {
-        const gray = 0.42 * d[i] + 0.45 * d[i + 1] + 0.13 * d[i + 2];
-        const boosted = gray < 122 ? Math.max(0, gray * 0.28) : Math.min(255, gray * 1.42);
+        // KTP Indonesia berlatar biru muda: saluran merah (R) memberi kontras tertinggi terhadap teks hitam
+        const gray = 0.55 * d[i] + 0.35 * d[i + 1] + 0.10 * d[i + 2];
+        const boosted = gray < 128 ? Math.max(0, gray * 0.22) : Math.min(255, 185 + (gray - 128) * 0.6);
         d[i] = d[i + 1] = d[i + 2] = boosted;
       }
       ctx.putImageData(imgData, 0, 0);
 
       const textCropCanvas = document.createElement('canvas');
-      textCropCanvas.width = Math.round(canvas.width * 0.72);
-      textCropCanvas.height = Math.round(canvas.height * 0.56);
+      textCropCanvas.width = Math.round(canvas.width * 0.74);
+      textCropCanvas.height = Math.round(canvas.height * 0.62);
       const tctx = textCropCanvas.getContext('2d');
-      tctx.drawImage(canvas, 0, Math.round(canvas.height * 0.12), textCropCanvas.width, textCropCanvas.height, 0, 0, textCropCanvas.width, textCropCanvas.height);
+      tctx.drawImage(canvas, 0, Math.round(canvas.height * 0.10), textCropCanvas.width, textCropCanvas.height, 0, 0, textCropCanvas.width, textCropCanvas.height);
 
       const faceCanvas = document.createElement('canvas');
       const fw = Math.round(natW * 0.27);
@@ -5145,6 +5257,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       const desk = `Pengajuan Pembayaran Tiket & Akomodasi PT ${pt} — ${divLabel} (${ptItems.length} Transaksi UNPAID)`;
       if (!customPvrDeskripsiEdited) setElVal('pvrDeskripsiInput', desk);
       setElText('docDeskripsiText', getElVal('pvrDeskripsiInput', desk));
+      requestAnimationFrame(fitPvrSheetsToViewport);
     }
 
     function addManualPvrLine() {
@@ -5232,9 +5345,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           }).join(' & ')
         : 'Karyawan';
 
-      const prefixNum = vendor === 'Tiket.com'
-        ? (invoice || receipt)
-        : (receipt || invoice);
+      const prefixNum = vendor === 'Tiket.com' ? (invoice || receipt) : (receipt || invoice);
       const prefixHead = prefixNum ? `${prefixNum} - ` : '';
 
       const expandRoute = rawRute => {
@@ -5372,8 +5483,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
 
     function onPtChange() { refreshFormDerivedOutputs(); }
     function onPaymentMethodChange() {
-      const pay = getElVal('fPayment', 'DC BNI Pak Tony');
-      setElVal('fTujuan', pay);
+      setElVal('fTujuan', getElVal('fPayment', 'DC BNI Pak Tony'));
       refreshFormDerivedOutputs();
     }
 
@@ -5386,17 +5496,21 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
     }
 
     async function extractTextFromPdfFile(file) {
-      if (!file || typeof pdfjsLib === 'undefined') return '';
+      if (!file) return '';
+      if (typeof pdfjsLib === 'undefined') {
+        showToast('Library PDF.js sedang dimuat, tunggu 2 detik lalu unggah ulang.', 'warning');
+        return '';
+      }
       try {
-        if (pdfjsLib.GlobalWorkerOptions && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+        if (pdfjsLib.GlobalWorkerOptions) {
           pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
         const buf = await file.arrayBuffer();
         let pdf;
         try {
-          pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+          pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
         } catch (workerErr) {
-          pdf = await pdfjsLib.getDocument({ data: buf, disableWorker: true }).promise;
+          pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf), disableWorker: true }).promise;
         }
         let fullText = '';
         for (let p = 1; p <= pdf.numPages; p++) {
@@ -5414,12 +5528,12 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
             fullText += rowStr + '\n';
           });
         }
-        if (fullText.replace(/\s+/g, '').length < 25 && typeof Tesseract !== 'undefined') {
-          const maxPagesOcr = Math.min(pdf.numPages, 2);
+        if (fullText.replace(/\s+/g, '').length < 30 && typeof Tesseract !== 'undefined') {
+          const maxPagesOcr = Math.min(pdf.numPages, 3);
           let ocrCombined = '';
           for (let p = 1; p <= maxPagesOcr; p++) {
             const page = await pdf.getPage(p);
-            const vp = page.getViewport({ scale: 2.0 });
+            const vp = page.getViewport({ scale: 2.2 });
             const canvas = document.createElement('canvas');
             canvas.width = vp.width;
             canvas.height = vp.height;
@@ -5461,8 +5575,8 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       };
 
       for (const code of Object.keys(PT_FULL_INFO)) {
-        const re = new RegExp(`\\b${code}\\b`, 'i');
-        if (re.test(combined)) {
+        const fullNm = PT_FULL_INFO[code].fullName.replace(/^PT\.?\s*/i, '');
+        if (new RegExp(`\\b${code}\\b`, 'i').test(combined) || (fullNm.length > 6 && upper.includes(fullNm.toUpperCase()))) {
           parsed.pt = code;
           break;
         }
@@ -5475,19 +5589,21 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       else if (/LION\s*AIR/i.test(combined)) parsed.maskapai = 'Lion Air';
       else if (/SRIWIJAYA/i.test(combined)) parsed.maskapai = 'Sriwijaya Air';
       else if (/PELITA\s*AIR/i.test(combined)) parsed.maskapai = 'Pelita Air';
+      else if (/WINGS\s*AIR/i.test(combined)) parsed.maskapai = 'Wings Air';
+      else if (/NAM\s*AIR/i.test(combined)) parsed.maskapai = 'NAM Air';
       else if (/KERETA\s*API|\bKAI\b/i.test(combined) && !/GARUDA|LION|BATIK|CITILINK|SUPER\s*AIR/i.test(combined)) {
         parsed.jenis = 'TRAIN';
         parsed.maskapai = 'PT Kereta Api Indonesia (KAI)';
-      } else if (/VOUCHER\s*HOTEL|CHECK[\s-]*IN|HOTEL\s*RESERVATION|BUKTI\s*PEMBAYARAN\s*HOTEL/i.test(combined) && !/GARUDA|LION|BATIK|CITILINK|SUPER\s*AIR/i.test(combined)) {
+      } else if (/VOUCHER\s*HOTEL|CHECK[\s-]*IN|HOTEL\s*RESERVATION|BUKTI\s*PEMBAYARAN\s*HOTEL|HOTEL\s*VOUCHER/i.test(combined) && !/GARUDA|LION|BATIK|CITILINK|SUPER\s*AIR/i.test(combined)) {
         parsed.jenis = 'HOTEL';
-        const hotelLine = lines.find(l => /HOTEL|SWISS-BEL|ASTON|HARRIS|MERCURE|NOVOTEL|IBIS|SANTIKA|FAVEHOTEL|GRAND|PREMIERE|ARYADUTA/i.test(l) && !/BUKTI|PEMBAYARAN|VOUCHER|ORDER|RECEIPT/i.test(l));
+        const hotelLine = lines.find(l => /HOTEL|SWISS-BEL|ASTON|HARRIS|MERCURE|NOVOTEL|IBIS|SANTIKA|FAVEHOTEL|GRAND|PREMIERE|ARYADUTA|WHIZ|POP!|ZEST|AMARIS/i.test(l) && !/BUKTI|PEMBAYARAN|VOUCHER|ORDER|RECEIPT|DETAIL/i.test(l));
         if (hotelLine) parsed.maskapai = hotelLine.replace(/\s+/g, ' ').trim();
       }
 
       const fnMatch = combined.match(/\b(GA|ID|IU|QG|JT|SJ|IP|IN|IW)[-\s]?(\d{2,4})\b/i);
       if (fnMatch) parsed.flightNo = `${fnMatch[1].toUpperCase()}-${fnMatch[2]}`;
 
-      const pnrBlacklist = /^(?:CODE|NUMBER|NOMOR|ID|BOOKING|FLIGHT|TICKET|STATUS|REFUND|ADULT|DEWASA|TRAVEL|CLASS|CABIN|ECONOMY|BUSINESS|PASSENGER|ISSUED|DATE|TIME)$/i;
+      const pnrBlacklist = /^(?:CODE|NUMBER|NOMOR|ID|BOOKING|FLIGHT|TICKET|STATUS|REFUND|ADULT|DEWASA|TRAVEL|CLASS|CABIN|ECONOMY|BUSINESS|PASSENGER|ISSUED|DATE|TIME|ONLINE|CHECK|DIRECT|NONSTOP)$/i;
       const pnrInline = combined.match(/(?:PNR|AIRLINE\s*BOOKING\s*CODE|BOOKING\s*(?:CODE|ID)|KODE\s*BOOKING)\s*(?:\(PNR\))?\s*[:#\-]?\s*([A-Z0-9]{5,7})\b/i);
       if (pnrInline && !pnrBlacklist.test(pnrInline[1]) && /[A-Z]/i.test(pnrInline[1])) {
         parsed.pnr = pnrInline[1].toUpperCase();
@@ -5505,7 +5621,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         }
       }
 
-      const iataBlacklist = new Set(['MR', 'MRS', 'MDF', 'EPM', 'GEL', 'GSM', 'GSJ', 'KMC', 'QIN', 'SIP', 'TER', 'KKS', 'ARC', 'PNR', 'PDF', 'JAN', 'FEB', 'MAR', 'APR', 'MEI', 'MAY', 'JUN', 'JUL', 'AGU', 'AUG', 'SEP', 'OKT', 'OCT', 'NOV', 'DES', 'DEC', 'WIB', 'WITA', 'WIT', 'IDR', 'TAX', 'PPN', 'PPH', 'GA', 'JT', 'QG', 'ID', 'IU', 'VIA', 'NON', 'ALL', 'FOR', 'THE', 'AND', 'PER', 'DIN', 'KTT', 'HO']);
+      const iataBlacklist = new Set(['MR', 'MRS', 'MDF', 'EPM', 'GEL', 'GSM', 'GSJ', 'KMC', 'QIN', 'SIP', 'TER', 'KKS', 'ARC', 'PNR', 'PDF', 'JAN', 'FEB', 'MAR', 'APR', 'MEI', 'MAY', 'JUN', 'JUL', 'AGU', 'AUG', 'SEP', 'OKT', 'OCT', 'NOV', 'DES', 'DEC', 'WIB', 'WITA', 'WIT', 'IDR', 'TAX', 'PPN', 'PPH', 'GA', 'JT', 'QG', 'ID', 'IU', 'VIA', 'NON', 'ALL', 'FOR', 'THE', 'AND', 'PER', 'DIN', 'KTT', 'HO', 'NIK', 'KTP']);
       const iataMatches = [...upper.matchAll(/\b([A-Z]{3})\s*(?:-|–|—|→|TO|KE|\s+-\s+)\s*([A-Z]{3})\b/g)];
       for (const m of iataMatches) {
         if (!iataBlacklist.has(m[1]) && !iataBlacklist.has(m[2]) && m[1] !== m[2]) {
@@ -5513,96 +5629,33 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           break;
         }
       }
-      if (!parsed.rute) {
-        const cityToIata = {
-          JAKARTA: 'CGK', CENGKARENG: 'CGK', SOEKARNO: 'CGK',
-          PONTIANAK: 'PNK', SUPADIO: 'PNK',
-          PEKANBARU: 'PKU', PALEMBANG: 'PLM', BALIKPAPAN: 'BPN', BANJARMASIN: 'BDJ',
-          SURABAYA: 'SUB', MEDAN: 'KNO', PADANG: 'PDG', JAMBI: 'DJB',
-          BENGKULU: 'BKS', LAMPUNG: 'TKG', MAKASSAR: 'UPG', MANADO: 'MDC',
-          DENPASAR: 'DPS', YOGYAKARTA: 'YIA', SEMARANG: 'SRG', BATAM: 'BTH',
-          'TANJUNG PINANG': 'TNJ', SAMARINDA: 'AAP', BERAU: 'BEJ', TARAKAN: 'TRK'
-        };
-        const foundCities = [];
-        const cityRegex = new RegExp(`\\b(${Object.keys(cityToIata).join('|')})\\b`, 'g');
-        for (const cm of upper.matchAll(cityRegex)) {
-          const code = cityToIata[cm[1]];
-          if (code && (!foundCities.length || foundCities[foundCities.length - 1] !== code)) {
-            foundCities.push(code);
-          }
-          if (foundCities.length >= 2) break;
-        }
-        if (foundCities.length >= 2) {
-          parsed.rute = `${foundCities[0]} - ${foundCities[1]}`;
-        } else if (foundCities.length === 1 && parsed.jenis === 'HOTEL') {
-          parsed.rute = IATA_CITY_MAP[foundCities[0]]?.name || foundCities[0];
-        }
-      }
 
       if (parsed.vendor === 'Tiket.com') {
-        let tiketOrderId = '';
         const orderMatch = combined.match(/ORDER\s*ID\s*[:#\-]?\s*#?\s*(\d{7,15})\b/i);
         if (orderMatch) {
-          tiketOrderId = orderMatch[1];
-        } else {
-          for (let i = 0; i < lines.length; i++) {
-            if (/ORDER\s*ID|NO\.?\s*PESANAN|INVOICE/i.test(lines[i])) {
-              const win = `${lines[i]} ${lines[i + 1] || ''}`;
-              const m = win.match(/#?\s*(\d{7,15})\b/);
-              if (m) { tiketOrderId = m[1]; break; }
-            }
-          }
-        }
-        if (tiketOrderId) {
-          parsed.invoice = tiketOrderId;
-          parsed.receiptCode = tiketOrderId;
+          parsed.invoice = orderMatch[1];
+          parsed.receiptCode = orderMatch[1];
         }
       } else {
-        let trvBookingId = '';
         const trvBookMatch = combined.match(/(?:TRAVELOKA\s*BOOKING\s*ID|NO\.?\s*PESANAN\s*TRAVELOKA|BOOKING\s*ID|NO\.?\s*PESANAN)\s*[:#\-]?\s*#?\s*(\d{8,14})\b/i);
-        if (trvBookMatch) {
-          trvBookingId = trvBookMatch[1];
-        } else {
-          for (let i = 0; i < lines.length; i++) {
-            if (/TRAVELOKA\s*BOOKING\s*ID|NO\.?\s*PESANAN\s*TRAVELOKA|BOOKING\s*ID/i.test(lines[i])) {
-              const win = `${lines[i]} ${lines[i + 1] || ''} ${lines[i + 2] || ''}`;
-              const m = win.match(/\b(\d{8,14})\b/);
-              if (m) { trvBookingId = m[1]; break; }
-            }
-          }
-        }
-        if (!trvBookingId) {
+        if (trvBookMatch) parsed.invoice = trvBookMatch[1];
+        else {
           const fallbackInv = combined.match(/\b(1\d{8,11})\b/);
-          if (fallbackInv) trvBookingId = fallbackInv[1];
+          if (fallbackInv) parsed.invoice = fallbackInv[1];
         }
-        if (trvBookingId) parsed.invoice = trvBookingId;
-
-        let trvReceipt19 = '';
-        const rec19LabelMatch = combined.match(/(?:NUMBER|NOMOR|RECEIPT)\s*[:#\-]?\s*#?\s*(\d{19})\b/i);
-        if (rec19LabelMatch) {
-          trvReceipt19 = rec19LabelMatch[1];
-        } else {
-          const any19Match = combined.match(/#?\b(\d{19})\b/);
-          if (any19Match) trvReceipt19 = any19Match[1];
-        }
-        if (trvReceipt19) parsed.receiptCode = trvReceipt19;
+        const rec19LabelMatch = combined.match(/(?:NUMBER|NOMOR|RECEIPT)\s*[:#\-]?\s*#?\s*(\d{19})\b/i) || combined.match(/#?\b(\d{19})\b/);
+        if (rec19LabelMatch) parsed.receiptCode = rec19LabelMatch[1];
       }
 
       const monthMap = {
-        JAN: '01', JANUARI: '01', JANUARY: '01',
-        FEB: '02', FEBRUARI: '02', FEBRUARY: '02',
-        MAR: '03', MARET: '03', MARCH: '03',
-        APR: '04', APRIL: '04',
-        MEI: '05', MAY: '05',
-        JUN: '06', JUNI: '06', JUNE: '06',
-        JUL: '07', JULI: '07', JULY: '07',
-        AGU: '08', AGUSTUS: '08', AUG: '08', AUGUST: '08',
-        SEP: '09', SEPTEMBER: '09',
-        OKT: '10', OKTOBER: '10', OCT: '10', OCTOBER: '10',
-        NOV: '11', NOVEMBER: '11',
+        JAN: '01', JANUARI: '01', JANUARY: '01', FEB: '02', FEBRUARI: '02', FEBRUARY: '02',
+        MAR: '03', MARET: '03', MARCH: '03', APR: '04', APRIL: '04', MEI: '05', MAY: '05',
+        JUN: '06', JUNI: '06', JUNE: '06', JUL: '07', JULI: '07', JULY: '07',
+        AGU: '08', AGUSTUS: '08', AUG: '08', AUGUST: '08', SEP: '09', SEPTEMBER: '09',
+        OKT: '10', OKTOBER: '10', OCT: '10', OCTOBER: '10', NOV: '11', NOVEMBER: '11',
         DES: '12', DESEMBER: '12', DEC: '12', DECEMBER: '12'
       };
-      const orderDateMatch = combined.match(/(?:DATE|TANGGAL)\s*[:\-]\s*(\d{1,2})\s+(JAN(?:UARI|UARY)?|FEB(?:RUARI|RUARY)?|MAR(?:ET|CH)?|APR(?:IL)?|MEI|MAY|JUN(?:I|E)?|JUL(?:I|Y)?|AGU(?:STUS)?|AUG(?:UST)?|SEP(?:TEMBER)?|OKT(?:OBER)?|OCT(?:OBER)?|NOV(?:EMBER)?|DES(?:EMBER)?|DEC(?:EMBER)?)\s+(202\d)/i);
+      const orderDateMatch = combined.match(/(?:DATE|TANGGAL|TGL\s*ORDER)\s*[:\-]\s*(\d{1,2})\s+(JAN(?:UARI|UARY)?|FEB(?:RUARI|RUARY)?|MAR(?:ET|CH)?|APR(?:IL)?|MEI|MAY|JUN(?:I|E)?|JUL(?:I|Y)?|AGU(?:STUS)?|AUG(?:UST)?|SEP(?:TEMBER)?|OKT(?:OBER)?|OCT(?:OBER)?|NOV(?:EMBER)?|DES(?:EMBER)?|DEC(?:EMBER)?)\s+(202\d)/i);
       if (orderDateMatch) {
         parsed.tanggalOrder = `${orderDateMatch[3]}-${monthMap[orderDateMatch[2].toUpperCase()] || '01'}-${String(orderDateMatch[1]).padStart(2, '0')}`;
       }
@@ -5617,9 +5670,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         const flightDates = uniqueDates.filter(d => d !== parsed.tanggalOrder);
         const targetDates = flightDates.length ? flightDates : uniqueDates;
         parsed.departDate = targetDates[0];
-        if (targetDates.length > 1 && targetDates[1] > targetDates[0]) {
-          parsed.returnDate = targetDates[1];
-        }
+        if (targetDates.length > 1 && targetDates[1] > targetDates[0]) parsed.returnDate = targetDates[1];
       }
 
       const receiptPayMatch = combined.match(/(?:TOTAL\s*PAYMENT|TOTAL\s*PEMBAYARAN|AMOUNT\s*PAID|TOTAL\s*BAYAR)\s*[:\-]?\s*(?:RP\.?|IDR)?\s*([\d]{1,3}(?:[.,]\d{3})+)/i);
@@ -5637,28 +5688,35 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       const jabMatch = combined.match(/(?:JABATAN|POSITION|DIVISI\s*\/\s*JABATAN)\s*[:\-]\s*([A-Z0-9\s\/&().-]{2,45}?)(?=\r?\n|NIK|DEPARTEMEN|TUJUAN|KEPERLUAN|TANGGAL|$)/i);
       if (jabMatch) {
         const cleanJab = jabMatch[1].replace(/\s+/g, ' ').trim();
-        if (cleanJab && !/^(?:NAMA|NIK|TANGGAL|TUJUAN)$/i.test(cleanJab)) {
-          docJabatan = cleanJab;
-        }
+        if (cleanJab && !/^(?:NAMA|NIK|TANGGAL|TUJUAN)$/i.test(cleanJab)) docJabatan = cleanJab;
       }
 
-      const paxMatches = [...combined.matchAll(/\b(MR|MRS|MS|TUAN|NYONYA)\.?\s+([A-Z][A-Z\s'.]{3,40}?)(?=\s*(?:\(|,|\n|\d|NIK|JABATAN|DIVISI|DEPART|FLIGHT|ETICKET|$))/gi)];
       const seen = new Set();
+      const pushPassenger = (title, rawName, roleOverride = '') => {
+        const name = String(rawName || '').replace(/\s+/g, ' ').trim().toUpperCase();
+        if (name.length >= 4 && !seen.has(name) && !/GARUDA|INDONESIA|TRAVELOKA|PERDIN|FORM|SURAT|GLOBAL|ENERGI|LESTARI|PERJALANAN|DINAS|TANGGAL|JABATAN|DIVISI/.test(name)) {
+          seen.add(name);
+          const ktpMatch = ktpRecords.find(k => k.nama === name);
+          parsed.passengers.push({
+            title: ktpMatch ? (ktpMatch.gender === 'PEREMPUAN' ? 'Mrs.' : 'Mr.') : title,
+            name,
+            role: roleOverride || docJabatan || (ktpMatch?.role || (ktpMatch?.nik ? `NIK: ${ktpMatch.nik}` : ''))
+          });
+          if (!parsed.pt && ktpMatch?.pt) parsed.pt = ktpMatch.pt;
+        }
+      };
+
+      const paxMatches = [...combined.matchAll(/\b(MR|MRS|MS|TUAN|NYONYA)\.?\s+([A-Z][A-Z\s'.]{3,40}?)(?=\s*(?:\(|,|\n|\d|NIK|JABATAN|DIVISI|DEPART|FLIGHT|ETICKET|$))/gi)];
       paxMatches.forEach(m => {
         const rawT = m[1].toUpperCase();
         const title = (rawT === 'MRS' || rawT === 'NYONYA') ? 'Mrs.' : (rawT === 'MS' ? 'Ms.' : 'Mr.');
-        const name = m[2].replace(/\s+/g, ' ').trim().toUpperCase();
-        if (name.length >= 4 && !seen.has(name) && !/GARUDA|INDONESIA|TRAVELOKA|PERDIN|FORM|SURAT|GLOBAL|ENERGI|LESTARI/.test(name)) {
-          seen.add(name);
-          parsed.passengers.push({ title, name, role: docJabatan });
-        }
+        pushPassenger(title, m[2]);
       });
 
-      if (!parsed.passengers.length && fileName) {
-        const fnName = fileName.replace(/\.pdf$/i, '').replace(/^(?:FORM\s*PERDIN|SURAT\s*CUTI|ETICKET|RECEIPT)\s*[-–]\s*/i, '').split(/[-–]/)[0].trim().toUpperCase();
-        if (fnName.length >= 4 && /^[A-Z\s'.]+$/.test(fnName) && !/^(?:CC|GRD|MDF|EPM|GEL|GSM)/.test(fnName)) {
-          parsed.passengers.push({ title: 'Mr.', name: fnName, role: docJabatan });
-        }
+      // Fallback pembacaan Nama dari Surat Perdin / Cuti Roster yang tidak memakai Mr./Mrs.
+      if (!parsed.passengers.length) {
+        const perdinNameMatches = [...combined.matchAll(/(?:NAMA\s*(?:KARYAWAN|PEMOHON|PENUMPANG)?|PASSENGER\s*NAME)\s*[:\-]\s*([A-Z][A-Z\s'.]{3,40}?)(?=\r?\n|NIK|JABATAN|DIVISI|PT|DEPARTEMEN|$)/gi)];
+        perdinNameMatches.forEach(m => pushPassenger('Mr.', m[1]));
       }
 
       return parsed;
@@ -5685,15 +5743,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         const box = getEl('passengerRowsContainer');
         if (box) {
           box.innerHTML = '';
-          parsed.passengers.forEach(p => {
-            const matchedKtp = ktpRecords.find(k => k.nama && p.name && k.nama.toUpperCase() === p.name.toUpperCase());
-            const resolvedTitle = matchedKtp ? (matchedKtp.gender === 'PEREMPUAN' ? 'Mrs.' : 'Mr.') : p.title;
-            const resolvedRole = p.role || (matchedKtp ? (matchedKtp.role || (matchedKtp.nik ? `NIK: ${matchedKtp.nik}` : '')) : '');
-            if (matchedKtp && matchedKtp.pt && PT_FULL_INFO[matchedKtp.pt]) {
-              setElVal('fPt', matchedKtp.pt);
-            }
-            addPassengerRow({ title: resolvedTitle, name: p.name, role: resolvedRole });
-          });
+          parsed.passengers.forEach(p => addPassengerRow(p));
         }
       }
       customPvrTextEdited = false;
@@ -5711,11 +5761,8 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         for (const file of list) {
           const text = await extractTextFromPdfFile(file);
           const parsed = parseTravelPdfText(text, file.name);
-          if (slotNum === 3) {
-            pairedSlots[3].push(parsed);
-          } else {
-            pairedSlots[slotNum] = parsed;
-          }
+          if (slotNum === 3) pairedSlots[3].push(parsed);
+          else pairedSlots[slotNum] = parsed;
           pdfQueue.push(parsed);
         }
 
@@ -5752,7 +5799,6 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         setElText('pairedSlotStatusText', `Terbaca (${allParsed.length} dok): ${list[list.length - 1].name}`);
         showToast(`Dokumen Slot 0${slotNum} berhasil dibaca & digabungkan ke form.`, 'success');
       } catch (err) {
-        console.error('Slot upload error:', err);
         setElText('pairedSlotStatusText', 'Gagal membaca PDF. Coba lagi.');
         showToast('Terjadi kendala saat membaca file PDF.', 'error');
       } finally {
@@ -5810,19 +5856,12 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           if (p.returnDate) mergedData.returnDate = p.returnDate;
           if (p.invoice) mergedData.invoice = p.invoice;
           if (p.receiptCode) mergedData.receiptCode = p.receiptCode;
-          if (/RECEIPT|ETICKET|E-TICKET|CC\s|GRD/i.test(file.name) && p.nominal > 0) {
-            mergedData.nominal = p.nominal;
-          } else if (!mergedData.nominal && p.nominal > 0) {
-            mergedData.nominal = p.nominal;
-          }
+          if (p.nominal > 0) mergedData.nominal = p.nominal;
         }
         (p.passengers || []).forEach(px => {
           const existing = mergedPaxMap.get(px.name);
-          if (!existing) {
-            mergedPaxMap.set(px.name, { ...px });
-          } else if (!existing.role && px.role) {
-            existing.role = px.role;
-          }
+          if (!existing) mergedPaxMap.set(px.name, { ...px });
+          else if (!existing.role && px.role) existing.role = px.role;
         });
       }
 
@@ -5847,7 +5886,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
           id: 'REC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
           tanggalOrder: p.tanggalOrder || getTodayIso(),
           issueTime: '11:00',
-          divisi: 'GA',
+          divisi: p.divisi || 'GA',
           jenis: p.jenis || 'FLIGHT',
           pt: p.pt || 'EPM',
           keperluan: p.keperluan || 'Perdin',
@@ -5897,13 +5936,13 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         setElVal('lvTanggalPo', getTodayIso());
         setElVal('opsDate', getTodayIso());
         setElVal('stnkDueDate', getTodayIso());
+        onOpsKategoriChange();
         if (getEl('passengerRowsContainer') && !getEl('passengerRowsContainer').children.length) {
           addPassengerRow();
         }
         if (getEl('opsInputItemsBody') && !getEl('opsInputItemsBody').children.length) {
           addOpsInputRow();
         }
-        onOpsKategoriChange();
         recalculateMova();
         refreshFormDerivedOutputs();
         renderRekapTable();
@@ -5915,6 +5954,7 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         renderOpsGelTable();
         initGaAccessGate();
         initSupabaseCloudSync();
+        requestAnimationFrame(fitPvrSheetsToViewport);
       } catch (err) {
         console.error('Init error:', err);
       }
