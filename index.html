@@ -3301,9 +3301,17 @@
       }
       if (code === 'GEL' || code === 'GEL-PKU') {
         return `
-          <div style="display:inline-flex;flex-direction:column;align-items:flex-start;padding:2px 0;">
-            <img src="https://gelgroup.co.id/images/logo-gel.png" alt="${escapeHtml(info.fullName)}" style="height:64px;width:auto;object-fit:contain;" />
-            ${code === 'GEL-PKU' ? `<div style="font-size:8.5pt;font-weight:700;color:#78350f;margin-top:2px;">CABANG PEKANBARU • RIAU</div>` : ''}
+          <div class="inline-flex flex-col items-center justify-center text-center pb-2.5 mb-1 border-b-2 border-black min-w-[230px]">
+            <img src="https://gelgroup.co.id/images/logo-gel.png" alt="Logo GEL" onerror="this.onerror=null;this.style.display='none';" class="h-12 w-auto object-contain block mx-auto" />
+            <div class="flex items-center justify-center gap-2 w-full mt-1">
+              <span class="flex-1 h-[1.5px] bg-[#b59449]"></span>
+              <span style="font-family:'Times New Roman',Georgia,serif;color:#9a7b32;font-weight:700;font-size:10.5pt;letter-spacing:2px;">GEL</span>
+              <span class="flex-1 h-[1.5px] bg-[#b59449]"></span>
+            </div>
+            <div style="font-family:'Times New Roman',Georgia,serif;color:#9a7b32;font-weight:700;font-size:8.5pt;letter-spacing:1.6px;" class="mt-0.5 uppercase">
+              PT. GLOBAL ENERGI LESTARI
+            </div>
+            ${code === 'GEL-PKU' ? `<div style="font-size:7.5pt;font-weight:700;color:#78350f;margin-top:2px;">CABANG PEKANBARU • RIAU</div>` : ''}
           </div>
         `;
       }
@@ -4442,798 +4450,6 @@
       showToast('Database KTP berhasil diunduh ke Excel.', 'success');
     }
 
-    function onServiceTypeChange() {
-      const svc = getElVal('fJenisLayanan', 'FLIGHT');
-      setElText('lblMaskapaiHotel', svc === 'HOTEL' ? 'Nama Hotel *' : (svc === 'TRAIN' ? 'Kereta Api *' : 'Maskapai / Hotel *'));
-      setElText('lblFlightNoRoom', svc === 'HOTEL' ? 'Tipe Kamar' : 'No. Penerbangan / KA');
-      setElText('lblPnrNights', svc === 'HOTEL' ? 'Jumlah Malam' : 'Kode Booking (PNR)');
-      setElText('lblRuteDetail', svc === 'HOTEL' ? 'Kota / Lokasi Hotel *' : 'Rute Perjalanan *');
-      setElText('lblDepartCi', svc === 'HOTEL' ? 'Check-In *' : 'Depart Date *');
-      setElText('lblReturnCo', svc === 'HOTEL' ? 'Check-Out' : 'Return Date (PP)');
-      recalculateMova();
-      refreshFormDerivedOutputs();
-    }
-
-    function onPtChange() {
-      const pt = getElVal('fPt', 'EPM');
-      setElText('ptGrHint', `GR: ${pt}`);
-      refreshFormDerivedOutputs();
-    }
-
-    function onPaymentMethodChange() {
-      const pay = getElVal('fPayment', 'DC BNI Pak Tony');
-      setElVal('fTujuan', pay);
-      refreshFormDerivedOutputs();
-    }
-
-    function recalculateMova() {
-      const nom = Number(getElVal('fNominal', 0)) || 0;
-      const vendor = getElVal('fVendor', 'Traveloka');
-      const svc = getElVal('fJenisLayanan', 'FLIGHT');
-      const rate = vendor === 'Traveloka' ? (svc === 'HOTEL' ? 0.015 : 0.00135) : 0;
-      setElVal('fMova', Math.round(nom * rate));
-      setElText('movaRateHint', vendor === 'Traveloka' ? `Tarif MOVA: ${(rate * 100).toFixed(3)}% (${svc})` : 'Non-MOVA');
-    }
-
-    function applyGrTemplate() {
-      const pt = getElVal('fPt', 'EPM');
-      const m = ROMAN_MONTHS[new Date().getMonth()];
-      const y = new Date().getFullYear();
-      setElVal('fNoGr', `____/GR/${pt}/${m}/${y}`);
-      refreshFormDerivedOutputs();
-    }
-
-    function resetCustomPvrText() {
-      customPvrTextEdited = false;
-      refreshFormDerivedOutputs();
-    }
-
-    function refreshFormDerivedOutputs() {
-      const pax = getFormPassengers();
-      const nom = Number(getElVal('fNominal', 0)) || 0;
-      const count = Math.max(1, pax.length);
-      setElText('nominalPerPaxHint', `${count} Orang • @ ${formatRupiah(Math.round(nom / count))} / orang`);
-
-      if (!customPvrTextEdited) {
-        const svc = getElVal('fJenisLayanan', 'FLIGHT');
-        const maskapai = getElVal('fMaskapaiHotel', '').trim() || '-';
-        const flightNo = getElVal('fFlightNoRoom', '').trim();
-        const pnr = getElVal('fPnrNights', '').trim();
-        const rute = getElVal('fRute', '').trim() || '-';
-        const dep = formatDateIndo(getElVal('fDepartDate', getTodayIso()));
-        const kep = getElVal('fKeperluan', 'Perdin');
-        const namesStr = pax.length ? pax.map(p => `${p.title} ${p.name}`).join(', ') : '-';
-        const text = svc === 'HOTEL'
-          ? `Pembayaran Voucher Hotel ${maskapai} (${rute}), Check-In ${dep} (${pnr || '1 Malam'}) a.n. ${namesStr} — Keperluan: ${kep}.`
-          : `Pembayaran Tiket ${maskapai} ${flightNo ? '(' + flightNo + ')' : ''} Rute ${rute}, Tgl ${dep} ${pnr ? 'Kode Booking ' + pnr : ''} a.n. ${namesStr} — Keperluan: ${kep}.`;
-        setElVal('fPvrKeterangan', text);
-      }
-
-      const previewBody = getEl('livePreviewRowBody');
-      if (!previewBody) return;
-      const namaStr = pax.length ? pax.map(p => `${p.title} ${p.name}`).join(', ') : '-';
-      const mova = Number(getElVal('fMova', 0)) || 0;
-      previewBody.innerHTML = `
-        <tr>
-          <td class="border border-slate-300 px-2 py-1.5 text-center font-bold">1</td>
-          <td class="border border-slate-300 px-2 py-1.5">${formatDateShort(getElVal('fTanggalOrder'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 font-mono">${escapeHtml(getElVal('fInvoice', '-'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fPayment'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(getElVal('fPt', 'EPM'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(namaStr)}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fKeperluan'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fRute', '-'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${formatDateShort(getElVal('fDepartDate'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fMaskapaiHotel', '-'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fVendor'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 text-right font-bold">${formatNumber(nom)}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fStatusPengajuan'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fTujuan'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 font-mono">${escapeHtml(getElVal('fNoGr', '-'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(getElVal('fStatusBayar'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fStatusKet', '-'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 text-right font-bold text-emerald-700">${formatNumber(mova)}</td>
-        </tr>
-      `;
-    }
-
-    async function triggerInstallPwaApp() {
-      if (deferredPwaPrompt) {
-        deferredPwaPrompt.prompt();
-        const choice = await deferredPwaPrompt.userChoice;
-        if (choice && choice.outcome === 'accepted') {
-          deferredPwaPrompt = null;
-          showToast('Sedang memasang aplikasi GA GEL dengan Logo Resmi PT GEL...', 'success');
-        }
-        return;
-      }
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-      if (isStandalone) {
-        showToast('Aplikasi GA GEL sudah terpasang dan sedang berjalan.', 'success');
-        return;
-      }
-      const isLocal = window.location.protocol === 'file:';
-      const ua = navigator.userAgent || '';
-      const isSafariMacOrIos = /Safari/i.test(ua) && !/Chrome|Chromium|Edg/i.test(ua);
-      if (isLocal) {
-        showToast('Upload file index.html ini ke GitHub Pages terlebih dahulu agar tombol Install 1-Klik aktif di browser.', 'warning');
-      } else if (isSafariMacOrIos) {
-        showToast('Di Safari MacBook: klik File → Add to Dock... | Di iPhone: ketuk Share (↑) → Add to Home Screen.', 'info');
-      } else {
-        showToast('Klik menu browser (⋮) → "Apps" / "Cast, save, and share" → "Install GA GEL" (atau tekan Ctrl+Shift+R lalu klik ⬇ Install).', 'info');
-      }
-    }
-
-    function resetBookingForm() {
-      getEl('bookingForm')?.reset();
-      editingRecordId = null;
-      customPvrTextEdited = false;
-      setElVal('fTanggalOrder', getTodayIso());
-      setElVal('fDepartDate', getTodayIso());
-      const box = getEl('passengerRowsContainer');
-      if (box) box.innerHTML = '';
-      addPassengerRow();
-      refreshFormDerivedOutputs();
-    }
-
-    function handleSaveForm(e) {
-      e.preventDefault();
-      const pax = getFormPassengers();
-      const rec = {
-        id: editingRecordId || 'REC-' + Date.now(),
-        tanggalOrder: getElVal('fTanggalOrder', getTodayIso()),
-        issueTime: getElVal('fIssueTime', '11:00'),
-        divisi: getElVal('fDivisi', 'GA'),
-        jenisLayanan: getElVal('fJenisLayanan', 'FLIGHT'),
-        pt: getElVal('fPt', 'EPM'),
-        keperluan: getElVal('fKeperluan', 'Perdin'),
-        requestBy: getElVal('fRequestBy', '').trim(),
-        passengers: pax,
-        nama: pax.map(p => `${p.title} ${p.name}`).join(', ') || '-',
-        invoice: getElVal('fInvoice', '').trim(),
-        receiptCode: getElVal('fReceiptCode', '').trim(),
-        maskapaiHotel: getElVal('fMaskapaiHotel', '').trim(),
-        flightNoRoom: getElVal('fFlightNoRoom', '').trim(),
-        pnrNights: getElVal('fPnrNights', '').trim(),
-        rute: getElVal('fRute', '').trim(),
-        departDate: getElVal('fDepartDate', getTodayIso()),
-        returnDate: getElVal('fReturnDate', ''),
-        vendor: getElVal('fVendor', 'Traveloka'),
-        nominal: Number(getElVal('fNominal', 0)) || 0,
-        mova: Number(getElVal('fMova', 0)) || 0,
-        payment: getElVal('fPayment', 'DC BNI Pak Tony'),
-        tujuan: getElVal('fTujuan', 'DC BNI Pak Tony'),
-        statusPengajuan: getElVal('fStatusPengajuan', 'Sudah Diajukan'),
-        noGr: getElVal('fNoGr', '').trim(),
-        statusBayar: getElVal('fStatusBayar', 'UNPAID'),
-        statusKet: getElVal('fStatusKet', '').trim(),
-        pvrKeterangan: getElVal('fPvrKeterangan', '').trim(),
-        _updatedAt: Date.now()
-      };
-      if (editingRecordId) {
-        const idx = records.findIndex(x => x.id === editingRecordId);
-        if (idx >= 0) records[idx] = rec;
-      } else {
-        records.unshift(rec);
-      }
-      saveStorage();
-      resetBookingForm();
-      renderRekapTable();
-      renderPvrPreview(false);
-      showToast('Transaksi tiket & PVR berhasil disimpan permanen!', 'success');
-    }
-
-    function loadSampleMdfFromUserPdf() {
-      setElVal('fPt', 'MDF');
-      setElVal('fJenisLayanan', 'FLIGHT');
-      setElVal('fInvoice', '1411719008');
-      setElVal('fReceiptCode', '1882273426528302129');
-      setElVal('fMaskapaiHotel', 'Garuda Indonesia');
-      setElVal('fFlightNoRoom', 'GA-513');
-      setElVal('fPnrNights', '5IZNPQ');
-      setElVal('fRute', 'PNK - CGK');
-      setElVal('fNominal', 4597900);
-      const box = getEl('passengerRowsContainer');
-      if (box) box.innerHTML = '';
-      addPassengerRow({ title: 'Mr.', name: 'MOCHAMAD RIZAL', role: 'Site Manager' });
-      recalculateMova();
-      refreshFormDerivedOutputs();
-      showToast('Contoh data tiket Garuda Indonesia (MDF) dimuat ke form.', 'info');
-    }
-
-    function resetPairedSlots() {
-      pairedSlots = { 1: null, 2: null, 3: [], slot3Parsed: null };
-      setElText('slot1FileLabel', 'Flight No, PNR, Rute, Kamar');
-      setElText('slot2FileLabel', 'Order ID, Tgl Order, Total Rp');
-      setElText('slot3FileLabel', 'Ambil Jabatan & Keperluan');
-      setElText('pairedSlotStatusText', 'Status: Belum ada file dipilih');
-    }
-
-    async function extractTextFromPdfFile(file) {
-      if (!file) return '';
-      if (typeof pdfjsLib === 'undefined') {
-        throw new Error('Library PDF.js belum termuat. Periksa koneksi internet.');
-      }
-      const buf = await file.arrayBuffer();
-      let pdf;
-      try {
-        pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
-      } catch (workerErr) {
-        // Fallback tanpa web worker jika diblokir oleh sandbox / CSP / offline
-        pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf), disableWorker: true }).promise;
-      }
-      let fullText = '';
-      for (let p = 1; p <= pdf.numPages; p++) {
-        const page = await pdf.getPage(p);
-        const content = await page.getTextContent();
-        const lines = [];
-        let lastY = null;
-        let lineBuf = '';
-        content.items.forEach(it => {
-          const y = Array.isArray(it.transform) ? Math.round(it.transform[5]) : null;
-          if (lastY !== null && y !== null && Math.abs(y - lastY) > 4) {
-            if (lineBuf.trim()) lines.push(lineBuf.trim());
-            lineBuf = it.str || '';
-          } else {
-            lineBuf += (lineBuf && !lineBuf.endsWith(' ') ? ' ' : '') + (it.str || '');
-          }
-          lastY = y;
-        });
-        if (lineBuf.trim()) lines.push(lineBuf.trim());
-        fullText += lines.join('\n') + '\n';
-      }
-
-      // Jika PDF berupa hasil scan gambar (teks kosong), jalankan OCR otomatis halaman 1
-      if (fullText.replace(/\s+/g, '').length < 25 && typeof Tesseract !== 'undefined' && pdf.numPages >= 1) {
-        try {
-          const page1 = await pdf.getPage(1);
-          const viewport = page1.getViewport({ scale: 2.0 });
-          const canvas = document.createElement('canvas');
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-          await page1.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
-          const ocrRes = await Tesseract.recognize(canvas.toDataURL('image/png'), 'ind+eng');
-          if (ocrRes?.data?.text) fullText += '\n' + ocrRes.data.text;
-        } catch (ocrPdfErr) {}
-      }
-      return fullText;
-    }
-
-    function parseIndonesianOrIsoDate(str) {
-      if (!str) return '';
-      const monthMap = {
-        jan: '01', januari: '01', january: '01',
-        feb: '02', februari: '02', february: '02',
-        mar: '03', maret: '03', march: '03',
-        apr: '04', april: '04',
-        mei: '05', may: '05',
-        jun: '06', juni: '06', june: '06',
-        jul: '07', juli: '07', july: '07',
-        agu: '08', agt: '08', agustus: '08', aug: '08', august: '08',
-        sep: '09', sept: '09', september: '09',
-        okt: '10', oktober: '10', oct: '10', october: '10',
-        nov: '11', november: '11',
-        des: '12', desember: '12', dec: '12', december: '12'
-      };
-      const m1 = String(str).match(/\b(\d{1,2})\s+([A-Za-z]{3,9})\s+(20\d{2})\b/);
-      if (m1) {
-        const mm = monthMap[m1[2].toLowerCase()];
-        if (mm) return `${m1[3]}-${mm}-${String(m1[1]).padStart(2, '0')}`;
-      }
-      const m2 = String(str).match(/\b(\d{1,2})[\/\-](\d{1,2})[\/\-](20\d{2})\b/);
-      if (m2) {
-        return `${m2[3]}-${String(m2[2]).padStart(2, '0')}-${String(m2[1]).padStart(2, '0')}`;
-      }
-      return '';
-    }
-
-    function detectPtFromPdfText(clean) {
-      const upper = String(clean || '').toUpperCase();
-      if (/MULTIDAYA\s*FORTUNA|\bMDF\b/.test(upper)) return 'MDF';
-      if (/ERA\s*PERKASA\s*MINING|\bEPM\b/.test(upper)) return 'EPM';
-      if (/GLOBAL\s*SINERGI\s*MARITIM|\bGSM\b/.test(upper)) return 'GSM';
-      if (/GLOBAL\s*SAMUDERA\s*JASINDO|\bGSJ\b/.test(upper)) return 'GSJ';
-      if (/KARINA\s*MINING|\bKMC\b/.test(upper)) return 'KMC';
-      if (/QUASAR\s*INTI|\bQIN\b/.test(upper)) return 'QIN';
-      if (/BUKIT\s*SUNUR|\bBSPC\b/.test(upper)) return 'BSPC';
-      if (/SUMATERA\s*INTI\s*PERKASA|\bSIP\b/.test(upper)) return 'SIP';
-      if (/TEMPIRAI\s*ENERGY|\bTER\b/.test(upper)) return 'TER';
-      if (/KELINCI\s*KARYA|\bKKS\b/.test(upper)) return 'KKS';
-      if (/MADHUCON\s*INDONESIA|\bMI\b/.test(upper)) return 'MI';
-      if (/GEMURUH\s*KARSA|\bGK\b/.test(upper)) return 'GK';
-      if (/ANUGRAH\s*RIAU\s*COAL|\bARC\b/.test(upper)) return 'ARC';
-      if (/GLOBAL\s*ENERGI\s*LESTARI|\bGEL\b/.test(upper)) return 'GEL';
-      return '';
-    }
-
-    function parseTicketPdfText(text) {
-      const rawLines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-      const clean = rawLines.join(' ').replace(/\s+/g, ' ');
-
-      const pnrMatch = clean.match(/(?:Airline\s*Booking\s*Code|Booking\s*(?:Code|ID|Reference)|Kode\s*Booking|PNR)\s*[:#]?\s*([A-Z0-9]{5,8})/i);
-      const flightMatch = clean.match(/\b(GA|JT|ID|QG|IU|SJ|IN|IW|IP|8B|KA)\s*-?\s*(\d{2,4})\b/i);
-      const iataMatches = Array.from(clean.matchAll(/\b([A-Z]{3})\b/g))
-        .map(m => m[1])
-        .filter(code => Boolean(IATA_CITY_MAP[code]));
-      const directRouteMatch = clean.match(/\b([A-Z]{3})\s*(?:-|–|—|→|to|ke)\s*([A-Z]{3})\b/i);
-      let rute = '';
-      if (directRouteMatch && IATA_CITY_MAP[directRouteMatch[1].toUpperCase()] && IATA_CITY_MAP[directRouteMatch[2].toUpperCase()]) {
-        rute = `${directRouteMatch[1].toUpperCase()} - ${directRouteMatch[2].toUpperCase()}`;
-      } else if (iataMatches.length >= 2) {
-        const uniqueCodes = [];
-        iataMatches.forEach(c => { if (uniqueCodes[uniqueCodes.length - 1] !== c) uniqueCodes.push(c); });
-        if (uniqueCodes.length >= 2) rute = `${uniqueCodes[0]} - ${uniqueCodes[1]}`;
-      }
-
-      const orderIdMatch = clean.match(/(?:Order\s*ID|Traveloka\s*Booking\s*ID|No\.?\s*Pesanan|Invoice\s*(?:No|Number)?|Booking\s*ID)\s*[:#]?\s*(\d{8,22})/i);
-      const receiptMatch = clean.match(/(?:Receipt\s*(?:No|Number|ID)?|No\.?\s*Receipt|Transaction\s*ID)\s*[:#]?\s*(\d{10,25})/i);
-
-      const priceMatches = Array.from(clean.matchAll(/(?:IDR|Rp\.?)\s*([\d.,]{5,18})/gi))
-        .map(m => Number(m[1].replace(/[.,]/g, '')) || 0)
-        .filter(n => n >= 50000 && n < 500000000);
-
-      // Ekstrak seluruh penumpang (mendukung format "1. Mr. MOCHAMAD RIZAL", "Mr. JOHN DOE", "Tn. BUDI", dll.)
-      const passengers = [];
-      const seenPax = new Set();
-      const paxRegex = /(?:^|\s|\d+\.)\b(Mr\.?|Mrs\.?|Ms\.?|Miss|Tn\.?|Ny\.?|Nn\.?)\s+([A-Z][A-Z\s'.]{2,38}?)(?=\s*(?:\(|Adult|Dewasa|Child|Infant|Ticket|E-Ticket|No\.|PNR|Booking|CGK|PNK|PKU|PLM|SUB|BPN|KNO|PDG|DJB|BKS|UPG|DPS|YIA|SRG|BTH|GA|JT|ID|QG|IU|SJ|IDR|Rp|\d|$))/g;
-      let pm;
-      while ((pm = paxRegex.exec(clean)) !== null) {
-        const rawTitle = pm[1];
-        const rawName = pm[2].replace(/\s+/g, ' ').trim().toUpperCase();
-        if (rawName.length >= 3 && !/BOOKING|FLIGHT|HOTEL|TRAVELOKA|TIKET|TOTAL|PRICE|PAYMENT|RECEIPT/.test(rawName) && !seenPax.has(rawName)) {
-          seenPax.add(rawName);
-          passengers.push({
-            title: /^Mrs|^Ny/i.test(rawTitle) ? 'Mrs.' : (/^Ms|^Miss|^Nn/i.test(rawTitle) ? 'Ms.' : 'Mr.'),
-            name: rawName,
-            role: ''
-          });
-        }
-      }
-
-      // Ekstrak tanggal order & tanggal berangkat / check-in
-      const allDates = [];
-      const dateRegex = /\b(?:\d{1,2}\s+(?:Jan|Feb|Mar|Apr|Mei|May|Jun|Jul|Agu|Agt|Aug|Sep|Sept|Okt|Oct|Nov|Des|Dec)[a-z]*\s+20\d{2}|\d{1,2}[\/\-]\d{1,2}[\/\-]20\d{2})\b/gi;
-      let dm;
-      while ((dm = dateRegex.exec(clean)) !== null) {
-        const iso = parseIndonesianOrIsoDate(dm[0]);
-        if (iso && !allDates.includes(iso)) allDates.push(iso);
-      }
-
-      const isHotel = /(?:Hotel\s*Voucher|Check-?in|Check-?out|Tipe\s*Kamar|Room\s*Type|Night\(s\)|Malam)/i.test(clean) && !flightMatch;
-      const isTrain = /(?:Kereta\s*Api|PT\s*KAI|Stasiun|Kode\s*Booking\s*KAI|Argo|Taksaka|Bima)/i.test(clean);
-
-      let maskapai = '';
-      if (isHotel) {
-        const hotelLine = rawLines.find(l => /Hotel|Resort|Inn|Suites|Aston|Santika|Mercure|Novotel|Swiss-Bel|Harris|Fave|Pop!|Ibis|Amaris|Grand/i.test(l) && l.length < 70);
-        maskapai = hotelLine || 'Hotel Voucher';
-      } else if (isTrain) {
-        maskapai = 'PT KAI';
-      } else if (/Garuda\s*Indonesia/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'GA') maskapai = 'Garuda Indonesia';
-      else if (/Batik\s*Air/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'ID') maskapai = 'Batik Air';
-      else if (/Lion\s*Air/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'JT') maskapai = 'Lion Air';
-      else if (/Citilink/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'QG') maskapai = 'Citilink';
-      else if (/Super\s*Air\s*Jet/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'IU') maskapai = 'Super Air Jet';
-      else if (/Sriwijaya/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'SJ') maskapai = 'Sriwijaya Air';
-      else if (/Pelita\s*Air/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'IP') maskapai = 'Pelita Air';
-      else if (/TransNusa/i.test(clean) || flightMatch?.[1]?.toUpperCase() === '8B') maskapai = 'TransNusa';
-
-      // Ekstrak jabatan dari Surat Perdin / Cuti Roster jika ada
-      const jabatanMatch = clean.match(/(?:Jabatan|Position|Posisi)\s*[:\-]\s*([A-Za-z0-9\s\/&.-]{3,45}?)(?=\s+(?:Departemen|Department|Divisi|Lokasi|Site|Tujuan|Keperluan|Tanggal|\n|$))/i);
-      const detectedJabatan = jabatanMatch ? jabatanMatch[1].trim() : '';
-      if (detectedJabatan && passengers.length) {
-        passengers.forEach(p => { if (!p.role) p.role = detectedJabatan; });
-      }
-
-      return {
-        isHotel,
-        isTrain,
-        detectedPt: detectPtFromPdfText(clean),
-        maskapai,
-        flightNo: flightMatch ? `${flightMatch[1].toUpperCase()}-${flightMatch[2]}` : '',
-        pnr: pnrMatch ? pnrMatch[1].toUpperCase() : '',
-        rute,
-        invoice: orderIdMatch ? orderIdMatch[1] : '',
-        receiptCode: receiptMatch ? receiptMatch[1] : (orderIdMatch ? orderIdMatch[1] : ''),
-        tanggalOrder: allDates[0] || '',
-        departDate: allDates[1] || allDates[0] || '',
-        returnDate: allDates[2] || '',
-        nominal: priceMatches.length ? Math.max(...priceMatches) : 0,
-        vendor: /Tiket\.com/i.test(clean) ? 'Tiket.com' : 'Traveloka',
-        keperluan: /Cuti\s*Roster/i.test(clean) ? 'Cuti Roster' : (/Cuti/i.test(clean) ? 'Cuti Tahunan' : 'Perdin'),
-        jabatan: detectedJabatan,
-        passengers
-      };
-    }
-
-    function applyParsedPdfToForm(parsed) {
-      if (!parsed) return;
-      if (parsed.detectedPt && PT_FULL_INFO[parsed.detectedPt]) setElVal('fPt', parsed.detectedPt);
-      if (parsed.isHotel) setElVal('fJenisLayanan', 'HOTEL');
-      else if (parsed.isTrain) setElVal('fJenisLayanan', 'TRAIN');
-      else setElVal('fJenisLayanan', 'FLIGHT');
-      onServiceTypeChange();
-
-      if (parsed.maskapai) setElVal('fMaskapaiHotel', parsed.maskapai);
-      if (parsed.flightNo) setElVal('fFlightNoRoom', parsed.flightNo);
-      if (parsed.pnr) setElVal('fPnrNights', parsed.pnr);
-      if (parsed.rute) setElVal('fRute', parsed.rute);
-      if (parsed.tanggalOrder) setElVal('fTanggalOrder', parsed.tanggalOrder);
-      if (parsed.departDate) setElVal('fDepartDate', parsed.departDate);
-      if (parsed.returnDate) setElVal('fReturnDate', parsed.returnDate);
-      if (parsed.invoice) setElVal('fInvoice', parsed.invoice);
-      if (parsed.receiptCode) setElVal('fReceiptCode', parsed.receiptCode);
-      if (parsed.nominal > 0) setElVal('fNominal', parsed.nominal);
-      if (parsed.vendor) setElVal('fVendor', parsed.vendor);
-      if (parsed.keperluan) setElVal('fKeperluan', parsed.keperluan);
-
-      if (parsed.passengers && parsed.passengers.length) {
-        const box = getEl('passengerRowsContainer');
-        if (box) box.innerHTML = '';
-        parsed.passengers.forEach(p => addPassengerRow(p));
-      } else if (parsed.jabatan) {
-        const firstRole = document.querySelector('#passengerRowsContainer .pax-role');
-        if (firstRole && !firstRole.value) firstRole.value = parsed.jabatan;
-      }
-      recalculateMova();
-      refreshFormDerivedOutputs();
-    }
-
-    async function handlePairedSlotUpload(slotNum, files) {
-      if (!files || !files.length) return;
-      try {
-        setElText('pairedSlotStatusText', `⏳ Membaca PDF ${files[0].name}...`);
-        const text = await extractTextFromPdfFile(files[0]);
-        const parsed = parseTicketPdfText(text);
-        if (slotNum === 1) {
-          pairedSlots[1] = parsed;
-          setElText('slot1FileLabel', `✓ ${files[0].name}`);
-        } else if (slotNum === 2) {
-          pairedSlots[2] = parsed;
-          setElText('slot2FileLabel', `✓ ${files[0].name}`);
-        } else {
-          pairedSlots[3].push(files[0].name);
-          pairedSlots.slot3Parsed = parsed;
-          setElText('slot3FileLabel', `✓ ${pairedSlots[3].length} file Perdin/Cuti`);
-        }
-
-        // Gabungkan hasil Slot 1 (Tiket), Slot 2 (Receipt), dan Slot 3 (Perdin/Cuti)
-        const merged = {
-          ...(pairedSlots[1] || {}),
-          invoice: pairedSlots[2]?.invoice || pairedSlots[1]?.invoice || parsed.invoice,
-          receiptCode: pairedSlots[2]?.receiptCode || pairedSlots[1]?.receiptCode || parsed.receiptCode,
-          nominal: Math.max(Number(pairedSlots[1]?.nominal) || 0, Number(pairedSlots[2]?.nominal) || 0, Number(parsed.nominal) || 0),
-          tanggalOrder: pairedSlots[2]?.tanggalOrder || pairedSlots[1]?.tanggalOrder || parsed.tanggalOrder,
-          keperluan: pairedSlots.slot3Parsed?.keperluan || pairedSlots[1]?.keperluan || parsed.keperluan,
-          detectedPt: pairedSlots.slot3Parsed?.detectedPt || pairedSlots[1]?.detectedPt || pairedSlots[2]?.detectedPt || parsed.detectedPt,
-          jabatan: pairedSlots.slot3Parsed?.jabatan || parsed.jabatan,
-          passengers: (pairedSlots[1]?.passengers?.length ? pairedSlots[1].passengers : parsed.passengers).map(p => ({
-            ...p,
-            role: p.role || pairedSlots.slot3Parsed?.jabatan || parsed.jabatan || ''
-          }))
-        };
-
-        applyParsedPdfToForm(merged);
-        setElText('pairedSlotStatusText', `Status: ✓ Terbaca ${files[0].name}`);
-        showToast(`PDF ${files[0].name} berhasil diekstrak ke form!`, 'success');
-      } catch (err) {
-        console.error('PDF extract error:', err);
-        setElText('pairedSlotStatusText', `Status: Gagal membaca ${files[0].name}`);
-        showToast('Gagal mengekstrak PDF: ' + (err.message || 'Format tidak didukung'), 'error');
-      }
-    }
-
-    async function handleBatchPdfFiles(files) {
-      if (!files || !files.length) return;
-      showToast(`Sedang membaca ${files.length} file PDF...`, 'info');
-      for (const f of Array.from(files)) {
-        try {
-          const txt = await extractTextFromPdfFile(f);
-          const parsed = parseTicketPdfText(txt);
-          pdfQueue.push({ fileName: f.name, parsed });
-        } catch (err) {
-          console.warn('Batch PDF skip:', f.name, err);
-        }
-      }
-      renderPdfQueue();
-      if (pdfQueue[0]) applyParsedPdfToForm(pdfQueue[0].parsed);
-      showToast(`${pdfQueue.length} file PDF berhasil masuk antrian.`, 'success');
-    }
-
-    function renderPdfQueue() {
-      setElText('pdfQueueCount', pdfQueue.length);
-      const box = getEl('pdfQueueList');
-      if (!box) return;
-      if (!pdfQueue.length) {
-        box.innerHTML = `<p class="text-xs text-slate-400 italic py-4 text-center">Belum ada antrian PDF terbaca.</p>`;
-        return;
-      }
-      box.innerHTML = pdfQueue.map((item, idx) => `
-        <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-2 text-xs">
-          <div class="min-w-0">
-            <div class="font-bold text-slate-900 truncate">${escapeHtml(item.fileName)}</div>
-            <div class="text-[10px] text-slate-500">${escapeHtml(item.parsed.maskapai || 'Tiket')} • ${formatRupiah(item.parsed.nominal)}</div>
-          </div>
-          <button type="button" onclick="applyParsedPdfToForm(pdfQueue[${idx}].parsed)" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-bold shrink-0">Muat</button>
-        </div>
-      `).join('');
-    }
-
-    function saveAllQueueToRekap() {
-      if (!pdfQueue.length) return;
-      pdfQueue.forEach(item => {
-        const p = item.parsed;
-        records.unshift({
-          id: 'REC-Q-' + Date.now() + Math.random().toString(36).slice(2, 5),
-          tanggalOrder: getTodayIso(),
-          divisi: 'GA',
-          jenisLayanan: p.isHotel ? 'HOTEL' : 'FLIGHT',
-          pt: getElVal('fPt', 'GEL'),
-          keperluan: p.keperluan || 'Perdin',
-          passengers: p.passengers || [],
-          nama: (p.passengers || []).map(x => `${x.title} ${x.name}`).join(', ') || item.fileName,
-          invoice: p.invoice || '-',
-          maskapaiHotel: p.maskapai || '-',
-          flightNoRoom: p.flightNo || '',
-          pnrNights: p.pnr || '',
-          rute: p.rute || '-',
-          departDate: getTodayIso(),
-          vendor: p.vendor || 'Traveloka',
-          nominal: p.nominal || 0,
-          mova: 0,
-          payment: 'DC BNI Pak Tony',
-          tujuan: 'DC BNI Pak Tony',
-          statusPengajuan: 'Sudah Diajukan',
-          noGr: '',
-          statusBayar: 'UNPAID',
-          _updatedAt: Date.now()
-        });
-      });
-      pdfQueue = [];
-      renderPdfQueue();
-      saveStorage();
-      renderRekapTable();
-      renderPvrPreview(false);
-      showToast('Seluruh antrian PDF berhasil disimpan ke Rekap!', 'success');
-    }
-
-    // =========================================================================
-    // SCANNER OCR KTP INDONESIA (NIK 16 DIGIT, NAMA & PAS FOTO)
-    // =========================================================================
-    function preprocessKtpCanvasForOcr(img) {
-      const targetW = Math.max(1200, Math.min(1800, img.width * 2));
-      const scale = targetW / (img.width || 1);
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      // Tingkatkan kontras grayscale agar angka NIK & huruf E-KTP terbaca tajam oleh OCR
-      try {
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const d = imgData.data;
-        for (let i = 0; i < d.length; i += 4) {
-          const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-          const contrasted = Math.min(255, Math.max(0, (gray - 128) * 1.45 + 128));
-          d[i] = d[i + 1] = d[i + 2] = contrasted;
-        }
-        ctx.putImageData(imgData, 0, 0);
-      } catch (e) {}
-      return canvas.toDataURL('image/png');
-    }
-
-    function parseIndonesianKtpText(rawText) {
-      const normalizedDigits = String(rawText || '')
-        .replace(/[OoQqDd]/g, '0')
-        .replace(/[Il|!]/g, '1')
-        .replace(/[Zz]/g, '2')
-        .replace(/[Ss]/g, '5')
-        .replace(/[Bb]/g, '8');
-
-      // Cari 16 digit NIK (baik menyambung maupun terpisah spasi)
-      let nik = '';
-      const nikCompact = normalizedDigits.match(/\b(\d{16})\b/);
-      if (nikCompact) {
-        nik = nikCompact[1];
-      } else {
-        const nikSpaced = normalizedDigits.match(/(\d{4}\s*\d{4}\s*\d{4}\s*\d{4})/);
-        if (nikSpaced) nik = nikSpaced[1].replace(/\s+/g, '');
-      }
-
-      // Cari Nama Lengkap di baris "Nama : ..." atau tepat di bawah NIK
-      let nama = '';
-      const lines = String(rawText || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const mNama = line.match(/(?:Nama|Narna|Maha)\s*[:;.\-]?\s*([A-Z\s'.]{3,42})/i);
-        if (mNama && mNama[1].trim().length >= 3) {
-          nama = mNama[1].replace(/[^A-Z\s'.]/gi, '').replace(/\s+/g, ' ').trim().toUpperCase();
-          break;
-        }
-      }
-      if (!nama && lines.length >= 3) {
-        const nikLineIdx = lines.findIndex(l => /\d{10,16}/.test(l.replace(/\s+/g, '')));
-        if (nikLineIdx >= 0 && lines[nikLineIdx + 1]) {
-          const candidate = lines[nikLineIdx + 1].replace(/^Nama\s*[:;.\-]?\s*/i, '').replace(/[^A-Z\s'.]/gi, '').trim().toUpperCase();
-          if (candidate.length >= 3 && !/TEMPAT|LAHIR|JENIS|ALAMAT|PROVINSI|KABUPATEN|KOTA/.test(candidate)) {
-            nama = candidate;
-          }
-        }
-      }
-
-      const isFemale = /PEREMPUAN|WANITA|FEMALE/i.test(rawText || '');
-      return { nik, nama, gender: isFemale ? 'PEREMPUAN' : 'LAKI-LAKI' };
-    }
-
-    async function handleKtpImageUpload(e) {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const progressBox = getEl('ktpOcrProgressBox');
-      if (progressBox) {
-        progressBox.textContent = '⏳ Memuat foto KTP & menjalankan OCR otomatis... Mohon tunggu 3–6 detik.';
-        progressBox.classList.remove('hidden');
-      }
-
-      compressImageToDataUrl(file, async dataUrl => {
-        currentKtpPhotoData = dataUrl;
-        const img = getEl('ktpPhotoPreviewImg');
-        if (img) { img.src = dataUrl; img.classList.remove('hidden'); }
-        getEl('ktpEmptyPlaceholder')?.classList.add('hidden');
-
-        const loadedImg = await new Promise(resolve => {
-          const t = new Image();
-          t.onload = () => resolve(t);
-          t.onerror = () => resolve(null);
-          t.src = dataUrl;
-        });
-
-        let ocrSourceUrl = dataUrl;
-        if (loadedImg) {
-          try {
-            const c = document.createElement('canvas');
-            const sx = Math.round(loadedImg.width * 0.68);
-            const sy = Math.round(loadedImg.height * 0.22);
-            const sw = Math.round(loadedImg.width * 0.28);
-            const sh = Math.round(loadedImg.height * 0.56);
-            c.width = 160; c.height = 200;
-            c.getContext('2d').drawImage(loadedImg, sx, sy, sw, sh, 0, 0, 160, 200);
-            currentKtpFaceData = c.toDataURL('image/jpeg', 0.85);
-            const faceEl = getEl('ktpFaceCropPreview');
-            if (faceEl) { faceEl.src = currentKtpFaceData; faceEl.classList.remove('hidden'); }
-            getEl('ktpFaceEmptyText')?.classList.add('hidden');
-            ocrSourceUrl = preprocessKtpCanvasForOcr(loadedImg);
-          } catch (cropErr) {}
-        }
-
-        try {
-          if (typeof Tesseract === 'undefined') {
-            throw new Error('Engine OCR Tesseract belum termuat.');
-          }
-          const res = await Tesseract.recognize(ocrSourceUrl, 'ind+eng', {
-            logger: m => {
-              if (progressBox && m?.status === 'recognizing text') {
-                progressBox.textContent = `⏳ Membaca teks E-KTP (${Math.round((m.progress || 0) * 100)}%)...`;
-              }
-            }
-          });
-          const rawText = res?.data?.text || '';
-          setElVal('ktpRawOcrText', rawText);
-          const parsedKtp = parseIndonesianKtpText(rawText);
-          if (parsedKtp.nik) setElVal('ktpNikInput', parsedKtp.nik);
-          if (parsedKtp.nama) setElVal('ktpNameInput', parsedKtp.nama);
-          setElVal('ktpGenderSelect', parsedKtp.gender);
-
-          if (parsedKtp.nik || parsedKtp.nama) {
-            showToast(`Scan KTP berhasil! NIK: ${parsedKtp.nik || '-'} | Nama: ${parsedKtp.nama || '-'}`, 'success');
-          } else {
-            showToast('Foto KTP terbaca, silakan cek hasil teks OCR atau lengkapi NIK/Nama.', 'warning');
-          }
-        } catch (ocrErr) {
-          console.error('OCR KTP error:', ocrErr);
-          showToast('OCR KTP terkendala jaringan/worker. Foto KTP tetap tersimpan, silakan ketik NIK & Nama.', 'warning');
-        } finally {
-          if (progressBox) progressBox.classList.add('hidden');
-        }
-      }, 1400, 0.90);
-    }
-
-    function resetKtpScannerForm() {
-      currentKtpPhotoData = '';
-      currentKtpFaceData = '';
-      setElVal('ktpNikInput', '');
-      setElVal('ktpNameInput', '');
-      setElVal('ktpRoleInput', '');
-      setElVal('ktpRawOcrText', '');
-      getEl('ktpPhotoPreviewImg')?.classList.add('hidden');
-      getEl('ktpEmptyPlaceholder')?.classList.remove('hidden');
-      getEl('ktpFaceCropPreview')?.classList.add('hidden');
-      getEl('ktpFaceEmptyText')?.classList.remove('hidden');
-    }
-
-    function handleSaveKtpRecord(e) {
-      e.preventDefault();
-      const nik = getElVal('ktpNikInput', '').trim();
-      const name = getElVal('ktpNameInput', '').trim().toUpperCase();
-      const gender = getElVal('ktpGenderSelect', 'LAKI-LAKI');
-      const pt = getElVal('ktpPtSelect', 'GEL');
-      const role = getElVal('ktpRoleInput', '').trim();
-      const idx = ktpRecords.findIndex(k => k.nik === nik);
-      const rec = {
-        id: 'KTP-' + nik,
-        nik,
-        name,
-        gender,
-        pt,
-        role,
-        photo: currentKtpPhotoData || '',
-        facePhoto: currentKtpFaceData || '',
-        _updatedAt: Date.now()
-      };
-      if (idx >= 0) ktpRecords[idx] = rec;
-      else ktpRecords.unshift(rec);
-      saveStorage();
-      renderKtpTable();
-      showToast(`Data KTP ${name} (${nik}) tersimpan permanen!`, 'success');
-    }
-
-    function useScannedKtpForBooking() {
-      const name = getElVal('ktpNameInput', '').trim().toUpperCase();
-      if (!name) { showToast('Isi nama penumpang terlebih dahulu.', 'warning'); return; }
-      const gender = getElVal('ktpGenderSelect', 'LAKI-LAKI');
-      const pt = getElVal('ktpPtSelect', 'GEL');
-      const role = getElVal('ktpRoleInput', '').trim() || getElVal('ktpNikInput', '').trim();
-      setElVal('fPt', pt);
-      const box = getEl('passengerRowsContainer');
-      if (box) box.innerHTML = '';
-      addPassengerRow({ title: gender === 'PEREMPUAN' ? 'Mrs.' : 'Mr.', name, role });
-      switchMainTab('input');
-      showToast(`Data KTP ${name} dimasukkan ke Form Pemesanan Tiket.`, 'success');
-    }
-
-    function renderKtpTable() {
-      const tbody = getEl('ktpTableBody');
-      if (!tbody) return;
-      const q = getElVal('ktpSearchInput', '').toLowerCase();
-      const filtered = ktpRecords.filter(k => !q || [k.nik, k.name, k.pt, k.role].some(v => String(v || '').toLowerCase().includes(q)));
-      tbody.innerHTML = filtered.map((k, i) => `
-        <tr class="hover:bg-slate-50">
-          <td class="py-2.5 px-3">${i + 1}</td>
-          <td class="py-2.5 px-3">
-            <div class="flex items-center gap-1.5">
-              ${k.facePhoto ? `<img src="${k.facePhoto}" class="w-9 h-11 object-cover rounded border border-amber-400"/>` : ''}
-              ${k.photo ? `<img src="${k.photo}" class="w-16 h-10 object-cover rounded border border-slate-300"/>` : '<span class="text-slate-400 text-[10px]">No Foto</span>'}
-            </div>
-          </td>
-          <td class="py-2.5 px-3 font-mono font-black text-blue-900">${escapeHtml(k.nik)}</td>
-          <td class="py-2.5 px-3 font-extrabold text-slate-900">${escapeHtml(k.name)}</td>
-          <td class="py-2.5 px-3 font-bold">${k.gender === 'PEREMPUAN' ? 'Mrs. (Perempuan)' : 'Mr. (Laki-laki)'}</td>
-          <td class="py-2.5 px-3"><b>${escapeHtml(k.pt)}</b> • ${escapeHtml(k.role || '-')}</td>
-          <td class="py-2.5 px-3 text-center">
-            <div class="flex items-center justify-center gap-1">
-              <button type="button" onclick="setElVal('ktpNikInput','${k.nik}');setElVal('ktpNameInput','${escapeHtml(k.name)}');setElVal('ktpPtSelect','${k.pt}');useScannedKtpForBooking();" class="px-2 py-1 rounded bg-blue-600 text-white text-[10px] font-bold">✈️ Pakai</button>
-              <button type="button" onclick="markEntityDeleted('${k.nik}');ktpRecords=ktpRecords.filter(x=>x.nik!=='${k.nik}');saveStorage();renderKtpTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-bold">Hapus</button>
-            </div>
-          </td>
-        </tr>
-      `).join('') || `<tr><td colspan="7" class="py-6 text-center text-slate-400">Belum ada data hasil scan KTP.</td></tr>`;
-    }
-
-    function exportKtpExcel() {
-      if (typeof XLSX === 'undefined') return;
-      const rows = ktpRecords.map((k, i) => ({
-        'No.': i + 1,
-        'NIK': k.nik,
-        'Nama Lengkap': k.name,
-        'Jenis Kelamin': k.gender,
-        'Entitas PT': k.pt,
-        'Jabatan': k.role || '-'
-      }));
-      const ws = XLSX.utils.json_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'DATABASE_KTP');
-      XLSX.writeFile(wb, `Database_Scan_KTP_GA_GEL_${getTodayIso()}.xlsx`);
-    }
-
     // =========================================================================
     // REKAP & REKONSILIASI + PVR GENERATOR PER PT
     // =========================================================================
@@ -5311,7 +4527,9 @@
             r.tujuan || r.payment || '-',
             r.noGr || '-',
             r.statusBayar || 'UNPAID',
-            r.statusKet || '-',
+            r.statusBayar === 'PAID' && r.paidDate
+              ? `PAID (${formatDateShort(r.paidDate)})${r.statusKet ? ' - ' + r.statusKet : ''}`
+              : (r.statusKet || '-'),
             mova
           ];
 
@@ -5467,7 +4685,9 @@
         'Tujuan Pembayaran': r.tujuan,
         'No. GR': r.noGr,
         'Status Pembayaran': r.statusBayar,
-        'Status': r.statusKet || '-',
+        'Status': r.statusBayar === 'PAID' && r.paidDate
+          ? `PAID (${formatDateShort(r.paidDate)})${r.statusKet ? ' - ' + r.statusKet : ''}`
+          : (r.statusKet || '-'),
         'Estimasi Pendapatan MOVA': Number(r.mova) || 0
       }));
       const ws = XLSX.utils.json_to_sheet(rows);
@@ -5501,24 +4721,59 @@
 
       const cardsBox = getEl('pvrReconcileCards');
       if (cardsBox) {
-        const ptGroups = {};
-        records.filter(r => (r.statusBayar || 'UNPAID') !== 'PAID').forEach(r => {
+        const ptSummary = {};
+        records.forEach(r => {
           const code = r.pt || 'GEL';
-          ptGroups[code] = (ptGroups[code] || 0) + (Number(r.nominal) || 0);
+          if (!ptSummary[code]) {
+            ptSummary[code] = { unpaidCount: 0, unpaidTotal: 0, paidCount: 0, paidTotal: 0 };
+          }
+          if ((r.statusBayar || 'UNPAID') === 'PAID') {
+            ptSummary[code].paidCount += 1;
+            ptSummary[code].paidTotal += Number(r.nominal) || 0;
+          } else {
+            ptSummary[code].unpaidCount += 1;
+            ptSummary[code].unpaidTotal += Number(r.nominal) || 0;
+          }
         });
-        const keys = Object.keys(ptGroups);
-        cardsBox.innerHTML = keys.length ? keys.map(pt => `
-          <div onclick="setElVal('pvrPtSelect','${pt}');switchMainTab('pvr');onPvrPtSelectChange();" class="p-3 rounded-xl bg-white border border-blue-200 hover:border-blue-500 cursor-pointer transition flex items-center justify-between">
-            <div>
-              <div class="text-xs font-black text-slate-900">${escapeHtml(pt)}</div>
-              <div class="text-[10px] text-slate-500 truncate max-w-[140px]">${escapeHtml(PT_FULL_INFO[pt]?.fullName || pt)}</div>
+        const keys = Object.keys(ptSummary);
+        cardsBox.innerHTML = keys.length ? keys.map(pt => {
+          const info = ptSummary[pt];
+          const hasUnpaid = info.unpaidCount > 0;
+          return hasUnpaid ? `
+            <div class="p-3.5 rounded-2xl bg-white border border-blue-200 hover:border-blue-500 shadow-2xs transition flex items-center justify-between gap-2.5">
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-black text-slate-900">${escapeHtml(pt)}</span>
+                  <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black">${info.unpaidCount} UNPAID</span>
+                </div>
+                <div class="text-[10px] text-slate-500 truncate mt-0.5">${escapeHtml(PT_FULL_INFO[pt]?.fullName || pt)}</div>
+                <div class="text-xs font-black text-blue-800 mt-1">${formatRupiah(info.unpaidTotal)}</div>
+              </div>
+              <button type="button" onclick="setElVal('pvrPtSelect','${escapeHtml(pt)}');setElVal('pvrStatusFilter','UNPAID');switchMainTab('pvr');onPvrPtSelectChange();" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-extrabold shadow-xs shrink-0">
+                Buka PVR (${info.unpaidCount})
+              </button>
             </div>
-            <div class="text-xs font-black text-blue-800">${formatRupiah(ptGroups[pt])}</div>
-          </div>
-        `).join('') : `<p class="text-xs text-slate-500 italic col-span-full">Tidak ada tagihan UNPAID yang menunggu PVR.</p>`;
+          ` : `
+            <div class="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200 flex items-center justify-between gap-2.5 opacity-85">
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-black text-slate-800">${escapeHtml(pt)}</span>
+                  <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">${info.paidCount} PAID</span>
+                </div>
+                <div class="text-[10px] text-slate-500 truncate mt-0.5">${escapeHtml(PT_FULL_INFO[pt]?.fullName || pt)}</div>
+                <div class="text-xs font-bold text-emerald-700 mt-1">${formatRupiah(info.paidTotal)}</div>
+              </div>
+              <span class="px-2.5 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 text-[10px] font-black shrink-0" title="Semua transaksi PT ini sudah PAID — tidak dapat dibuat PVR lagi">
+                ✓ PAID (Terkunci)
+              </span>
+            </div>
+          `;
+        }).join('') : `<p class="text-xs text-slate-500 italic col-span-full">Tidak ada transaksi untuk direkonsiliasi.</p>`;
       }
 
-      tbody.innerHTML = filtered.map((r, i) => `
+      tbody.innerHTML = filtered.map((r, i) => {
+        const isPaid = (r.statusBayar || 'UNPAID') === 'PAID';
+        return `
         <tr class="hover:bg-slate-50">
           <td class="py-2.5 px-3 text-center">${i + 1}</td>
           <td class="py-2.5 px-3">${formatDateShort(r.tanggalOrder)}</td>
@@ -5530,27 +4785,116 @@
           <td class="py-2.5 px-3">${formatDateShort(r.departDate)}</td>
           <td class="py-2.5 px-3">${escapeHtml(r.vendor)} • <span class="text-[10px] font-bold">${escapeHtml(r.payment)}</span></td>
           <td class="py-2.5 px-3 text-right font-black text-blue-900">${formatRupiah(r.nominal)}</td>
-          <td class="py-2.5 px-3 font-mono text-[11px]">${escapeHtml(r.noGr || '-')}</td>
-          <td class="py-2.5 px-3 text-center">
-            <button type="button" onclick="toggleRecordPaidStatus('${r.id}')" class="px-2.5 py-1 rounded-full text-[10px] font-black ${r.statusBayar === 'PAID' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">
-              ${r.statusBayar || 'UNPAID'}
-            </button>
+          <td class="py-2.5 px-3 font-mono text-[11px]">
+            <div class="font-bold text-slate-800">${escapeHtml(r.noGr || '-')}</div>
+            <button type="button" onclick="openStatusAndGrModal('${r.id}')" class="text-[10px] font-bold text-blue-600 hover:underline mt-0.5">+ Edit GR / Tgl Bayar</button>
           </td>
           <td class="py-2.5 px-3 text-center">
-            <button type="button" onclick="markEntityDeleted('${r.id}');records=records.filter(x=>x.id!=='${r.id}');saveStorage();renderRekapTable();renderPvrPreview(false);" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-bold">Hapus</button>
+            <button type="button" onclick="openStatusAndGrModal('${r.id}')" title="Klik untuk ubah status PAID/UNPAID, Tanggal Bayar, & No. GR/PVR" class="px-2.5 py-1 rounded-full text-[10px] font-black ${isPaid ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-900 border border-amber-300'}">
+              ${isPaid ? 'PAID' : 'UNPAID'}
+            </button>
+            ${isPaid && r.paidDate ? `<div class="text-[10px] font-bold text-emerald-700 mt-0.5">Tgl: ${formatDateShort(r.paidDate)}</div>` : ''}
+          </td>
+          <td class="py-2.5 px-3 text-center">
+            <div class="flex items-center justify-center gap-1">
+              ${isPaid
+                ? `<span class="px-2 py-1 rounded bg-slate-100 text-slate-400 text-[10px] font-bold" title="Sudah PAID — tidak perlu buka PVR">Terkunci</span>`
+                : `<button type="button" onclick="setElVal('pvrPtSelect','${escapeHtml(r.pt)}');setElVal('pvrStatusFilter','UNPAID');switchMainTab('pvr');onPvrPtSelectChange();" class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-extrabold shadow-2xs">Buka PVR</button>`
+              }
+              <button type="button" onclick="markEntityDeleted('${r.id}');records=records.filter(x=>x.id!=='${r.id}');saveStorage();renderRekapTable();renderPvrPreview(false);" class="px-2 py-1 rounded bg-rose-100 hover:bg-rose-200 text-rose-800 text-[10px] font-bold">Hapus</button>
+            </div>
           </td>
         </tr>
-      `).join('') || `<tr><td colspan="13" class="py-8 text-center text-slate-400">Belum ada data rekap transaksi tiket.</td></tr>`;
+      `;}).join('') || `<tr><td colspan="13" class="py-8 text-center text-slate-400">Belum ada data rekap transaksi tiket.</td></tr>`;
+    }
+
+    function openStatusAndGrModal(id) {
+      const r = records.find(x => x.id === id);
+      if (!r) return;
+      const defaultPaidDate = r.paidDate || getTodayIso();
+      const m = ROMAN_MONTHS[new Date().getMonth()];
+      const y = new Date().getFullYear();
+      const divCode = (r.divisi || 'GA') === 'CORSEC' ? 'CORSEC' : 'GA';
+      const grTemplate = `${r.pt || 'GEL'}/${divCode}/GR-____/${m}/${y}`;
+
+      openUniversalModal(`
+        <div class="space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black uppercase">Status Pembayaran &amp; Nomor GR / PVR</span>
+              <h3 class="text-base font-black text-slate-900 mt-1">${escapeHtml(r.pt)} • Invoice ${escapeHtml(r.invoice)}</h3>
+              <p class="text-xs text-slate-500">${escapeHtml(r.nama)} — ${formatRupiah(r.nominal)}</p>
+            </div>
+            <button type="button" onclick="closeUniversalModal()" class="text-slate-400 hover:text-slate-700 font-bold text-sm">✕</button>
+          </div>
+
+          <form onsubmit="saveStatusAndGrModal(event, '${r.id}')" class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Status Pembayaran *</label>
+              <select id="modalStatusBayarSelect" onchange="onModalStatusBayarChange()" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-extrabold">
+                <option value="UNPAID" ${(r.statusBayar || 'UNPAID') !== 'PAID' ? 'selected' : ''}>UNPAID (Wajib Buka PVR)</option>
+                <option value="PAID" ${r.statusBayar === 'PAID' ? 'selected' : ''}>PAID (Lunas — Tidak Perlu Buka PVR)</option>
+              </select>
+            </div>
+
+            <div id="modalPaidDateWrap" class="${r.statusBayar === 'PAID' ? '' : 'hidden'}">
+              <label class="block text-xs font-bold text-emerald-800 mb-1">Tanggal Pembayaran (PAID) *</label>
+              <input type="date" id="modalPaidDateInput" value="${escapeHtml(defaultPaidDate)}" class="w-full h-10 px-3 text-xs border border-emerald-300 rounded-xl bg-emerald-50/50 font-bold text-slate-900" />
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-bold text-slate-700">Nomor GR / PVR</label>
+                <button type="button" onclick="setElVal('modalNoGrInput', '${escapeHtml(grTemplate)}')" class="text-[11px] font-extrabold text-blue-600 hover:underline">+ Template GR/PVR (${escapeHtml(r.pt)})</button>
+              </div>
+              <input type="text" id="modalNoGrInput" value="${escapeHtml(r.noGr || '')}" placeholder="Contoh: ${escapeHtml(grTemplate)}" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-mono font-bold" />
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button type="button" onclick="closeUniversalModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow">✓ Simpan Perubahan</button>
+            </div>
+          </form>
+        </div>
+      `);
+    }
+
+    function onModalStatusBayarChange() {
+      const st = getElVal('modalStatusBayarSelect', 'UNPAID');
+      const wrap = getEl('modalPaidDateWrap');
+      if (wrap) wrap.classList.toggle('hidden', st !== 'PAID');
+      if (st === 'PAID' && !getElVal('modalPaidDateInput')) {
+        setElVal('modalPaidDateInput', getTodayIso());
+      }
+    }
+
+    function saveStatusAndGrModal(e, id) {
+      e.preventDefault();
+      const r = records.find(x => x.id === id);
+      if (!r) return;
+      const newStatus = getElVal('modalStatusBayarSelect', 'UNPAID');
+      const newPaidDate = getElVal('modalPaidDateInput', '');
+      const newNoGr = getElVal('modalNoGrInput', '').trim();
+
+      r.statusBayar = newStatus;
+      r.noGr = newNoGr;
+      r.paidDate = newStatus === 'PAID' ? (newPaidDate || getTodayIso()) : '';
+      r._updatedAt = Date.now();
+
+      saveStorage();
+      closeUniversalModal();
+      renderRekapTable();
+      renderPvrPreview(false);
+      showToast(
+        newStatus === 'PAID'
+          ? `Status PAID disimpan (Tgl Bayar: ${formatDateShort(r.paidDate)}${newNoGr ? ', No. GR/PVR: ' + newNoGr : ''}) — PVR terkunci.`
+          : `Status UNPAID & No. GR/PVR (${newNoGr || '-'}) diperbarui — siap Buka PVR.`,
+        'success'
+      );
     }
 
     function toggleRecordPaidStatus(id) {
-      const r = records.find(x => x.id === id);
-      if (!r) return;
-      r.statusBayar = r.statusBayar === 'PAID' ? 'UNPAID' : 'PAID';
-      r._updatedAt = Date.now();
-      saveStorage();
-      renderRekapTable();
-      renderPvrPreview(false);
+      openStatusAndGrModal(id);
     }
 
     function backupJsonData() {
