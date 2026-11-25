@@ -2177,28 +2177,32 @@
         iconCanvas.height = 512;
         const ctx = iconCanvas.getContext('2d');
 
-        // Latar belakang putih bersih berbingkai emas korporat PT GEL
+        // Kotak putih sudut membulat dengan bingkai emas persis seperti logo di layar login
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.roundRect(0, 0, 512, 512, 112);
+        ctx.roundRect(12, 12, 488, 488, 118);
         ctx.fill();
-        ctx.lineWidth = 16;
-        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 22;
+        ctx.strokeStyle = '#b48a28';
         ctx.stroke();
 
         const drawFallbackEmblem = () => {
-          ctx.fillStyle = '#0b1628';
-          ctx.beginPath();
-          ctx.roundRect(24, 24, 464, 464, 96);
-          ctx.fill();
-          ctx.fillStyle = '#fde047';
-          ctx.font = '900 124px Arial, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('GA', 256, 205);
-          ctx.fillStyle = '#ffffff';
-          ctx.font = '900 84px Arial, sans-serif';
-          ctx.fillText('GEL', 256, 330);
+          // Fallback vektor emblem GEL emas murni jika offline
+          ctx.save();
+          ctx.translate(256, 256);
+          ctx.strokeStyle = '#d4a024';
+          ctx.lineWidth = 22;
+          for (let i = 0; i < 3; i++) {
+            ctx.save();
+            ctx.rotate((i * 2 * Math.PI) / 3);
+            ctx.beginPath();
+            ctx.moveTo(0, -135);
+            ctx.quadraticCurveTo(95, -55, 0, 35);
+            ctx.quadraticCurveTo(-95, -55, 0, -135);
+            ctx.stroke();
+            ctx.restore();
+          }
+          ctx.restore();
           resolve(iconCanvas.toDataURL('image/png'));
         };
 
@@ -2206,25 +2210,13 @@
         img.crossOrigin = 'anonymous';
         img.onload = () => {
           try {
-            const pad = 64;
-            const maxW = 512 - pad * 2;
-            const maxH = 340;
-            const scale = Math.min(maxW / (img.naturalWidth || 300), maxH / (img.naturalHeight || 300));
+            // Gambar emblem GEL berada tepat di tengah kotak putih tanpa teks tambahan
+            const pad = 76;
+            const maxBox = 512 - pad * 2;
+            const scale = Math.min(maxBox / (img.naturalWidth || 300), maxBox / (img.naturalHeight || 300));
             const w = Math.round((img.naturalWidth || 300) * scale);
             const h = Math.round((img.naturalHeight || 300) * scale);
-            ctx.drawImage(img, Math.round((512 - w) / 2), Math.round((400 - h) / 2) + 12, w, h);
-
-            // Label "GA GEL" di bagian bawah ikon
-            ctx.fillStyle = '#0b1628';
-            ctx.beginPath();
-            ctx.roundRect(116, 396, 280, 68, 22);
-            ctx.fill();
-            ctx.fillStyle = '#fde047';
-            ctx.font = '900 40px Arial, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('GA GEL', 256, 431);
-
+            ctx.drawImage(img, Math.round((512 - w) / 2), Math.round((512 - h) / 2), w, h);
             resolve(iconCanvas.toDataURL('image/png'));
           } catch (e) {
             drawFallbackEmblem();
@@ -2232,12 +2224,8 @@
         };
         img.onerror = drawFallbackEmblem;
 
-        // Gunakan logo GEL yang sudah ada di portal (custom/locked atau logo resmi GEL)
-        if (ptCustomLogos && ptCustomLogos['GEL']) {
-          img.src = ptCustomLogos['GEL'];
-        } else {
-          img.src = 'https://gelgroup.co.id/images/logo-gel.png';
-        }
+        // Kunci ikon aplikasi hanya memakai logo resmi GEL (tidak tergantikan PT lain)
+        img.src = 'https://gelgroup.co.id/images/logo-gel.png';
       });
     }
 
