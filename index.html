@@ -9,8 +9,58 @@
   <meta name="apple-mobile-web-app-title" content="GA GEL" />
   <title>GA GEL — Portal Operasional Terpadu PT Global Energi Lestari</title>
   <link id="dynamicPwaManifest" rel="manifest" href="" />
-  <link id="appFaviconLink" rel="icon" type="image/png" href="https://gelgroup.co.id/images/logo-gel.png" />
-  <link id="appleTouchIconLink" rel="apple-touch-icon" href="https://gelgroup.co.id/images/logo-gel.png" />
+  <link id="appFaviconLink" rel="icon" type="image/png" href="" />
+  <link id="appleTouchIconLink" rel="apple-touch-icon" href="" />
+  <script>
+    // Sinkronkan Logo Emas PT GEL langsung ke Favicon & Manifest data:image/png sebelum Chrome/Edge membaca ikon Desktop
+    (function bootstrapGelDesktopIcon() {
+      const gelGoldSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <rect x="16" y="16" width="480" height="480" rx="112" fill="#ffffff" stroke="#d4a017" stroke-width="20"/>
+        <g transform="translate(256,256)" fill="none" stroke="#c89211" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z"/>
+          <path d="M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z" transform="rotate(120)"/>
+          <path d="M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z" transform="rotate(240)"/>
+          <circle cx="0" cy="0" r="24" fill="#ffffff" stroke="#c89211" stroke-width="18"/>
+        </g>
+      </svg>`;
+      const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(gelGoldSvg);
+      const applyIcons = (pngOrSvgUrl) => {
+        const fav = document.getElementById('appFaviconLink');
+        const app = document.getElementById('appleTouchIconLink');
+        if (fav) fav.href = pngOrSvgUrl;
+        if (app) app.href = pngOrSvgUrl;
+        const startUrl = window.location.href.split('#')[0];
+        const manifest = {
+          id: 'ga-gel-desktop-app',
+          name: 'GA GEL — PT Global Energi Lestari',
+          short_name: 'GA GEL',
+          description: 'Portal Operasional General Affair & Site — PT Global Energi Lestari',
+          start_url: startUrl,
+          display: 'standalone',
+          background_color: '#fffdf7',
+          theme_color: '#b45309',
+          icons: [
+            { src: pngOrSvgUrl, sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: pngOrSvgUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+          ]
+        };
+        const mEl = document.getElementById('dynamicPwaManifest');
+        if (mEl) mEl.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
+      };
+      applyIcons(svgDataUrl);
+      try {
+        const img = new Image();
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = 512; c.height = 512;
+          const ctx = c.getContext('2d');
+          ctx.drawImage(img, 0, 0, 512, 512);
+          applyIcons(c.toDataURL('image/png'));
+        };
+        img.src = svgDataUrl;
+      } catch (e) {}
+    })();
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -2326,6 +2376,7 @@
     let perubahanPoRecords = [];
     let ktpRecords = [];
     let pvrStateByPt = {};
+    let deletedEntityIds = [];
     let pdfQueue = [];
     let pairedSlots = { 1: null, 2: null, 3: [], slot3Parsed: null };
     let editingRecordId = null;
@@ -2711,96 +2762,32 @@
     window.addEventListener('resize', fitPvrSheetsToViewport);
 
     function initPwaAppExperience() {
-      const gelLogoUrl = 'https://gelgroup.co.id/images/logo-gel.png';
-      const fallbackSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect x='24' y='24' width='464' height='464' rx='112' fill='%23ffffff' stroke='%23d4a017' stroke-width='20'/%3E%3Cg transform='translate(256,256)' fill='none' stroke='%23d4a017' stroke-width='22' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M0,-125 C55,-75 55,-15 0,25 C-55,-15 -55,-75 0,-125 Z'/%3E%3Cpath d='M0,-125 C55,-75 55,-15 0,25 C-55,-15 -55,-75 0,-125 Z' transform='rotate(120)'/%3E%3Cpath d='M0,-125 C55,-75 55,-15 0,25 C-55,-15 -55,-75 0,-125 Z' transform='rotate(240)'/%3E%3Ccircle cx='0' cy='0' r='22' fill='%23ffffff' stroke='%23d4a017' stroke-width='18'/%3E%3C/g%3E%3C/svg%3E";
-
-      const applyManifestWithIcon = (finalIconUrl) => {
-        try {
-          const fav = getEl('appFaviconLink');
-          const apple = getEl('appleTouchIconLink');
-          if (fav) fav.href = finalIconUrl;
-          if (apple) apple.href = finalIconUrl;
-
-          const startUrl = window.location.href.split('#')[0];
-          const manifestObj = {
-            id: 'ga-gel-portal-app',
-            name: 'GA GEL — PT Global Energi Lestari',
-            short_name: 'GA GEL',
-            description: 'Portal Operasional General Affair & Site — PT Global Energi Lestari',
-            start_url: startUrl,
-            scope: startUrl.substring(0, startUrl.lastIndexOf('/') + 1) || '.',
-            display: 'standalone',
-            orientation: 'any',
-            background_color: '#fffdf7',
-            theme_color: '#b45309',
-            icons: [
-              { src: finalIconUrl, sizes: '192x192', type: 'image/png', purpose: 'any' },
-              { src: finalIconUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
-            ]
-          };
-          const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
-          const mLink = getEl('dynamicPwaManifest');
-          if (mLink) mLink.href = URL.createObjectURL(blob);
-        } catch (e) {}
-      };
-
-      // Render logo resmi PT GEL ke kanvas 512x512 PNG putih bersih agar ikon aplikasi desktop/HP tetap PT GEL
-      try {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          try {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, 512, 512);
-            const pad = 56;
-            const maxDim = 512 - pad * 2;
-            const ratio = Math.min(maxDim / (img.naturalWidth || 256), maxDim / (img.naturalHeight || 256));
-            const dw = Math.round((img.naturalWidth || 256) * ratio);
-            const dh = Math.round((img.naturalHeight || 256) * ratio);
-            ctx.drawImage(img, Math.round((512 - dw) / 2), Math.round((512 - dh) / 2), dw, dh);
-            applyManifestWithIcon(canvas.toDataURL('image/png'));
-          } catch (err) {
-            applyManifestWithIcon(gelLogoUrl);
-          }
-        };
-        img.onerror = () => applyManifestWithIcon(fallbackSvg);
-        img.src = gelLogoUrl;
-      } catch (e) {
-        applyManifestWithIcon(fallbackSvg);
-      }
-
       window.addEventListener('beforeinstallprompt', e => {
         e.preventDefault();
         deferredPwaPrompt = e;
         const btn = getEl('installPwaBtn');
         if (btn) btn.classList.add('ring-2', 'ring-yellow-300');
-        // Jika link dibagikan dengan ?install=1 atau dibuka pertama kali di browser desktop/HP, arahkan otomatis
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
         const params = new URLSearchParams(window.location.search);
         if (!isStandalone && (params.get('install') === '1' || !sessionStorage.getItem('ga_gel_install_prompted'))) {
           sessionStorage.setItem('ga_gel_install_prompted', '1');
-          setTimeout(() => triggerInstallPwaApp(), 700);
+          setTimeout(() => triggerInstallPwaApp(), 650);
         }
       });
 
       window.addEventListener('appinstalled', () => {
         deferredPwaPrompt = null;
         closeUniversalModal();
-        showToast('Aplikasi GA GEL (Logo PT GEL) berhasil terpasang di perangkat Anda!', 'success');
+        showToast('Aplikasi GA GEL dengan Logo Emas PT GEL berhasil terpasang di Desktop!', 'success');
       });
 
-      // Jika dibuka lewat link ?install=1 pada browser Safari MacBook/iPhone atau browser lain yang belum menembak beforeinstallprompt
       const isStandaloneNow = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
       if (!isStandaloneNow && new URLSearchParams(window.location.search).get('install') === '1') {
         setTimeout(() => {
           if (!getEl('universalModalOverlay')?.classList.contains('flex')) {
             triggerInstallPwaApp();
           }
-        }, 900);
+        }, 800);
       }
     }
 
@@ -2821,11 +2808,106 @@
       }
     }
 
+    function markEntityDeleted(id) {
+      if (!id) return;
+      if (!deletedEntityIds.includes(id)) {
+        deletedEntityIds.push(id);
+        if (deletedEntityIds.length > 600) {
+          deletedEntityIds = deletedEntityIds.slice(-600);
+        }
+      }
+    }
+
+    function mergeArrayByKey(localArr, remoteArr, keyFn, deletedSet) {
+      const map = new Map();
+      const addList = (arr, isLocal) => {
+        if (!Array.isArray(arr)) return;
+        arr.forEach(item => {
+          if (!item) return;
+          const k = keyFn(item);
+          if (!k || (deletedSet && deletedSet.has(k))) return;
+          if (!map.has(k)) {
+            map.set(k, item);
+          } else if (isLocal) {
+            const existing = map.get(k);
+            const locTs = Number(item._updatedAt || 0);
+            const remTs = Number(existing._updatedAt || 0);
+            if (locTs >= remTs) {
+              map.set(k, { ...existing, ...item });
+            }
+          }
+        });
+      };
+      addList(remoteArr, false);
+      addList(localArr, true);
+      return Array.from(map.values());
+    }
+
+    function mergeWorkspaceStates(remotePayload) {
+      if (!remotePayload || typeof remotePayload !== 'object') return;
+      const remoteDeleted = Array.isArray(remotePayload.deletedEntityIds) ? remotePayload.deletedEntityIds : [];
+      deletedEntityIds = Array.from(new Set([...deletedEntityIds, ...remoteDeleted])).slice(-600);
+      const delSet = new Set(deletedEntityIds);
+
+      records = mergeArrayByKey(records, remotePayload.records, r => r.id || `${r.invoice}-${r.nama}-${r.tanggalOrder}`, delSet);
+      opsGelRecords = mergeArrayByKey(opsGelRecords, remotePayload.opsGelRecords, o => o.id || `${o.date}-${o.applicant}-${o.total}`, delSet);
+      stnkRecords = mergeArrayByKey(stnkRecords, remotePayload.stnkRecords, s => s.id || `${s.nopol}-${s.dueDate}`, delSet);
+      sewaLvRecords = mergeArrayByKey(sewaLvRecords, remotePayload.sewaLvRecords, lv => lv.id || `${lv.noPo}-${lv.unit}`, delSet);
+      pengajuanSewaRecords = mergeArrayByKey(pengajuanSewaRecords, remotePayload.pengajuanSewaRecords, ps => ps.id, delSet);
+      perubahanPoRecords = mergeArrayByKey(perubahanPoRecords, remotePayload.perubahanPoRecords, gp => gp.id, delSet);
+      ktpRecords = mergeArrayByKey(ktpRecords, remotePayload.ktpRecords, k => k.nik || k.id, delSet);
+
+      if (remotePayload.ptCustomLogos && typeof remotePayload.ptCustomLogos === 'object') {
+        ptCustomLogos = { ...remotePayload.ptCustomLogos, ...ptCustomLogos };
+      }
+      if (remotePayload.pvrStateByPt && typeof remotePayload.pvrStateByPt === 'object') {
+        pvrStateByPt = { ...remotePayload.pvrStateByPt, ...pvrStateByPt };
+      }
+
+      const rCt = remotePayload.cateringTowerState;
+      if (rCt && typeof rCt === 'object') {
+        cateringTowerState.sites = mergeArrayByKey(cateringTowerState.sites, rCt.sites, s => s.id, delSet);
+        cateringTowerState.reports = mergeArrayByKey(cateringTowerState.reports, rCt.reports, r => r.id, delSet);
+        cateringTowerState.employees = mergeArrayByKey(cateringTowerState.employees, rCt.employees, e => e.id || e.nik, delSet);
+        cateringTowerState.guests = mergeArrayByKey(cateringTowerState.guests, rCt.guests, g => g.id, delSet);
+        cateringTowerState.qualityLogs = mergeArrayByKey(cateringTowerState.qualityLogs, rCt.qualityLogs, q => q.id, delSet);
+        cateringTowerState.actionLogs = mergeArrayByKey(cateringTowerState.actionLogs, rCt.actionLogs, a => a.id, delSet);
+        cateringTowerState.auditLogs = mergeArrayByKey(cateringTowerState.auditLogs, rCt.auditLogs, l => `${l.time}-${l.user}-${l.action}`, delSet).slice(0, 300);
+      }
+    }
+
     async function pushStateToSupabase() {
       if (!supabaseClient || isApplyingRemoteSync) return;
       try {
         setElText('cloudSyncBadge', '☁️ Syncing...');
-        const payload = { records, ptCustomLogos, opsGelRecords, stnkRecords, sewaLvRecords, pengajuanSewaRecords, perubahanPoRecords, ktpRecords, pvrStateByPt, cateringTowerState };
+        // Tarik dulu data terbaru dari cloud agar inputan orang site lain terakumulasi (tidak tertimpa)
+        const { data: latestRow } = await supabaseClient
+          .from(SUPABASE_TABLE_NAME)
+          .select('payload')
+          .eq('id', SUPABASE_ROW_ID)
+          .maybeSingle();
+        if (latestRow && latestRow.payload) {
+          isApplyingRemoteSync = true;
+          try {
+            mergeWorkspaceStates(latestRow.payload);
+          } finally {
+            isApplyingRemoteSync = false;
+          }
+        }
+
+        const payload = {
+          records,
+          ptCustomLogos,
+          opsGelRecords,
+          stnkRecords,
+          sewaLvRecords,
+          pengajuanSewaRecords,
+          perubahanPoRecords,
+          ktpRecords,
+          pvrStateByPt,
+          cateringTowerState,
+          deletedEntityIds
+        };
         const { error } = await supabaseClient
           .from(SUPABASE_TABLE_NAME)
           .upsert({ id: SUPABASE_ROW_ID, payload, updated_at: new Date().toISOString() });
@@ -2850,6 +2932,8 @@
           .maybeSingle();
         if (!error && data && data.payload) {
           applyRemoteWorkspacePayload(data.payload);
+          // Jika perangkat lokal punya data tambahan yang belum ada di cloud, dorong hasil gabungan ke cloud
+          await pushStateToSupabase();
         } else if (!error && !data) {
           await pushStateToSupabase();
         }
@@ -2939,6 +3023,9 @@
           try {
             const parsed = JSON.parse(raw);
             if (!parsed || typeof parsed !== 'object') return;
+            if (Array.isArray(parsed.deletedEntityIds)) {
+              deletedEntityIds = Array.from(new Set([...deletedEntityIds, ...parsed.deletedEntityIds]));
+            }
 
             if (Array.isArray(parsed.records)) {
               parsed.records.forEach(r => {
@@ -3063,7 +3150,8 @@
           perubahanPoRecords,
           ktpRecords,
           pvrStateByPt,
-          cateringTowerState
+          cateringTowerState,
+          deletedEntityIds
         }));
         localStorage.setItem('ga_permanent_17_pt_logos_v1', JSON.stringify(ptCustomLogos));
         // Mirror backup permanen untuk mencegah kehilangan data saat update/refresh
@@ -3078,7 +3166,8 @@
           perubahanPoRecords,
           ktpRecords,
           pvrStateByPt,
-          cateringTowerState
+          cateringTowerState,
+          deletedEntityIds
         }));
       } catch (e) {
         console.warn('localStorage penuh:', e);
@@ -3087,7 +3176,7 @@
       updateNavBadge();
       if (supabaseClient && !isApplyingRemoteSync) {
         clearTimeout(cloudPushTimer);
-        cloudPushTimer = setTimeout(() => pushStateToSupabase(), 600);
+        cloudPushTimer = setTimeout(() => pushStateToSupabase(), 350);
       }
     }
 
@@ -3236,7 +3325,8 @@
         baPdf: currentSewaAttachments.baPdf || existing?.baPdf || '',
         baName: currentSewaAttachments.baName || existing?.baName || '',
         photo: currentSewaAttachments.photo || existing?.photo || '',
-        photoName: currentSewaAttachments.photoName || existing?.photoName || ''
+        photoName: currentSewaAttachments.photoName || existing?.photoName || '',
+        _updatedAt: Date.now()
       };
 
       if (editId) {
@@ -3289,6 +3379,7 @@
     }
 
     function deleteSewaLvRecord(id) {
+      markEntityDeleted(id);
       sewaLvRecords = sewaLvRecords.filter(x => x.id !== id);
       saveStorage();
       renderSewaLvTable();
@@ -3299,6 +3390,7 @@
       const item = sewaLvRecords.find(x => x.id === id);
       if (!item) return;
       item.status = newStatus;
+      item._updatedAt = Date.now();
       saveStorage();
       renderSewaLvTable();
       showToast(`Status kontrak ${item.noPo} diubah menjadi ${newStatus}.`, 'success');
@@ -3534,7 +3626,8 @@
         userSite,
         alasan,
         pdfDoc: currentPerubahanPoPdf.dataUrl || '',
-        pdfFileName: currentPerubahanPoPdf.fileName || ''
+        pdfFileName: currentPerubahanPoPdf.fileName || '',
+        _updatedAt: Date.now()
       };
       perubahanPoRecords.unshift(rec);
 
@@ -3542,6 +3635,7 @@
         const oldPoItem = sewaLvRecords.find(x => String(x.noPo || '').trim().toLowerCase() === noPoLama.toLowerCase());
         if (oldPoItem) {
           oldPoItem.status = 'Diganti PO Baru';
+          oldPoItem._updatedAt = Date.now();
         }
         sewaLvRecords.unshift({
           id: 'LV-NEW-' + Date.now(),
@@ -3562,7 +3656,8 @@
           baPdf: '',
           baName: '',
           photo: '',
-          photoName: ''
+          photoName: '',
+          _updatedAt: Date.now()
         });
         renderSewaLvTable();
       }
@@ -3662,7 +3757,7 @@
             <td class="py-2.5 px-3 text-center">
               <div class="flex items-center justify-center gap-1">
                 ${r.pdfDoc ? `<button type="button" onclick="viewPerubahanPoPdfModal('${r.id}')" class="px-2 py-1 rounded bg-emerald-100 text-emerald-900 text-[10px] font-extrabold">📄 PDF</button>` : `<span class="text-[10px] text-slate-400">No PDF</span>`}
-                <button type="button" onclick="perubahanPoRecords=perubahanPoRecords.filter(x=>x.id!=='${r.id}');saveStorage();renderPerubahanPoTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
+                <button type="button" onclick="markEntityDeleted('${r.id}');perubahanPoRecords=perubahanPoRecords.filter(x=>x.id!=='${r.id}');saveStorage();renderPerubahanPoTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
               </div>
             </td>
           </tr>
@@ -3749,7 +3844,8 @@
         alasan: getElVal('psAlasan', '').trim(),
         keterangan: getElVal('psKeterangan', '').trim(),
         kontrakPdf: currentPengajuanKontrakPdf.dataUrl || '',
-        kontrakFileName: currentPengajuanKontrakPdf.fileName || ''
+        kontrakFileName: currentPengajuanKontrakPdf.fileName || '',
+        _updatedAt: Date.now()
       };
       pengajuanSewaRecords.unshift(rec);
       currentPengajuanKontrakPdf = { dataUrl: '', fileName: '' };
@@ -3767,6 +3863,7 @@
       const item = pengajuanSewaRecords.find(x => x.id === id);
       if (!item) return;
       item.statusKontrak = 'Verifikasi GA → Procurement';
+      item._updatedAt = Date.now();
       saveStorage();
       renderPengajuanSewaTable();
       showToast(`Pengajuan ${item.noLambung} diteruskan ke Procurement!`, 'success');
@@ -3850,7 +3947,7 @@
             <div class="flex items-center justify-center gap-1">
               ${r.kontrakPdf ? `<button type="button" onclick="viewPengajuanKontrakPdfModal('${r.id}')" class="px-2 py-1 rounded bg-yellow-200 text-slate-950 text-[10px] font-black">📑 Kontrak</button>` : `<span class="text-[10px] text-slate-400">No PDF</span>`}
               ${r.statusKontrak === 'Pengajuan Baru (Copy GA)' ? `<button type="button" onclick="forwardPengajuanToProcurement('${r.id}')" class="px-2 py-1 rounded bg-blue-600 text-white text-[10px] font-extrabold">→ Proc</button>` : ''}
-              <button type="button" onclick="pengajuanSewaRecords=pengajuanSewaRecords.filter(x=>x.id!=='${r.id}');saveStorage();renderPengajuanSewaTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
+              <button type="button" onclick="markEntityDeleted('${r.id}');pengajuanSewaRecords=pengajuanSewaRecords.filter(x=>x.id!=='${r.id}');saveStorage();renderPengajuanSewaTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
             </div>
           </td>
         </tr>
@@ -3904,20 +4001,9 @@
       if (!p || typeof p !== 'object') return;
       isApplyingRemoteSync = true;
       try {
-        if (Array.isArray(p.records)) records = p.records;
-        if (p.ptCustomLogos && typeof p.ptCustomLogos === 'object') ptCustomLogos = { ...ptCustomLogos, ...p.ptCustomLogos };
-        if (Array.isArray(p.opsGelRecords)) opsGelRecords = p.opsGelRecords;
-        if (Array.isArray(p.stnkRecords)) stnkRecords = p.stnkRecords;
-        if (Array.isArray(p.sewaLvRecords) && p.sewaLvRecords.length) sewaLvRecords = p.sewaLvRecords;
-        if (Array.isArray(p.pengajuanSewaRecords)) pengajuanSewaRecords = p.pengajuanSewaRecords;
-        if (Array.isArray(p.perubahanPoRecords)) perubahanPoRecords = p.perubahanPoRecords;
-        if (Array.isArray(p.ktpRecords)) ktpRecords = p.ktpRecords;
-        if (p.pvrStateByPt && typeof p.pvrStateByPt === 'object') pvrStateByPt = p.pvrStateByPt;
-        if (p.cateringTowerState && typeof p.cateringTowerState === 'object') {
-          cateringTowerState = { ...cateringTowerState, ...p.cateringTowerState };
-        }
+        mergeWorkspaceStates(p);
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
-          records, ptCustomLogos, opsGelRecords, stnkRecords, sewaLvRecords, pengajuanSewaRecords, perubahanPoRecords, ktpRecords, pvrStateByPt, cateringTowerState
+          records, ptCustomLogos, opsGelRecords, stnkRecords, sewaLvRecords, pengajuanSewaRecords, perubahanPoRecords, ktpRecords, pvrStateByPt, cateringTowerState, deletedEntityIds
         }));
         updateNavBadge();
         renderRekapTable();
@@ -4137,12 +4223,14 @@
       const rep = cateringTowerState.reports.find(r => r.id === reportId);
       if (!rep) return;
       rep.status = status;
+      rep._updatedAt = Date.now();
       saveStorage();
       ctRender();
       showToast(`Laporan ${reportId} diperbarui menjadi ${status.toUpperCase()}.`, 'success');
     }
 
     function ctDeleteReport(reportId) {
+      markEntityDeleted(reportId);
       cateringTowerState.reports = cateringTowerState.reports.filter(r => r.id !== reportId);
       saveStorage();
       ctRender();
@@ -4264,7 +4352,8 @@
         vendorMalam: mode === 'MULTI_VENDOR' ? vMalam : summaryVendor,
         vendorSupper: mode === 'MULTI_VENDOR' ? vSupper : summaryVendor,
         pic: getElVal('ctNewSitePic', '').trim(),
-        rate: Number(getElVal('ctNewSiteRate', 0)) || 0
+        rate: Number(getElVal('ctNewSiteRate', 0)) || 0,
+        _updatedAt: Date.now()
       };
       cateringTowerState.sites.push(newSite);
       saveStorage();
@@ -4364,6 +4453,7 @@
       s.vendorSupper = mode === 'MULTI_VENDOR' ? vSupper : singleVendor;
       s.pic = getElVal('ctEditSitePic', s.pic).trim();
       s.rate = Number(getElVal('ctEditSiteRate', s.rate)) || 0;
+      s._updatedAt = Date.now();
       saveStorage();
       closeUniversalModal();
       ctRender();
@@ -4375,6 +4465,7 @@
         showToast('Minimal harus ada 1 site terdaftar.', 'warning');
         return;
       }
+      markEntityDeleted(siteId);
       cateringTowerState.sites = cateringTowerState.sites.filter(s => s.id !== siteId);
       saveStorage();
       ctRender();
@@ -4616,7 +4707,8 @@
         photos: totalPhotos,
         mealPhotos: JSON.parse(JSON.stringify(ctDraftMealPhotos)),
         status: 'pending',
-        pic: getElVal('sidebarActiveStaffLabel', 'PIC Site')
+        pic: getElVal('sidebarActiveStaffLabel', 'PIC Site'),
+        _updatedAt: Date.now()
       });
       cateringTowerState.auditLogs.unshift({
         time: new Date().toLocaleString('id-ID'),
@@ -4626,7 +4718,7 @@
       saveStorage();
       closeUniversalModal();
       ctGo('actual');
-      showToast('Laporan Harian Katering tersimpan. Cuti & Perdin otomatis dikecualikan dari jatah makan.', 'success');
+      showToast('Laporan Harian Katering tersimpan & terakumulasi ke Cloud GA HO.', 'success');
     }
 
     function ctAddEmployee(e) {
@@ -4638,7 +4730,8 @@
         dept: getElVal('ctEmpDept', '').trim(),
         site: getElVal('ctEmpSite', cateringTowerState.sites[0]?.name || 'Site 01 — PT GEL'),
         status: getElVal('ctEmpStatus', 'ON_SITE'),
-        overtime: Boolean(getEl('ctEmpOvertime')?.checked)
+        overtime: Boolean(getEl('ctEmpOvertime')?.checked),
+        _updatedAt: Date.now()
       };
       cateringTowerState.employees.unshift(emp);
       cateringTowerState.auditLogs.unshift({
@@ -4656,6 +4749,7 @@
       if (!emp) return;
       emp.status = newStatus;
       if (newStatus !== 'ON_SITE') emp.overtime = false;
+      emp._updatedAt = Date.now();
       saveStorage();
       ctRender();
       showToast(`${emp.name} diubah ke ${newStatus} → ${newStatus === 'ON_SITE' ? 'Dapat Jatah Makan' : 'Otomatis Tidak Dapat Makan'}.`, 'info');
@@ -4665,6 +4759,7 @@
       const emp = cateringTowerState.employees.find(x => x.id === empId);
       if (!emp || emp.status !== 'ON_SITE') return;
       emp.overtime = !emp.overtime;
+      emp._updatedAt = Date.now();
       saveStorage();
       ctRender();
     }
@@ -4678,7 +4773,8 @@
         company: getElVal('ctGstCompany', '').trim(),
         site: getElVal('ctGstSite', cateringTowerState.sites[0]?.name || 'Site 01 — PT GEL'),
         pax: Number(getElVal('ctGstPax', 1)) || 1,
-        meals: getElVal('ctGstMeals', 'Pagi, Siang, Malam')
+        meals: getElVal('ctGstMeals', 'Pagi, Siang, Malam'),
+        _updatedAt: Date.now()
       };
       cateringTowerState.guests.unshift(gst);
       cateringTowerState.auditLogs.unshift({
@@ -4699,7 +4795,8 @@
         site: getElVal('ctQcSite', cateringTowerState.sites[0]?.name || 'Site 01 — PT GEL'),
         shift: getElVal('ctQcShift', 'Makan Siang'),
         hygiene: getElVal('ctQcHygiene', 'Sangat Baik (Layak)'),
-        notes: getElVal('ctQcNotes', '').trim()
+        notes: getElVal('ctQcNotes', '').trim(),
+        _updatedAt: Date.now()
       });
       saveStorage();
       ctRender();
@@ -4714,7 +4811,8 @@
         site: getElVal('ctCaSite', cateringTowerState.sites[0]?.name || 'Site 01 — PT GEL'),
         issue: getElVal('ctCaIssue', '').trim(),
         action: getElVal('ctCaAction', '').trim(),
-        status: 'Open'
+        status: 'Open',
+        _updatedAt: Date.now()
       });
       saveStorage();
       ctRender();
@@ -5099,7 +5197,7 @@
                           }
                         </td>
                         <td class="py-2.5 px-3 text-center">
-                          <button type="button" onclick="cateringTowerState.employees=cateringTowerState.employees.filter(x=>x.id!=='${emp.id}');saveStorage();ctRender();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
+                          <button type="button" onclick="markEntityDeleted('${emp.id}');cateringTowerState.employees=cateringTowerState.employees.filter(x=>x.id!=='${emp.id}');saveStorage();ctRender();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
                         </td>
                       </tr>
                     `;
@@ -5167,7 +5265,7 @@
                       <td class="py-2.5 px-3 text-center font-black text-blue-900">${g.pax} Org</td>
                       <td class="py-2.5 px-3"><span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-black">✓ DAPAT JATAH MAKAN (${escapeHtml(g.meals)})</span></td>
                       <td class="py-2.5 px-3 text-center">
-                        <button type="button" onclick="cateringTowerState.guests=cateringTowerState.guests.filter(x=>x.id!=='${g.id}');saveStorage();ctRender();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
+                        <button type="button" onclick="markEntityDeleted('${g.id}');cateringTowerState.guests=cateringTowerState.guests.filter(x=>x.id!=='${g.id}');saveStorage();ctRender();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
                       </td>
                     </tr>
                   `).join('') || `<tr><td colspan="7" class="py-6 text-center text-slate-400">Belum ada tamu terdaftar.</td></tr>`}
@@ -5376,7 +5474,8 @@
         status: getElVal('stnkManualStatus', 'AUTO'),
         cost: Number(getElVal('stnkCost', 0)) || 0,
         pic: getElVal('stnkPic', ''),
-        photo: currentStnkPhotoData || ''
+        photo: currentStnkPhotoData || '',
+        _updatedAt: Date.now()
       });
       saveStorage();
       renderStnkTable();
@@ -5408,7 +5507,7 @@
           <td class="py-2.5 px-3 font-bold text-emerald-700">${escapeHtml(r.status)}</td>
           <td class="py-2.5 px-3 text-right font-bold">${formatRupiah(r.cost)}</td>
           <td class="py-2.5 px-3">${escapeHtml(r.pic)}</td>
-          <td class="py-2.5 px-3 text-center"><button type="button" onclick="stnkRecords.splice(${i},1);saveStorage();renderStnkTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[11px] font-bold">Hapus</button></td>
+          <td class="py-2.5 px-3 text-center"><button type="button" onclick="markEntityDeleted('${r.id}');stnkRecords.splice(${i},1);saveStorage();renderStnkTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[11px] font-bold">Hapus</button></td>
         </tr>
       `).join('') || `<tr><td colspan="11" class="py-6 text-center text-slate-400">Belum ada data STNK.</td></tr>`;
     }
@@ -5452,7 +5551,7 @@
           <td class="py-2 px-2.5 text-center">
             <div class="flex items-center justify-center gap-1">
               <button type="button" onclick="renderOpsGelPvrSheet(${i})" class="px-2 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-extrabold">Buka PVR</button>
-              <button type="button" onclick="opsGelRecords.splice(${i},1);saveStorage();renderOpsGelTable();renderOpsGelPvrSheet(0);" class="px-2 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
+              <button type="button" onclick="markEntityDeleted('${r.id}');opsGelRecords.splice(${i},1);saveStorage();renderOpsGelTable();renderOpsGelPvrSheet(0);" class="px-2 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
             </div>
           </td>
         </tr>
@@ -5481,152 +5580,530 @@
         setElText('opsDocFrom', 'Eliza Putri Nadya');
         setElText('opsDocDate', formatDateIndo(getTodayIso()));
         setElText('opsDocDueDate', formatDateIndo(addDaysIso(getTodayIso(), 14)));
-        const colSpanSub = isAtkDefault ? 5 : 4;
         body.innerHTML = `
           <tr>
             <td class="text-center">1</td>
-            <td contenteditable="true">Pengajuan Operasional / ATK PT. Global Energi Lestari</td>
-            <td class="text-center" contenteditable="true">1</td>
-            ${isAtkDefault ? '<td class="text-center" contenteditable="true">Paket</td>' : ''}
-            <td class="text-right" contenteditable="true">Rp -</td>
-            <td class="text-right font-bold" contenteditable="true">Rp -</td>
-          </tr>
-          <tr>
-            <td colspan="${colSpanSub}" class="text-center font-bold">SUBTOTAL</td>
+            <td>Pengajuan Operasional / ATK PT. Global Energi Lestari</td>
+            <td class="text-center">1</td>
+            ${isAtkDefault ? `<td class="text-center">Paket</td>` : ''}
+            <td class="text-right">Rp -</td>
             <td class="text-right font-bold">Rp -</td>
           </tr>
+          <tr><td colspan="${isAtkDefault ? 5 : 4}" class="text-center font-bold">SUBTOTAL</td><td class="text-right font-bold">Rp -</td></tr>
           <tr>
             <td colspan="${isAtkDefault ? 3 : 2}" rowspan="3" class="align-top p-2">
               <div class="font-bold underline mb-1">KETERANGAN :</div>
-              <div contenteditable="true" class="font-bold leading-snug">REKENING : -\nA/N -\nBANK -</div>
+              <div class="font-bold">REKENING : - A/N - BANK -</div>
             </td>
-            <td colspan="2" class="text-right font-bold text-[8.5pt]">PPN 11%</td>
-            <td class="text-right" contenteditable="true">Rp -</td>
+            <td colspan="2" class="text-right font-bold text-[10px]">PPN 11%</td>
+            <td class="text-right">Rp -</td>
           </tr>
-          <tr>
-            <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 23 (2%)</td>
-            <td class="text-right" contenteditable="true">Rp -</td>
-          </tr>
-          <tr>
-            <td colspan="2" class="text-right font-bold">GRAND TOTAL</td>
-            <td class="text-right font-bold">Rp -</td>
-          </tr>
+          <tr><td colspan="2" class="text-right font-bold text-[10px]">PPH 23 (2%)</td><td class="text-right">Rp -</td></tr>
+          <tr><td colspan="2" class="text-right font-bold">GRAND TOTAL</td><td class="text-right font-bold">Rp -</td></tr>
         `;
+        requestAnimationFrame(fitPvrSheetsToViewport);
         return;
       }
 
-      const isAtkRec = isOpsAtkCategory(activeRec.kategori);
-      if (pvrThUnit) pvrThUnit.classList.toggle('hidden', !isAtkRec);
+      const isAtk = isOpsAtkCategory(activeRec.kategori);
+      if (pvrThUnit) pvrThUnit.classList.toggle('hidden', !isAtk);
+      const dt = activeRec.date || getTodayIso();
+      const dtParts = dt.split('-');
+      const rMonth = dtParts.length === 3 ? ROMAN_MONTHS[parseInt(dtParts[1], 10) - 1] : m;
+      const rYear = dtParts.length === 3 ? dtParts[0] : y;
 
-      setElText('opsDocNoDisplay', activeRec.noGr || `GEL/GA/GR-____/${m}/${y}`);
+      setElText('opsDocNoDisplay', `GEL/GA/GR-____/${rMonth}/${rYear}`);
       setElText('opsDocFrom', activeRec.applicant || 'Eliza Putri Nadya');
-      setElText('opsDocDate', formatDateIndo(activeRec.date || getTodayIso()));
-      setElText('opsDocDueDate', formatDateIndo(addDaysIso(activeRec.date || getTodayIso(), 14)));
+      setElText('opsDocDate', formatDateIndo(dt));
+      setElText('opsDocDueDate', formatDateIndo(addDaysIso(dt, 14)));
 
-      const items = (Array.isArray(activeRec.items) && activeRec.items.length)
+      const items = Array.isArray(activeRec.items) && activeRec.items.length
         ? activeRec.items
-        : [{ name: activeRec.title || activeRec.kategori || 'Operasional GA PT GEL', qty: 1, unit: 'Paket', price: Number(activeRec.total) || 0 }];
+        : [{ name: activeRec.title || activeRec.kategori, qty: 1, unit: 'Paket', price: activeRec.total, subtotal: activeRec.total }];
 
-      let subtotal = 0;
-      const itemRowsHtml = items.map((it, idx) => {
-        const q = Number(it.qty) || 1;
-        const p = Number(it.price) || 0;
-        const sub = q * p;
-        subtotal += sub;
-        return `
-          <tr>
-            <td class="text-center">${idx + 1}</td>
-            <td contenteditable="true">${escapeHtml(it.name)}</td>
-            <td class="text-center" contenteditable="true">${q}</td>
-            ${isAtkRec ? `<td class="text-center" contenteditable="true">${escapeHtml(it.unit || 'Pcs')}</td>` : ''}
-            <td class="text-right" contenteditable="true">${formatRupiahPvr(p)}</td>
-            <td class="text-right font-bold" contenteditable="true">${formatRupiahPvr(sub)}</td>
-          </tr>
-        `;
-      }).join('');
+      const itemRowsHtml = items.map((it, idx) => `
+        <tr>
+          <td class="text-center">${idx + 1}</td>
+          <td>${escapeHtml(it.name || '-')}</td>
+          <td class="text-center">${formatNumber(it.qty || 1)}</td>
+          ${isAtk ? `<td class="text-center">${escapeHtml(it.unit || 'Pcs')}</td>` : ''}
+          <td class="text-right">${formatRupiahPvr(it.price)}</td>
+          <td class="text-right font-bold">${formatRupiahPvr(it.subtotal)}</td>
+        </tr>
+      `).join('');
 
       body.innerHTML = `
-        <tr>
-          <td></td>
-          <td colspan="${isAtkRec ? 5 : 4}" class="font-bold uppercase" contenteditable="true">${escapeHtml(activeRec.kategori || 'OPERASIONAL GA PT. GEL')}${activeRec.invoice ? ' — INV: ' + escapeHtml(activeRec.invoice) : ''}</td>
-        </tr>
+        <tr><td></td><td colspan="${isAtk ? 5 : 4}" class="font-bold uppercase">${escapeHtml(activeRec.kategori || 'OPERASIONAL GA')}</td></tr>
         ${itemRowsHtml}
+        <tr><td colspan="${isAtk ? 5 : 4}" class="text-center font-bold">SUBTOTAL</td><td class="text-right font-bold">${formatRupiahPvr(activeRec.total)}</td></tr>
         <tr>
-          <td colspan="${isAtkRec ? 5 : 4}" class="text-center font-bold">SUBTOTAL</td>
-          <td class="text-right font-bold">${formatRupiahPvr(subtotal)}</td>
-        </tr>
-        <tr>
-          <td colspan="${isAtkRec ? 3 : 2}" rowspan="3" class="align-top p-2">
+          <td colspan="${isAtk ? 3 : 2}" rowspan="3" class="align-top p-2">
             <div class="font-bold underline mb-1">KETERANGAN :</div>
-            <div contenteditable="true" class="font-bold leading-snug whitespace-pre-line">REKENING : ${escapeHtml(activeRec.rekNo || '-')}
-A/N ${escapeHtml((activeRec.rekName || '-').toUpperCase())}
-${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
+            <div class="font-bold leading-snug">
+              REKENING : ${escapeHtml(activeRec.rekNo || '-')}<br/>
+              A/N ${escapeHtml(activeRec.rekName || '-')}<br/>
+              ${escapeHtml(activeRec.rekBank || '-')}
+            </div>
           </td>
-          <td colspan="2" class="text-right font-bold text-[8.5pt]">PPN 11%</td>
-          <td class="text-right" contenteditable="true">Rp -</td>
+          <td colspan="2" class="text-right font-bold text-[10px]">PPN 11%</td>
+          <td class="text-right">Rp -</td>
         </tr>
-        <tr>
-          <td colspan="2" class="text-right font-bold text-[8.5pt]">PPH 23 (2%)</td>
-          <td class="text-right" contenteditable="true">Rp -</td>
-        </tr>
-        <tr>
-          <td colspan="2" class="text-right font-bold">GRAND TOTAL</td>
-          <td class="text-right font-bold">${formatRupiahPvr(subtotal)}</td>
-        </tr>
-        <tr>
-          <td colspan="${isAtkRec ? 6 : 5}" class="p-2">
-            <span class="font-bold underline">DESKRIPSI :</span>
-            <span contenteditable="true">${escapeHtml(activeRec.title || ('Pengajuan ' + (activeRec.kategori || 'Operasional GA') + ' PT. Global Energi Lestari'))}</span>
-          </td>
-        </tr>
+        <tr><td colspan="2" class="text-right font-bold text-[10px]">PPH 23 (2%)</td><td class="text-right">Rp -</td></tr>
+        <tr><td colspan="2" class="text-right font-bold">GRAND TOTAL</td><td class="text-right font-bold">${formatRupiahPvr(activeRec.total)}</td></tr>
+        <tr><td colspan="${isAtk ? 6 : 5}" class="p-2"><span class="font-bold underline">DESKRIPSI :</span> ${escapeHtml(activeRec.title || activeRec.kategori || '-')}</td></tr>
+      `;
+      requestAnimationFrame(fitPvrSheetsToViewport);
+    }
+
+    function addOpsInputRow(def = {}) {
+      const tbody = getEl('opsInputItemsBody');
+      if (!tbody) return;
+      const isAtk = isOpsAtkCategory(getElVal('opsKategori', 'Tagihan ATK & Perlengkapan'));
+      const idx = tbody.children.length + 1;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="py-1.5 px-2 text-center font-bold text-slate-500 ops-row-num">${idx}</td>
+        <td class="py-1.5 px-2"><input type="text" value="${escapeHtml(def.name || '')}" placeholder="${isAtk ? 'Nama item barang ATK...' : 'Uraian pengajuan...'}" class="ops-item-name w-full h-8 px-2 text-xs border border-slate-300 rounded-lg" /></td>
+        <td class="py-1.5 px-2"><input type="number" value="${def.qty || 1}" min="1" oninput="recalcOpsDraftRows()" class="ops-item-qty w-full h-8 px-2 text-xs border border-slate-300 rounded-lg text-center font-bold" /></td>
+        <td class="py-1.5 px-2 ops-td-unit ${isAtk ? '' : 'hidden'}"><input type="text" value="${escapeHtml(def.unit || 'Pcs')}" class="ops-item-unit w-full h-8 px-2 text-xs border border-slate-300 rounded-lg text-center" /></td>
+        <td class="py-1.5 px-2"><input type="number" value="${def.price || 0}" min="0" oninput="recalcOpsDraftRows()" class="ops-item-price w-full h-8 px-2 text-xs border border-slate-300 rounded-lg text-right font-bold" /></td>
+        <td class="py-1.5 px-2 text-right font-extrabold text-slate-900 ops-item-sub">Rp 0</td>
+        <td class="py-1.5 px-2 text-center"><button type="button" onclick="this.closest('tr').remove(); recalcOpsDraftRows();" class="text-rose-600 font-bold">✕</button></td>
+      `;
+      tbody.appendChild(tr);
+      recalcOpsDraftRows();
+    }
+
+    function addMultipleOpsInputRows(n) {
+      for (let i = 0; i < n; i++) addOpsInputRow();
+    }
+
+    function recalcOpsDraftRows() {
+      const tbody = getEl('opsInputItemsBody');
+      if (!tbody) return;
+      let total = 0;
+      Array.from(tbody.children).forEach((tr, i) => {
+        const num = tr.querySelector('.ops-row-num');
+        if (num) num.textContent = i + 1;
+        const qty = Number(tr.querySelector('.ops-item-qty')?.value || 0);
+        const price = Number(tr.querySelector('.ops-item-price')?.value || 0);
+        const sub = qty * price;
+        total += sub;
+        const subEl = tr.querySelector('.ops-item-sub');
+        if (subEl) subEl.textContent = formatRupiah(sub);
+      });
+      setElText('opsDraftTotalLabel', `Total: ${formatRupiah(total)}`);
+    }
+
+    function resetOpsGelForm() {
+      getEl('opsGelForm')?.reset();
+      setElVal('opsDate', getTodayIso());
+      setElVal('editingOpsId', '');
+      const tbody = getEl('opsInputItemsBody');
+      if (tbody) tbody.innerHTML = '';
+      addOpsInputRow();
+      onOpsKategoriChange();
+    }
+
+    function handleSaveOpsGel(e) {
+      e.preventDefault();
+      const tbody = getEl('opsInputItemsBody');
+      const items = [];
+      let total = 0;
+      if (tbody) {
+        Array.from(tbody.children).forEach(tr => {
+          const name = tr.querySelector('.ops-item-name')?.value?.trim();
+          const qty = Number(tr.querySelector('.ops-item-qty')?.value || 1);
+          const unit = tr.querySelector('.ops-item-unit')?.value?.trim() || 'Pcs';
+          const price = Number(tr.querySelector('.ops-item-price')?.value || 0);
+          if (name) {
+            const subtotal = qty * price;
+            total += subtotal;
+            items.push({ name, qty, unit, price, subtotal });
+          }
+        });
+      }
+      const rec = {
+        id: 'OPS-' + Date.now(),
+        date: getElVal('opsDate', getTodayIso()),
+        kategori: getElVal('opsKategori', 'Tagihan ATK & Perlengkapan'),
+        applicant: getElVal('opsApplicant', '').trim(),
+        invoice: getElVal('opsInvoice', '').trim(),
+        rekNo: getElVal('opsRekNo', '').trim(),
+        rekName: getElVal('opsRekName', '').trim(),
+        rekBank: getElVal('opsRekBank', '').trim(),
+        title: getElVal('opsTitle', '').trim(),
+        items,
+        total,
+        _updatedAt: Date.now()
+      };
+      opsGelRecords.unshift(rec);
+      saveStorage();
+      resetOpsGelForm();
+      renderOpsGelTable();
+      showToast('Pengajuan Operasional PT GEL tersimpan & tampil di PVR kanan!', 'success');
+    }
+
+    function loadSampleOpsGel() {
+      opsGelRecords.unshift({
+        id: 'OPS-SMP-' + Date.now(),
+        date: getTodayIso(),
+        kategori: 'Tagihan ATK & Perlengkapan',
+        applicant: 'Eliza Putri Nadya',
+        invoice: 'INV-ATK-2026-01',
+        rekNo: '0221-568-710',
+        rekName: 'TONY',
+        rekBank: 'BANK CENTRAL ASIA',
+        title: 'Pembelian ATK & Perlengkapan Kantor HO',
+        items: [
+          { name: 'Kertas A4 80gr Sinar Dunia', qty: 10, unit: 'Rim', price: 58000, subtotal: 580000 },
+          { name: 'Tinta Printer Epson 003 Full Set', qty: 2, unit: 'Set', price: 340000, subtotal: 680000 }
+        ],
+        total: 1260000,
+        _updatedAt: Date.now()
+      });
+      saveStorage();
+      renderOpsGelTable();
+      showToast('Contoh data Operasional PT GEL ditambahkan.', 'info');
+    }
+
+    function printOpsGelPvr() {
+      window.print();
+    }
+
+    function exportOpsGelExcel() {
+      if (typeof XLSX === 'undefined') return;
+      const rows = opsGelRecords.map((r, i) => ({
+        'No.': i + 1,
+        'Tanggal': r.date,
+        'Kategori': r.kategori,
+        'Pengaju': r.applicant,
+        'No. Invoice': r.invoice,
+        'Rekening': r.rekNo,
+        'Atas Nama': r.rekName,
+        'Bank': r.rekBank,
+        'Judul': r.title,
+        'Total Nominal': Number(r.total) || 0
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'OPERASIONAL_GA_GEL');
+      XLSX.writeFile(wb, `Operasional_GA_PT_GEL_${getTodayIso()}.xlsx`);
+      showToast('Excel Operasional GA PT GEL berhasil diunduh.', 'success');
+    }
+
+    function toggleBulkPasteOpsModal(show) {
+      if (!show) { closeUniversalModal(); return; }
+      openUniversalModal(`
+        <div class="space-y-3">
+          <div class="flex items-center justify-between border-b pb-2">
+            <h3 class="text-sm font-black text-slate-900">📋 Paste Daftar Item dari Excel</h3>
+            <button type="button" onclick="closeUniversalModal()" class="text-slate-500 font-bold">✕</button>
+          </div>
+          <p class="text-xs text-slate-500">Tempel baris dari Excel dengan format: <b>Nama Item [Tab] Qty [Tab] Unit [Tab] Harga</b></p>
+          <textarea id="bulkOpsTextarea" rows="6" placeholder="Kertas A4 80gr&#9;10&#9;Rim&#9;58000" class="w-full p-3 text-xs border border-slate-300 rounded-xl font-mono"></textarea>
+          <div class="flex justify-end gap-2">
+            <button type="button" onclick="closeUniversalModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-xs font-bold">Batal</button>
+            <button type="button" onclick="applyBulkOpsPaste()" class="px-5 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-extrabold">Masukkan ke Tabel</button>
+          </div>
+        </div>
+      `);
+    }
+
+    function applyBulkOpsPaste() {
+      const raw = getElVal('bulkOpsTextarea', '').trim();
+      if (!raw) return;
+      raw.split(/\r?\n/).forEach(line => {
+        const cols = line.split('\t');
+        if (cols[0]?.trim()) {
+          addOpsInputRow({
+            name: cols[0].trim(),
+            qty: Number(String(cols[1] || '1').replace(/\D/g, '')) || 1,
+            unit: (cols[2] || 'Pcs').trim(),
+            price: Number(String(cols[3] || '0').replace(/\D/g, '')) || 0
+          });
+        }
+      });
+      closeUniversalModal();
+      showToast('Baris item dari Excel berhasil dimasukkan.', 'success');
+    }
+
+    function resetStnkForm() {
+      getEl('stnkForm')?.reset();
+      setElVal('stnkDueDate', getTodayIso());
+      currentStnkPhotoData = '';
+      const img = getEl('stnkPhotoPreview');
+      if (img) { img.src = ''; img.classList.add('hidden'); }
+    }
+
+    function loadSampleStnk() {
+      stnkRecords.unshift({
+        id: 'STNK-SMP-' + Date.now(),
+        nopol: 'B 9124 KXA',
+        unit: 'Toyota Hilux 4x4 Double Cabin',
+        pt: 'GEL',
+        type: 'Pajak Tahunan (1 Thn)',
+        dueDate: addDaysIso(getTodayIso(), 20),
+        status: 'Segera Perpanjang',
+        cost: 4850000,
+        pic: 'Pool HO Jakarta',
+        photo: '',
+        _updatedAt: Date.now()
+      });
+      saveStorage();
+      renderStnkTable();
+      showToast('Contoh data STNK ditambahkan.', 'info');
+    }
+
+    function exportStnkExcel() {
+      if (typeof XLSX === 'undefined') return;
+      const rows = stnkRecords.map((r, i) => ({
+        'No.': i + 1,
+        'No. Polisi': r.nopol,
+        'Tipe Kendaraan': r.unit,
+        'PT': r.pt,
+        'Jenis Perpanjangan': r.type,
+        'Jatuh Tempo': r.dueDate,
+        'Status': r.status,
+        'Estimasi Biaya': Number(r.cost) || 0,
+        'PIC / Lokasi': r.pic
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'PERPANJANGAN_STNK');
+      XLSX.writeFile(wb, `Monitoring_Perpanjangan_STNK_${getTodayIso()}.xlsx`);
+      showToast('Excel Perpanjangan STNK berhasil diunduh.', 'success');
+    }
+
+    // =========================================================================
+    // KOP LOGO 17 PT, TICKETING PDF PARSER, OCR KTP, REKAP & PVR GENERATOR
+    // =========================================================================
+    function buildPtKopLogoMarkup(ptCode) {
+      const code = String(ptCode || 'GEL').toUpperCase();
+      const info = PT_FULL_INFO[code] || PT_FULL_INFO['GEL'];
+      const customLogo = ptCustomLogos[code];
+      if (customLogo) {
+        return `<div class="flex items-center gap-3">
+          <img src="${customLogo}" alt="${escapeHtml(info.fullName)}" class="max-h-16 object-contain" />
+        </div>`;
+      }
+      if (code === 'GEL' || code === 'GEL-PKU') {
+        return `
+          <div style="display:inline-flex;flex-direction:column;align-items:center;padding:4px 0;">
+            <svg width="54" height="46" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g transform="translate(60,50)" stroke="#c59632" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M0,-38 C18,-22 18,-4 0,9 C-18,-4 -18,-22 0,-38 Z"/>
+                <path d="M0,-38 C18,-22 18,-4 0,9 C-18,-4 -18,-22 0,-38 Z" transform="rotate(120)"/>
+                <path d="M0,-38 C18,-22 18,-4 0,9 C-18,-4 -18,-22 0,-38 Z" transform="rotate(240)"/>
+                <circle cx="0" cy="0" r="6" fill="#ffffff" stroke="#c59632" stroke-width="4"/>
+              </g>
+            </svg>
+            <div style="display:flex;align-items:center;gap:8px;width:100%;margin-top:1px;">
+              <span style="flex:1;height:1px;background:#c59632;"></span>
+              <span style="font-family:Georgia,serif;font-size:10pt;font-weight:700;letter-spacing:2px;color:#b88628;">GEL</span>
+              <span style="flex:1;height:1px;background:#c59632;"></span>
+            </div>
+            <div style="font-family:Georgia,serif;font-size:8.5pt;font-weight:700;letter-spacing:1.2px;color:#b88628;margin-top:2px;">
+              ${escapeHtml(info.fullName)}
+            </div>
+          </div>
+        `;
+      }
+      return `
+        <div>
+          <div style="font-size:13pt;font-weight:900;letter-spacing:0.4px;color:#0f172a;">${escapeHtml(info.fullName)}</div>
+          <div style="font-size:8.5pt;color:#475569;margin-top:2px;">${escapeHtml(info.sub || '')}</div>
+        </div>
       `;
     }
 
+    function openLogoManagerModal() {
+      const codes = Object.keys(PT_FULL_INFO);
+      openUniversalModal(`
+        <div class="space-y-4">
+          <div class="flex items-center justify-between border-b pb-2.5">
+            <div>
+              <h3 class="text-base font-black text-slate-900">🎨 Pengelola 17 Logo Entitas PT (Terkunci Permanen)</h3>
+              <p class="text-xs text-slate-500">Upload kop surat/logo khusus untuk masing-masing PT agar otomatis muncul di lembar PVR A4.</p>
+            </div>
+            <button type="button" onclick="closeUniversalModal()" class="text-slate-500 font-bold">✕</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[60vh] overflow-y-auto pr-1">
+            ${codes.map(c => `
+              <div class="p-3 rounded-2xl border border-slate-200 flex items-center justify-between gap-2 bg-slate-50">
+                <div class="min-w-0">
+                  <div class="text-xs font-black text-slate-900">${c}</div>
+                  <div class="text-[10px] text-slate-500 truncate">${escapeHtml(PT_FULL_INFO[c].fullName)}</div>
+                  <div class="text-[10px] font-bold ${ptCustomLogos[c] ? 'text-emerald-700' : 'text-amber-700'} mt-0.5">${ptCustomLogos[c] ? '✓ Logo Custom Terpasang' : 'Kop Standar'}</div>
+                </div>
+                <label class="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-[10px] font-extrabold cursor-pointer shrink-0">
+                  Upload
+                  <input type="file" accept="image/*" onchange="uploadSpecificPtLogo('${c}', this.files)" class="hidden" />
+                </label>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `);
+    }
+
+    function uploadSpecificPtLogo(ptCode, files) {
+      if (!files || !files.length) return;
+      compressImageToDataUrl(files[0], url => {
+        ptCustomLogos[ptCode] = url;
+        saveStorage();
+        renderPvrPreview(false);
+        openLogoManagerModal();
+        showToast(`Logo ${ptCode} berhasil disimpan permanen.`, 'success');
+      }, 640, 0.85);
+    }
+
+    function handleUploadPtLogo(files) {
+      const pt = getElVal('pvrPtSelect', 'GEL');
+      uploadSpecificPtLogo(pt, files);
+    }
+
+    function getFormPassengers() {
+      const box = getEl('passengerRowsContainer');
+      if (!box) return [];
+      return Array.from(box.children).map(row => ({
+        title: row.querySelector('.pax-title')?.value || 'Mr.',
+        name: (row.querySelector('.pax-name')?.value || '').trim().toUpperCase(),
+        role: (row.querySelector('.pax-role')?.value || '').trim()
+      })).filter(p => p.name);
+    }
+
+    function onServiceTypeChange() {
+      const svc = getElVal('fJenisLayanan', 'FLIGHT');
+      setElText('lblMaskapaiHotel', svc === 'HOTEL' ? 'Nama Hotel *' : (svc === 'TRAIN' ? 'Kereta Api *' : 'Maskapai / Hotel *'));
+      setElText('lblFlightNoRoom', svc === 'HOTEL' ? 'Tipe Kamar' : 'No. Penerbangan / KA');
+      setElText('lblPnrNights', svc === 'HOTEL' ? 'Jumlah Malam' : 'Kode Booking (PNR)');
+      setElText('lblRuteDetail', svc === 'HOTEL' ? 'Kota / Lokasi Hotel *' : 'Rute Perjalanan *');
+      setElText('lblDepartCi', svc === 'HOTEL' ? 'Check-In *' : 'Depart Date *');
+      setElText('lblReturnCo', svc === 'HOTEL' ? 'Check-Out' : 'Return Date (PP)');
+      recalculateMova();
+      refreshFormDerivedOutputs();
+    }
+
+    function onPtChange() {
+      const pt = getElVal('fPt', 'EPM');
+      setElText('ptGrHint', `GR: ${pt}`);
+      refreshFormDerivedOutputs();
+    }
+
+    function onPaymentMethodChange() {
+      const pay = getElVal('fPayment', 'DC BNI Pak Tony');
+      setElVal('fTujuan', pay);
+      refreshFormDerivedOutputs();
+    }
+
+    function recalculateMova() {
+      const nom = Number(getElVal('fNominal', 0)) || 0;
+      const vendor = getElVal('fVendor', 'Traveloka');
+      const svc = getElVal('fJenisLayanan', 'FLIGHT');
+      const rate = vendor === 'Traveloka' ? (svc === 'HOTEL' ? 0.015 : 0.00135) : 0;
+      setElVal('fMova', Math.round(nom * rate));
+      setElText('movaRateHint', vendor === 'Traveloka' ? `Tarif MOVA: ${(rate * 100).toFixed(3)}% (${svc})` : 'Non-MOVA');
+    }
+
+    function applyGrTemplate() {
+      const pt = getElVal('fPt', 'EPM');
+      const m = ROMAN_MONTHS[new Date().getMonth()];
+      const y = new Date().getFullYear();
+      setElVal('fNoGr', `____/GR/${pt}/${m}/${y}`);
+      refreshFormDerivedOutputs();
+    }
+
+    function resetCustomPvrText() {
+      customPvrTextEdited = false;
+      refreshFormDerivedOutputs();
+    }
+
+    function refreshFormDerivedOutputs() {
+      const pax = getFormPassengers();
+      const nom = Number(getElVal('fNominal', 0)) || 0;
+      const count = Math.max(1, pax.length);
+      setElText('nominalPerPaxHint', `${count} Orang • @ ${formatRupiah(Math.round(nom / count))} / orang`);
+
+      if (!customPvrTextEdited) {
+        const svc = getElVal('fJenisLayanan', 'FLIGHT');
+        const maskapai = getElVal('fMaskapaiHotel', '').trim() || '-';
+        const flightNo = getElVal('fFlightNoRoom', '').trim();
+        const pnr = getElVal('fPnrNights', '').trim();
+        const rute = getElVal('fRute', '').trim() || '-';
+        const dep = formatDateIndo(getElVal('fDepartDate', getTodayIso()));
+        const kep = getElVal('fKeperluan', 'Perdin');
+        const namesStr = pax.length ? pax.map(p => `${p.title} ${p.name}`).join(', ') : '-';
+        const text = svc === 'HOTEL'
+          ? `Pembayaran Voucher Hotel ${maskapai} (${rute}), Check-In ${dep} (${pnr || '1 Malam'}) a.n. ${namesStr} — Keperluan: ${kep}.`
+          : `Pembayaran Tiket ${maskapai} ${flightNo ? '(' + flightNo + ')' : ''} Rute ${rute}, Tgl ${dep} ${pnr ? 'Kode Booking ' + pnr : ''} a.n. ${namesStr} — Keperluan: ${kep}.`;
+        setElVal('fPvrKeterangan', text);
+      }
+
+      const previewBody = getEl('livePreviewRowBody');
+      if (previewBody) {
+        const names = pax.map(p => `${p.title} ${p.name}`).join(', ') || '-';
+        previewBody.innerHTML = `
+          <tr>
+            <td class="border border-slate-300 px-2 py-1.5 text-center">1</td>
+            <td class="border border-slate-300 px-2 py-1.5">${formatDateShort(getElVal('fTanggalOrder', getTodayIso()))}</td>
+            <td class="border border-slate-300 px-2 py-1.5 font-mono font-bold">${escapeHtml(getElVal('fInvoice', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fPayment', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(getElVal('fPt', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(names)}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fKeperluan', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fRute', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${formatDateShort(getElVal('fDepartDate', getTodayIso()))}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fMaskapaiHotel', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fVendor', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5 text-right font-bold">${formatRupiah(nom)}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fStatusPengajuan', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fTujuan', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fNoGr', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fStatusBayar', 'UNPAID'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fStatusKet', '-'))}</td>
+            <td class="border border-slate-300 px-2 py-1.5 text-right">${formatRupiah(getElVal('fMova', 0))}</td>
+          </tr>
+        `;
+      }
+    }
+
     function resetBookingForm() {
-      const f = getEl('bookingForm');
-      if (f) f.reset();
+      getEl('bookingForm')?.reset();
       editingRecordId = null;
       customPvrTextEdited = false;
       setElVal('fTanggalOrder', getTodayIso());
       setElVal('fDepartDate', getTodayIso());
       const box = getEl('passengerRowsContainer');
-      if (box) { box.innerHTML = ''; addPassengerRow(); }
+      if (box) box.innerHTML = '';
+      addPassengerRow();
       refreshFormDerivedOutputs();
     }
 
     function handleSaveForm(e) {
       e.preventDefault();
       const pax = getFormPassengers();
-      if (!pax.length) {
-        showToast('Isi minimal 1 nama penumpang terlebih dahulu.', 'warning');
-        return;
-      }
-      const paxCount = Math.max(1, pax.length);
-      const nom = Number(getElVal('fNominal', 0)) || 0;
-      const unitNom = Math.round(nom / paxCount);
-      const item = {
+      const rec = {
         id: editingRecordId || 'REC-' + Date.now(),
         tanggalOrder: getElVal('fTanggalOrder', getTodayIso()),
         issueTime: getElVal('fIssueTime', '11:00'),
         divisi: getElVal('fDivisi', 'GA'),
-        jenis: getElVal('fJenisLayanan', 'FLIGHT'),
+        jenisLayanan: getElVal('fJenisLayanan', 'FLIGHT'),
         pt: getElVal('fPt', 'EPM'),
         keperluan: getElVal('fKeperluan', 'Perdin'),
-        requestBy: getElVal('fRequestBy', ''),
+        requestBy: getElVal('fRequestBy', '').trim(),
         passengers: pax,
-        paxCount,
-        nama: pax.map(p => `${p.title} ${p.name}`).join(', '),
+        nama: pax.map(p => `${p.title} ${p.name}`).join(', ') || '-',
         invoice: getElVal('fInvoice', '').trim(),
         receiptCode: getElVal('fReceiptCode', '').trim(),
-        maskapai: getElVal('fMaskapaiHotel', '').trim(),
-        flightNo: getElVal('fFlightNoRoom', '').trim().toUpperCase(),
-        pnr: getElVal('fPnrNights', '').trim().toUpperCase(),
+        maskapaiHotel: getElVal('fMaskapaiHotel', '').trim(),
+        flightNoRoom: getElVal('fFlightNoRoom', '').trim(),
+        pnrNights: getElVal('fPnrNights', '').trim(),
         rute: getElVal('fRute', '').trim(),
         departDate: getElVal('fDepartDate', getTodayIso()),
         returnDate: getElVal('fReturnDate', ''),
         vendor: getElVal('fVendor', 'Traveloka'),
-        nominal: nom,
-        unitNominal: unitNom,
+        nominal: Number(getElVal('fNominal', 0)) || 0,
         mova: Number(getElVal('fMova', 0)) || 0,
         payment: getElVal('fPayment', 'DC BNI Pak Tony'),
         tujuan: getElVal('fTujuan', 'DC BNI Pak Tony'),
@@ -5634,28 +6111,25 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         noGr: getElVal('fNoGr', '').trim(),
         statusBayar: getElVal('fStatusBayar', 'UNPAID'),
         statusKet: getElVal('fStatusKet', '').trim(),
-        pvrKeterangan: getElVal('fPvrKeterangan', buildAutoPvrKeterangan())
+        pvrKeterangan: getElVal('fPvrKeterangan', '').trim(),
+        _updatedAt: Date.now()
       };
-
       if (editingRecordId) {
-        const idx = records.findIndex(r => r.id === editingRecordId);
-        if (idx >= 0) records[idx] = item;
-        editingRecordId = null;
-        showToast('Data pemesanan berhasil diperbarui!', 'success');
+        const idx = records.findIndex(x => x.id === editingRecordId);
+        if (idx >= 0) records[idx] = rec;
       } else {
-        records.unshift(item);
-        showToast(`Data ${item.pt} (${item.nama}) tersimpan ke Rekap & PVR!`, 'success');
+        records.unshift(rec);
       }
       saveStorage();
-      renderRekapTable();
-      renderPvrPreview(true);
       resetBookingForm();
+      renderRekapTable();
+      renderPvrPreview(false);
+      showToast('Transaksi tiket & PVR berhasil disimpan permanen!', 'success');
     }
 
     function loadSampleMdfFromUserPdf() {
       setElVal('fPt', 'MDF');
       setElVal('fJenisLayanan', 'FLIGHT');
-      setElVal('fVendor', 'Traveloka');
       setElVal('fInvoice', '1411719008');
       setElVal('fReceiptCode', '1882273426528302129');
       setElVal('fMaskapaiHotel', 'Garuda Indonesia');
@@ -5664,16 +6138,340 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       setElVal('fRute', 'PNK - CGK');
       setElVal('fNominal', 4597900);
       const box = getEl('passengerRowsContainer');
-      if (box) {
-        box.innerHTML = '';
-        addPassengerRow({ title: 'Mr.', name: 'BUDI SANTOSO', role: 'Estate Manager' });
-      }
-      customPvrTextEdited = false;
+      if (box) box.innerHTML = '';
+      addPassengerRow({ title: 'Mr.', name: 'MOCHAMAD RIZAL', role: 'Site Manager' });
       recalculateMova();
       refreshFormDerivedOutputs();
-      showToast('Contoh data PDF MDF (Garuda Indonesia PNK - CGK) dimuat ke form.', 'info');
+      showToast('Contoh data tiket Garuda Indonesia (MDF) dimuat ke form.', 'info');
     }
 
+    function resetPairedSlots() {
+      pairedSlots = { 1: null, 2: null, 3: [], slot3Parsed: null };
+      setElText('slot1FileLabel', 'Flight No, PNR, Rute, Kamar');
+      setElText('slot2FileLabel', 'Order ID, Tgl Order, Total Rp');
+      setElText('slot3FileLabel', 'Ambil Jabatan & Keperluan');
+      setElText('pairedSlotStatusText', 'Status: Belum ada file dipilih');
+    }
+
+    async function extractTextFromPdfFile(file) {
+      if (typeof pdfjsLib === 'undefined') return '';
+      const buf = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      let fullText = '';
+      for (let p = 1; p <= pdf.numPages; p++) {
+        const page = await pdf.getPage(p);
+        const content = await page.getTextContent();
+        fullText += content.items.map(it => it.str).join(' ') + '\n';
+      }
+      return fullText;
+    }
+
+    function parseTicketPdfText(text) {
+      const clean = String(text || '').replace(/\s+/g, ' ');
+      const pnrMatch = clean.match(/(?:Booking\s*(?:Code|ID)|PNR|Kode\s*Booking)\s*[:#]?\s*([A-Z0-9]{5,8})/i);
+      const flightMatch = clean.match(/\b(GA|JT|ID|QG|IU|SJ|IN|IW|KA)\s*-?\s*(\d{2,4})\b/i);
+      const routeMatch = clean.match(/\b([A-Z]{3})\s*(?:-|→|to|ke)\s*([A-Z]{3})\b/);
+      const invMatch = clean.match(/(?:Order\s*ID|Invoice|No\.?\s*Pesanan)\s*[:#]?\s*(\d{8,20})/i);
+      const priceMatches = Array.from(clean.matchAll(/(?:IDR|Rp\.?)\s*([\d.,]{5,15})/gi))
+        .map(m => Number(m[1].replace(/[.,]/g, '')) || 0)
+        .filter(n => n >= 50000 && n < 500000000);
+      const paxMatches = Array.from(clean.matchAll(/\b(Mr\.?|Mrs\.?|Ms\.?|Tn\.?|Ny\.?)\s+([A-Z][A-Z\s]{2,35}?)(?=\s+(?:Adult|Dewasa|Ticket|No\.|PNR|CGK|PNK|PKU|PLM|SUB|BPN|KNO|ID|GA|JT|QG|IDR|Rp|\d))/g));
+
+      let maskapai = '';
+      if (/Garuda\s*Indonesia/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'GA') maskapai = 'Garuda Indonesia';
+      else if (/Batik\s*Air/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'ID') maskapai = 'Batik Air';
+      else if (/Lion\s*Air/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'JT') maskapai = 'Lion Air';
+      else if (/Citilink/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'QG') maskapai = 'Citilink';
+      else if (/Super\s*Air\s*Jet/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'IU') maskapai = 'Super Air Jet';
+      else if (/Sriwijaya/i.test(clean) || flightMatch?.[1]?.toUpperCase() === 'SJ') maskapai = 'Sriwijaya Air';
+      else if (/Kereta\s*Api|KAI/i.test(clean)) maskapai = 'PT KAI';
+
+      return {
+        isHotel: /Hotel|Check-in|Check-out|Voucher\s*Hotel|Room/i.test(clean) && !flightMatch,
+        maskapai,
+        flightNo: flightMatch ? `${flightMatch[1].toUpperCase()}-${flightMatch[2]}` : '',
+        pnr: pnrMatch ? pnrMatch[1].toUpperCase() : '',
+        rute: routeMatch ? `${routeMatch[1]} - ${routeMatch[2]}` : '',
+        invoice: invMatch ? invMatch[1] : '',
+        nominal: priceMatches.length ? Math.max(...priceMatches) : 0,
+        vendor: /Tiket\.com/i.test(clean) ? 'Tiket.com' : 'Traveloka',
+        keperluan: /Cuti\s*Roster/i.test(clean) ? 'Cuti Roster' : (/Cuti/i.test(clean) ? 'Cuti Tahunan' : 'Perdin'),
+        passengers: paxMatches.map(m => ({
+          title: /^Mrs|^Ny/i.test(m[1]) ? 'Mrs.' : (/^Ms/i.test(m[1]) ? 'Ms.' : 'Mr.'),
+          name: m[2].trim().toUpperCase(),
+          role: ''
+        }))
+      };
+    }
+
+    function applyParsedPdfToForm(parsed) {
+      if (!parsed) return;
+      if (parsed.isHotel) setElVal('fJenisLayanan', 'HOTEL');
+      if (parsed.maskapai) setElVal('fMaskapaiHotel', parsed.maskapai);
+      if (parsed.flightNo) setElVal('fFlightNoRoom', parsed.flightNo);
+      if (parsed.pnr) setElVal('fPnrNights', parsed.pnr);
+      if (parsed.rute) setElVal('fRute', parsed.rute);
+      if (parsed.invoice) {
+        setElVal('fInvoice', parsed.invoice);
+        setElVal('fReceiptCode', parsed.invoice);
+      }
+      if (parsed.nominal > 0) setElVal('fNominal', parsed.nominal);
+      if (parsed.vendor) setElVal('fVendor', parsed.vendor);
+      if (parsed.keperluan) setElVal('fKeperluan', parsed.keperluan);
+      if (parsed.passengers && parsed.passengers.length) {
+        const box = getEl('passengerRowsContainer');
+        if (box) box.innerHTML = '';
+        parsed.passengers.forEach(p => addPassengerRow(p));
+      }
+      recalculateMova();
+      refreshFormDerivedOutputs();
+    }
+
+    async function handlePairedSlotUpload(slotNum, files) {
+      if (!files || !files.length) return;
+      try {
+        const text = await extractTextFromPdfFile(files[0]);
+        const parsed = parseTicketPdfText(text);
+        if (slotNum === 1) {
+          pairedSlots[1] = parsed;
+          setElText('slot1FileLabel', `✓ ${files[0].name}`);
+        } else if (slotNum === 2) {
+          pairedSlots[2] = parsed;
+          setElText('slot2FileLabel', `✓ ${files[0].name}`);
+        } else {
+          pairedSlots[3].push(files[0].name);
+          setElText('slot3FileLabel', `✓ ${pairedSlots[3].length} file Perdin/Cuti`);
+        }
+        applyParsedPdfToForm(parsed);
+        setElText('pairedSlotStatusText', `Status: Berhasil membaca ${files[0].name}`);
+        showToast(`PDF ${files[0].name} berhasil dibaca otomatis!`, 'success');
+      } catch (err) {
+        showToast('Gagal mengekstrak PDF. Pastikan PDF berisi teks.', 'warning');
+      }
+    }
+
+    async function handleBatchPdfFiles(files) {
+      if (!files || !files.length) return;
+      for (const f of Array.from(files)) {
+        const txt = await extractTextFromPdfFile(f);
+        const parsed = parseTicketPdfText(txt);
+        pdfQueue.push({ fileName: f.name, parsed });
+      }
+      renderPdfQueue();
+      if (pdfQueue[0]) applyParsedPdfToForm(pdfQueue[0].parsed);
+      showToast(`${files.length} file PDF berhasil masuk antrian.`, 'success');
+    }
+
+    function renderPdfQueue() {
+      setElText('pdfQueueCount', pdfQueue.length);
+      const box = getEl('pdfQueueList');
+      if (!box) return;
+      if (!pdfQueue.length) {
+        box.innerHTML = `<p class="text-xs text-slate-400 italic py-4 text-center">Belum ada antrian PDF terbaca.</p>`;
+        return;
+      }
+      box.innerHTML = pdfQueue.map((item, idx) => `
+        <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-2 text-xs">
+          <div class="min-w-0">
+            <div class="font-bold text-slate-900 truncate">${escapeHtml(item.fileName)}</div>
+            <div class="text-[10px] text-slate-500">${escapeHtml(item.parsed.maskapai || 'Tiket')} • ${formatRupiah(item.parsed.nominal)}</div>
+          </div>
+          <button type="button" onclick="applyParsedPdfToForm(pdfQueue[${idx}].parsed)" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-bold shrink-0">Muat</button>
+        </div>
+      `).join('');
+    }
+
+    function saveAllQueueToRekap() {
+      if (!pdfQueue.length) return;
+      pdfQueue.forEach(item => {
+        const p = item.parsed;
+        records.unshift({
+          id: 'REC-Q-' + Date.now() + Math.random().toString(36).slice(2, 5),
+          tanggalOrder: getTodayIso(),
+          divisi: 'GA',
+          jenisLayanan: p.isHotel ? 'HOTEL' : 'FLIGHT',
+          pt: getElVal('fPt', 'GEL'),
+          keperluan: p.keperluan || 'Perdin',
+          passengers: p.passengers || [],
+          nama: (p.passengers || []).map(x => `${x.title} ${x.name}`).join(', ') || item.fileName,
+          invoice: p.invoice || '-',
+          maskapaiHotel: p.maskapai || '-',
+          flightNoRoom: p.flightNo || '',
+          pnrNights: p.pnr || '',
+          rute: p.rute || '-',
+          departDate: getTodayIso(),
+          vendor: p.vendor || 'Traveloka',
+          nominal: p.nominal || 0,
+          mova: 0,
+          payment: 'DC BNI Pak Tony',
+          tujuan: 'DC BNI Pak Tony',
+          statusPengajuan: 'Sudah Diajukan',
+          noGr: '',
+          statusBayar: 'UNPAID',
+          _updatedAt: Date.now()
+        });
+      });
+      pdfQueue = [];
+      renderPdfQueue();
+      saveStorage();
+      renderRekapTable();
+      renderPvrPreview(false);
+      showToast('Seluruh antrian PDF berhasil disimpan ke Rekap!', 'success');
+    }
+
+    // =========================================================================
+    // SCANNER OCR KTP INDONESIA (NIK 16 DIGIT, NAMA & PAS FOTO)
+    // =========================================================================
+    async function handleKtpImageUpload(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      compressImageToDataUrl(file, async dataUrl => {
+        currentKtpPhotoData = dataUrl;
+        const img = getEl('ktpPhotoPreviewImg');
+        if (img) { img.src = dataUrl; img.classList.remove('hidden'); }
+        getEl('ktpEmptyPlaceholder')?.classList.add('hidden');
+        getEl('ktpOcrProgressBox')?.classList.remove('hidden');
+
+        // Crop area pas foto E-KTP (bagian kanan kartu KTP)
+        try {
+          const tempImg = new Image();
+          tempImg.onload = () => {
+            const c = document.createElement('canvas');
+            const sx = Math.round(tempImg.width * 0.68);
+            const sy = Math.round(tempImg.height * 0.22);
+            const sw = Math.round(tempImg.width * 0.28);
+            const sh = Math.round(tempImg.height * 0.56);
+            c.width = 160; c.height = 200;
+            c.getContext('2d').drawImage(tempImg, sx, sy, sw, sh, 0, 0, 160, 200);
+            currentKtpFaceData = c.toDataURL('image/jpeg', 0.85);
+            const faceEl = getEl('ktpFaceCropPreview');
+            if (faceEl) { faceEl.src = currentKtpFaceData; faceEl.classList.remove('hidden'); }
+            getEl('ktpFaceEmptyText')?.classList.add('hidden');
+          };
+          tempImg.src = dataUrl;
+        } catch (cropErr) {}
+
+        try {
+          if (typeof Tesseract !== 'undefined') {
+            const res = await Tesseract.recognize(dataUrl, 'ind+eng');
+            const rawText = res?.data?.text || '';
+            setElVal('ktpRawOcrText', rawText);
+            const nikMatch = rawText.replace(/[Oo]/g, '0').replace(/[Il|]/g, '1').match(/\b(\d{16})\b/);
+            if (nikMatch) setElVal('ktpNikInput', nikMatch[1]);
+            const nameMatch = rawText.match(/Nama\s*[:;]?\s*([A-Z\s'.]{3,40})/i);
+            if (nameMatch) setElVal('ktpNameInput', nameMatch[1].replace(/\n.*/g, '').trim().toUpperCase());
+            if (/PEREMPUAN|WANITA/i.test(rawText)) setElVal('ktpGenderSelect', 'PEREMPUAN');
+            else if (/LAKI/i.test(rawText)) setElVal('ktpGenderSelect', 'LAKI-LAKI');
+          }
+          showToast('Scan OCR KTP selesai! Periksa NIK & Nama sebelum menyimpan.', 'success');
+        } catch (ocrErr) {
+          showToast('Foto KTP dimuat. Silakan lengkapi NIK & Nama jika OCR kurang jelas.', 'info');
+        } finally {
+          getEl('ktpOcrProgressBox')?.classList.add('hidden');
+        }
+      }, 1100, 0.85);
+    }
+
+    function resetKtpScannerForm() {
+      currentKtpPhotoData = '';
+      currentKtpFaceData = '';
+      setElVal('ktpNikInput', '');
+      setElVal('ktpNameInput', '');
+      setElVal('ktpRoleInput', '');
+      setElVal('ktpRawOcrText', '');
+      getEl('ktpPhotoPreviewImg')?.classList.add('hidden');
+      getEl('ktpEmptyPlaceholder')?.classList.remove('hidden');
+      getEl('ktpFaceCropPreview')?.classList.add('hidden');
+      getEl('ktpFaceEmptyText')?.classList.remove('hidden');
+    }
+
+    function handleSaveKtpRecord(e) {
+      e.preventDefault();
+      const nik = getElVal('ktpNikInput', '').trim();
+      const name = getElVal('ktpNameInput', '').trim().toUpperCase();
+      const gender = getElVal('ktpGenderSelect', 'LAKI-LAKI');
+      const pt = getElVal('ktpPtSelect', 'GEL');
+      const role = getElVal('ktpRoleInput', '').trim();
+      const idx = ktpRecords.findIndex(k => k.nik === nik);
+      const rec = {
+        id: 'KTP-' + nik,
+        nik,
+        name,
+        gender,
+        pt,
+        role,
+        photo: currentKtpPhotoData || '',
+        facePhoto: currentKtpFaceData || '',
+        _updatedAt: Date.now()
+      };
+      if (idx >= 0) ktpRecords[idx] = rec;
+      else ktpRecords.unshift(rec);
+      saveStorage();
+      renderKtpTable();
+      showToast(`Data KTP ${name} (${nik}) tersimpan permanen!`, 'success');
+    }
+
+    function useScannedKtpForBooking() {
+      const name = getElVal('ktpNameInput', '').trim().toUpperCase();
+      if (!name) { showToast('Isi nama penumpang terlebih dahulu.', 'warning'); return; }
+      const gender = getElVal('ktpGenderSelect', 'LAKI-LAKI');
+      const pt = getElVal('ktpPtSelect', 'GEL');
+      const role = getElVal('ktpRoleInput', '').trim() || getElVal('ktpNikInput', '').trim();
+      setElVal('fPt', pt);
+      const box = getEl('passengerRowsContainer');
+      if (box) box.innerHTML = '';
+      addPassengerRow({ title: gender === 'PEREMPUAN' ? 'Mrs.' : 'Mr.', name, role });
+      switchMainTab('input');
+      showToast(`Data KTP ${name} dimasukkan ke Form Pemesanan Tiket.`, 'success');
+    }
+
+    function renderKtpTable() {
+      const tbody = getEl('ktpTableBody');
+      if (!tbody) return;
+      const q = getElVal('ktpSearchInput', '').toLowerCase();
+      const filtered = ktpRecords.filter(k => !q || [k.nik, k.name, k.pt, k.role].some(v => String(v || '').toLowerCase().includes(q)));
+      tbody.innerHTML = filtered.map((k, i) => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 px-3">${i + 1}</td>
+          <td class="py-2.5 px-3">
+            <div class="flex items-center gap-1.5">
+              ${k.facePhoto ? `<img src="${k.facePhoto}" class="w-9 h-11 object-cover rounded border border-amber-400"/>` : ''}
+              ${k.photo ? `<img src="${k.photo}" class="w-16 h-10 object-cover rounded border border-slate-300"/>` : '<span class="text-slate-400 text-[10px]">No Foto</span>'}
+            </div>
+          </td>
+          <td class="py-2.5 px-3 font-mono font-black text-blue-900">${escapeHtml(k.nik)}</td>
+          <td class="py-2.5 px-3 font-extrabold text-slate-900">${escapeHtml(k.name)}</td>
+          <td class="py-2.5 px-3 font-bold">${k.gender === 'PEREMPUAN' ? 'Mrs. (Perempuan)' : 'Mr. (Laki-laki)'}</td>
+          <td class="py-2.5 px-3"><b>${escapeHtml(k.pt)}</b> • ${escapeHtml(k.role || '-')}</td>
+          <td class="py-2.5 px-3 text-center">
+            <div class="flex items-center justify-center gap-1">
+              <button type="button" onclick="setElVal('ktpNikInput','${k.nik}');setElVal('ktpNameInput','${escapeHtml(k.name)}');setElVal('ktpPtSelect','${k.pt}');useScannedKtpForBooking();" class="px-2 py-1 rounded bg-blue-600 text-white text-[10px] font-bold">✈️ Pakai</button>
+              <button type="button" onclick="markEntityDeleted('${k.nik}');ktpRecords=ktpRecords.filter(x=>x.nik!=='${k.nik}');saveStorage();renderKtpTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-bold">Hapus</button>
+            </div>
+          </td>
+        </tr>
+      `).join('') || `<tr><td colspan="7" class="py-6 text-center text-slate-400">Belum ada data hasil scan KTP.</td></tr>`;
+    }
+
+    function exportKtpExcel() {
+      if (typeof XLSX === 'undefined') return;
+      const rows = ktpRecords.map((k, i) => ({
+        'No.': i + 1,
+        'NIK': k.nik,
+        'Nama Lengkap': k.name,
+        'Jenis Kelamin': k.gender,
+        'Entitas PT': k.pt,
+        'Jabatan': k.role || '-'
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'DATABASE_KTP');
+      XLSX.writeFile(wb, `Database_Scan_KTP_GA_GEL_${getTodayIso()}.xlsx`);
+    }
+
+    // =========================================================================
+    // REKAP & REKONSILIASI + PVR GENERATOR PER PT
+    // =========================================================================
     function renderRekapTable() {
       const tbody = getEl('rekapTableBody');
       if (!tbody) return;
@@ -5685,472 +6483,75 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       const fStat = getElVal('filterStatusBayar', 'ALL');
 
       const filtered = records.filter(r => {
-        const matchQ = !q || [r.nama, r.invoice, r.noGr, r.maskapai, r.rute].some(v => String(v || '').toLowerCase().includes(q));
-        const matchPt = fPt === 'ALL' || r.pt === fPt;
-        const matchVen = fVen === 'ALL' || r.vendor === fVen;
-        const matchPay = fPay === 'ALL' || String(r.payment || '').includes(fPay.replace(' / CC Pak Tony', ''));
-        const matchDiv = fDiv === 'ALL' || r.divisi === fDiv;
-        const matchStat = fStat === 'ALL' || r.statusBayar === fStat;
-        return matchQ && matchPt && matchVen && matchPay && matchDiv && matchStat;
+        const mQ = !q || [r.nama, r.invoice, r.noGr, r.pt, r.maskapaiHotel, r.rute].some(v => String(v || '').toLowerCase().includes(q));
+        const mPt = fPt === 'ALL' || r.pt === fPt;
+        const mVen = fVen === 'ALL' || r.vendor === fVen;
+        const mPay = fPay === 'ALL' || r.payment === fPay || (fPay === 'DC BCA / CC Pak Tony' && /BCA/i.test(r.payment));
+        const mDiv = fDiv === 'ALL' || r.divisi === fDiv;
+        const mStat = fStat === 'ALL' || r.statusBayar === fStat;
+        return mQ && mPt && mVen && mPay && mDiv && mStat;
       });
 
-      const totalNom = filtered.reduce((s, r) => s + (Number(r.nominal) || 0), 0);
-      setElText('rekapFilteredTotal', formatRupiah(totalNom));
+      const totalFiltered = filtered.reduce((a, r) => a + (Number(r.nominal) || 0), 0);
+      setElText('rekapFilteredTotal', formatRupiah(totalFiltered));
 
+      // Kartu rekonsiliasi per PT (UNPAID)
       const cardsBox = getEl('pvrReconcileCards');
       if (cardsBox) {
-        const byPt = {};
-        filtered.forEach(r => {
-          if (!byPt[r.pt]) byPt[r.pt] = { count: 0, total: 0, unpaidCount: 0, unpaidTotal: 0 };
-          byPt[r.pt].count += 1;
-          byPt[r.pt].total += Number(r.nominal) || 0;
-          if (r.statusBayar !== 'PAID') {
-            byPt[r.pt].unpaidCount += 1;
-            byPt[r.pt].unpaidTotal += Number(r.nominal) || 0;
-          }
+        const unpaidByPt = {};
+        records.filter(r => r.statusBayar !== 'PAID').forEach(r => {
+          unpaidByPt[r.pt] = (unpaidByPt[r.pt] || 0) + (Number(r.nominal) || 0);
         });
-        cardsBox.innerHTML = Object.keys(byPt).map(pt => {
-          const info = byPt[pt];
-          const hasUnpaid = info.unpaidCount > 0;
-          return `
-            <div class="p-3 rounded-xl bg-white border ${hasUnpaid ? 'border-blue-200' : 'border-emerald-200 bg-emerald-50/30'} flex items-center justify-between gap-2">
-              <div>
-                <div class="text-xs font-black text-slate-900">${pt} <span class="text-[10px] font-bold text-slate-500">(${info.unpaidCount} UNPAID / ${info.count} Total)</span></div>
-                <div class="text-xs font-extrabold ${hasUnpaid ? 'text-blue-800' : 'text-emerald-700'} mt-0.5">
-                  ${hasUnpaid ? `Tagihan PVR: ${formatRupiah(info.unpaidTotal)}` : `Lunas PAID (${formatRupiah(info.total)})`}
-                </div>
-              </div>
-              ${hasUnpaid
-                ? `<button type="button" onclick="setElVal('pvrPtSelect','${pt}');setElVal('pvrStatusFilter','UNPAID');switchMainTab('pvr');renderPvrPreview(true);" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-extrabold shrink-0">Buka PVR</button>`
-                : `<span class="px-2.5 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-[10px] font-extrabold shrink-0">✓ PAID (Terkunci)</span>`
-              }
-            </div>
-          `;
-        }).join('') || `<p class="text-xs text-slate-500 col-span-full">Belum ada data transaksi untuk direkonsiliasi.</p>`;
-      }
-
-      if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="13" class="py-8 text-center text-slate-400 italic">Belum ada data transaksi pemesanan.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filtered.map((r, i) => {
-        const isPaid = r.statusBayar === 'PAID';
-        const pCount = Math.max(1, Number(r.paxCount) || (Array.isArray(r.passengers) && r.passengers.length) || 1);
-        const unitPrice = Number(r.unitNominal) || Math.round((Number(r.nominal) || 0) / pCount);
-        return `
-          <tr class="hover:bg-slate-50">
-            <td class="py-2.5 px-3 text-center font-bold">${i + 1}</td>
-            <td class="py-2.5 px-3">${formatDateShort(r.tanggalOrder)}</td>
-            <td class="py-2.5 px-3 font-mono font-bold text-blue-900">${escapeHtml(r.invoice)}</td>
-            <td class="py-2.5 px-3 font-black">${escapeHtml(r.pt)} <span class="text-[10px] text-slate-500">(${escapeHtml(r.divisi)})</span></td>
-            <td class="py-2.5 px-3 font-bold">${escapeHtml(r.nama)}</td>
-            <td class="py-2.5 px-3">${escapeHtml(r.keperluan)}</td>
-            <td class="py-2.5 px-3 font-semibold">${escapeHtml(r.maskapai)} • <span class="font-bold">${escapeHtml(r.rute)}</span></td>
-            <td class="py-2.5 px-3">${formatDateShort(r.departDate)}</td>
-            <td class="py-2.5 px-3 text-[11px]">${escapeHtml(r.vendor)}<br/><span class="text-slate-500">${escapeHtml(r.payment)}</span></td>
-            <td class="py-2.5 px-3 text-right">
-              <div class="font-black">${formatRupiah(r.nominal)}</div>
-              ${pCount > 1 ? `<div class="text-[10px] font-bold text-blue-700">${pCount} org @ ${formatRupiah(unitPrice)}</div>` : ''}
-            </td>
-            <td class="py-2.5 px-3 font-mono text-[11px]">
-              <div class="font-bold text-slate-800">${escapeHtml(r.noGr || '-')}</div>
-              <button type="button" onclick="openStatusAndGrModal('${r.id}')" class="text-[10px] font-bold text-blue-600 hover:underline mt-0.5">+ Edit GR / Tgl Bayar</button>
-            </td>
-            <td class="py-2.5 px-3 text-center">
-              <button type="button" onclick="openStatusAndGrModal('${r.id}')" title="Klik untuk ubah status PAID/UNPAID, Tanggal Bayar, & No. GR" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${isPaid ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300'}">${r.statusBayar}</button>
-              ${isPaid && r.paidDate ? `<div class="text-[10px] font-bold text-emerald-700 mt-0.5">Tgl: ${formatDateShort(r.paidDate)}</div>` : ''}
-            </td>
-            <td class="py-2.5 px-3 text-center">
-              <div class="flex items-center justify-center gap-1">
-                ${isPaid
-                  ? `<span class="px-2 py-1 rounded bg-slate-100 text-slate-400 text-[10px] font-bold">No PVR</span>`
-                  : `<button type="button" onclick="setElVal('pvrPtSelect','${escapeHtml(r.pt)}');setElVal('pvrStatusFilter','UNPAID');switchMainTab('pvr');renderPvrPreview(true);" class="px-2 py-1 rounded bg-blue-600 text-white text-[10px] font-extrabold">Buka PVR</button>`
-                }
-                <button type="button" onclick="deleteBookingRecord('${r.id}')" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function openStatusAndGrModal(id) {
-      const r = records.find(x => x.id === id);
-      if (!r) return;
-      const defaultPaidDate = r.paidDate || getTodayIso();
-      const m = ROMAN_MONTHS[new Date().getMonth()];
-      const y = new Date().getFullYear();
-      const grTemplate = `____/GR/${r.pt || 'GEL'}/${m}/${y}`;
-
-      openUniversalModal(`
-        <div class="space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        const pts = Object.keys(unpaidByPt);
+        cardsBox.innerHTML = pts.length ? pts.map(pt => `
+          <div onclick="setElVal('pvrPtSelect','${pt}'); switchMainTab('pvr'); renderPvrPreview(false);" class="p-3 rounded-xl bg-white border border-blue-200 hover:border-blue-500 cursor-pointer transition flex items-center justify-between">
             <div>
-              <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black uppercase">Update Status Pembayaran &amp; Nomor GR</span>
-              <h3 class="text-base font-black text-slate-900 mt-1">${escapeHtml(r.pt)} • Invoice ${escapeHtml(r.invoice)}</h3>
-              <p class="text-xs text-slate-500">${escapeHtml(r.nama)} — ${formatRupiah(r.nominal)}</p>
+              <div class="text-xs font-black text-slate-900">${pt}</div>
+              <div class="text-[10px] text-slate-500">Klik untuk buka PVR</div>
             </div>
-            <button type="button" onclick="closeUniversalModal()" class="text-slate-400 hover:text-slate-700 font-bold text-sm">✕</button>
+            <div class="text-xs font-black text-blue-900">${formatRupiah(unpaidByPt[pt])}</div>
           </div>
-
-          <form onsubmit="saveStatusAndGrModal(event, '${r.id}')" class="space-y-3.5">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Status Pembayaran *</label>
-              <select id="modalStatusBayarSelect" onchange="onModalStatusBayarChange()" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-extrabold">
-                <option value="UNPAID" ${r.statusBayar !== 'PAID' ? 'selected' : ''}>UNPAID (Wajib Buka PVR)</option>
-                <option value="PAID" ${r.statusBayar === 'PAID' ? 'selected' : ''}>PAID (Lunas — Terkunci dari PVR)</option>
-              </select>
-            </div>
-
-            <div id="modalPaidDateBox" class="${r.statusBayar === 'PAID' ? '' : 'opacity-90'}">
-              <label class="block text-xs font-bold text-emerald-800 mb-1">Tanggal Bayar (Otomatis Terisi saat PAID)</label>
-              <input type="date" id="modalPaidDateInput" value="${escapeHtml(defaultPaidDate)}" class="w-full h-10 px-3 text-xs border border-emerald-300 rounded-xl bg-emerald-50/40 font-bold text-slate-900" />
-            </div>
-
-            <div>
-              <div class="flex items-center justify-between mb-1">
-                <label class="block text-xs font-bold text-slate-700">Nomor GR / PVR</label>
-                <button type="button" onclick="setElVal('modalNoGrInput', '${escapeHtml(grTemplate)}')" class="text-[11px] font-extrabold text-blue-600 hover:underline">+ Pakai Template GR (${escapeHtml(r.pt)})</button>
-              </div>
-              <input type="text" id="modalNoGrInput" value="${escapeHtml(r.noGr || '')}" placeholder="Contoh: 1565/GR/${escapeHtml(r.pt || 'GEL')}/${m}/${y}" class="w-full h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white font-mono font-bold" />
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
-              <button type="button" onclick="closeUniversalModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow">✓ Simpan Perubahan</button>
-            </div>
-          </form>
-        </div>
-      `);
-    }
-
-    function onModalStatusBayarChange() {
-      const st = getElVal('modalStatusBayarSelect', 'UNPAID');
-      if (st === 'PAID' && !getElVal('modalPaidDateInput')) {
-        setElVal('modalPaidDateInput', getTodayIso());
+        `).join('') : `<p class="text-xs text-slate-500 col-span-full">Semua transaksi sudah PAID atau belum ada tagihan UNPAID.</p>`;
       }
+
+      tbody.innerHTML = filtered.map((r, i) => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 px-3 text-center">${i + 1}</td>
+          <td class="py-2.5 px-3">${formatDateShort(r.tanggalOrder)}</td>
+          <td class="py-2.5 px-3 font-mono font-bold">${escapeHtml(r.invoice)}</td>
+          <td class="py-2.5 px-3 font-black">${escapeHtml(r.pt)} <span class="text-[10px] text-slate-500">(${escapeHtml(r.divisi)})</span></td>
+          <td class="py-2.5 px-3 font-bold">${escapeHtml(r.nama)}</td>
+          <td class="py-2.5 px-3">${escapeHtml(r.keperluan)}</td>
+          <td class="py-2.5 px-3">${escapeHtml(r.maskapaiHotel)} • <b>${escapeHtml(r.rute)}</b></td>
+          <td class="py-2.5 px-3">${formatDateShort(r.departDate)}</td>
+          <td class="py-2.5 px-3">${escapeHtml(r.vendor)} • <span class="text-[10px] font-bold">${escapeHtml(r.payment)}</span></td>
+          <td class="py-2.5 px-3 text-right font-black text-blue-900">${formatRupiah(r.nominal)}</td>
+          <td class="py-2.5 px-3 font-mono text-[11px]">${escapeHtml(r.noGr || '-')}</td>
+          <td class="py-2.5 px-3 text-center">
+            <button type="button" onclick="toggleRecordPaidStatus('${r.id}')" class="px-2.5 py-1 rounded-full text-[10px] font-black ${r.statusBayar === 'PAID' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">
+              ${r.statusBayar || 'UNPAID'}
+            </button>
+          </td>
+          <td class="py-2.5 px-3 text-center">
+            <button type="button" onclick="markEntityDeleted('${r.id}');records=records.filter(x=>x.id!=='${r.id}');saveStorage();renderRekapTable();renderPvrPreview(false);" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[10px] font-bold">Hapus</button>
+          </td>
+        </tr>
+      `).join('') || `<tr><td colspan="13" class="py-8 text-center text-slate-400">Belum ada data rekap transaksi tiket.</td></tr>`;
     }
 
-    function saveStatusAndGrModal(e, id) {
-      e.preventDefault();
+    function toggleRecordPaidStatus(id) {
       const r = records.find(x => x.id === id);
       if (!r) return;
-      const newStatus = getElVal('modalStatusBayarSelect', 'UNPAID');
-      const newPaidDate = getElVal('modalPaidDateInput', '');
-      const newNoGr = getElVal('modalNoGrInput', '').trim();
-
-      r.statusBayar = newStatus;
-      r.noGr = newNoGr;
-      r.paidDate = newStatus === 'PAID' ? (newPaidDate || getTodayIso()) : '';
-
+      r.statusBayar = r.statusBayar === 'PAID' ? 'UNPAID' : 'PAID';
+      r._updatedAt = Date.now();
       saveStorage();
-      closeUniversalModal();
       renderRekapTable();
       renderPvrPreview(false);
-      showToast(
-        newStatus === 'PAID'
-          ? `Status PAID disimpan (Tgl Bayar: ${formatDateShort(r.paidDate)}${newNoGr ? ', GR: ' + newNoGr : ''}) — PVR terkunci.`
-          : `Status UNPAID & No. GR (${newNoGr || '-'}) diperbarui.`,
-        'success'
-      );
     }
 
-    function toggleRecordPaid(id) {
-      openStatusAndGrModal(id);
-    }
-
-    function deleteBookingRecord(id) {
-      records = records.filter(x => x.id !== id);
-      saveStorage();
-      renderRekapTable();
-      renderPvrPreview(true);
-    }
-
-    function clearAllRecordsConfirm() {
-      records = [];
-      saveStorage();
-      renderRekapTable();
-      renderPvrPreview(true);
-      showToast('Semua data rekap ticketing dikosongkan.', 'info');
-    }
-
-    async function exportCleanRekapExcel() {
-      if (!records.length) {
-        showToast('Belum ada data transaksi untuk diekspor.', 'warning');
-        return;
-      }
-
-      const formatExcelDateLong = iso => {
-        if (!iso) return '-';
-        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-        const p = String(iso).slice(0, 10).split('-');
-        if (p.length !== 3) return iso;
-        return `${parseInt(p[2], 10)} ${months[parseInt(p[1], 10) - 1] || ''} ${p[0]}`;
-      };
-
-      const expandedRows = [];
-      records.forEach(r => {
-        const paxList = (Array.isArray(r.passengers) && r.passengers.length)
-          ? r.passengers
-          : [{ title: 'Mr.', name: r.nama || 'KARYAWAN', role: '' }];
-        const count = Math.max(1, paxList.length);
-        const totalNom = Number(r.nominal) || 0;
-        const totalMova = Number(r.mova) || 0;
-        const baseNom = Math.floor(totalNom / count);
-        const remNom = totalNom - (baseNom * count);
-        const baseMova = Math.floor(totalMova / count);
-        const remMova = totalMova - (baseMova * count);
-
-        const tglTerbang = r.returnDate
-          ? `${formatExcelDateLong(r.departDate)} - ${formatExcelDateLong(r.returnDate)}`
-          : formatExcelDateLong(r.departDate);
-
-        paxList.forEach((p, pIdx) => {
-          const paxFullName = `${p.title || 'Mr.'} ${toTitleCaseName(p.name || '')}`.trim();
-          expandedRows.push({
-            tanggalOrder: formatExcelDateLong(r.tanggalOrder),
-            invoice: r.invoice || '-',
-            payment: r.payment || 'DC BNI Pak Tony',
-            pt: r.pt || 'EPM',
-            nama: paxFullName,
-            keperluan: r.keperluan || 'Perdin',
-            rute: r.rute || '-',
-            tglTerbang,
-            maskapai: r.maskapai || '-',
-            vendor: r.vendor || 'Traveloka',
-            nominal: baseNom + (pIdx === 0 ? remNom : 0),
-            statusPengajuan: r.statusPengajuan || 'Sudah Diajukan',
-            tujuan: r.tujuan || r.payment || 'DC BNI Pak Tony',
-            noGr: r.noGr || '',
-            statusBayar: r.statusBayar || 'UNPAID',
-            statusKet: r.statusBayar === 'PAID' && r.paidDate
-              ? `PAID (${formatDateShort(r.paidDate)})${r.statusKet ? ' - ' + r.statusKet : ''}`
-              : (r.statusKet || ''),
-            mova: baseMova + (pIdx === 0 ? remMova : 0)
-          });
-        });
-      });
-
-      if (typeof ExcelJS !== 'undefined') {
-        try {
-          const wb = new ExcelJS.Workbook();
-          const ws = wb.addWorksheet('Rekap Tiket & Hotel', {
-            views: [{ showGridLines: true }]
-          });
-
-          ws.columns = [
-            { width: 6 },   // A: No.
-            { width: 18 },  // B: Tanggal Order
-            { width: 18 },  // C: Nomor Invoice
-            { width: 20 },  // D: Payment Method
-            { width: 10 },  // E: PT
-            { width: 26 },  // F: Nama
-            { width: 16 },  // G: Keperluan
-            { width: 24 },  // H: Rute/ Hotel
-            { width: 22 },  // I: Tanggal Penerbangan/ Ci-Co
-            { width: 24 },  // J: Maskapai/ Hotel
-            { width: 14 },  // K: Vendor
-            { width: 18 },  // L: Nominal
-            { width: 18 },  // M: Status Pengajuan
-            { width: 20 },  // N: Tujuan Pembayaran
-            { width: 22 },  // O: No. GR
-            { width: 18 },  // P: Status Pembayaran
-            { width: 15 },  // Q: Status
-            { width: 22 }   // R: Estimasi Pendapatan MOVA
-          ];
-
-          const thinBorder = {
-            top: { style: 'thin', color: { argb: 'FF000000' } },
-            left: { style: 'thin', color: { argb: 'FF000000' } },
-            bottom: { style: 'thin', color: { argb: 'FF000000' } },
-            right: { style: 'thin', color: { argb: 'FF000000' } }
-          };
-          const numFmtRp = '_("Rp"* #,##0_);_("Rp"* (#,##0);_("Rp"* "-"_);_(@_)';
-
-          ws.mergeCells('A1:I1');
-          ws.getCell('A1').value = 'REKAPITULASI PEMESANAN TIKET & HOTEL - GENERAL AFFAIR';
-          ws.getCell('A1').font = { name: 'Calibri', size: 13, bold: true, color: { argb: 'FF000000' } };
-
-          const validDates = records.map(r => r.tanggalOrder).filter(Boolean).sort();
-          const periodeStr = validDates.length
-            ? (validDates[0] === validDates[validDates.length - 1]
-                ? `Periode: ${formatExcelDateLong(validDates[0])}`
-                : `Periode: ${formatExcelDateLong(validDates[0])} s/d ${formatExcelDateLong(validDates[validDates.length - 1])}`)
-            : `Periode: ${formatExcelDateLong(getTodayIso())}`;
-          ws.mergeCells('A2:I2');
-          ws.getCell('A2').value = periodeStr;
-          ws.getCell('A2').font = { name: 'Calibri', size: 10, italic: true, color: { argb: 'FF334155' } };
-
-          const startDataRow = 5;
-          const endDataRow = startDataRow + expandedRows.length - 1;
-          const totalRowIdx = endDataRow + 1;
-
-          ws.mergeCells('P1:Q1');
-          ws.getCell('P1').value = 'Total Seluruh Transaksi';
-          ws.getCell('P1').font = { name: 'Calibri', size: 10, bold: true };
-          ws.getCell('P1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
-          ws.getCell('P1').border = thinBorder;
-          ws.getCell('Q1').border = thinBorder;
-
-          ws.getCell('R1').value = { formula: `SUM(L${startDataRow}:L${endDataRow})` };
-          ws.getCell('R1').font = { name: 'Calibri', size: 10, bold: true };
-          ws.getCell('R1').numFmt = numFmtRp;
-          ws.getCell('R1').border = thinBorder;
-
-          ws.mergeCells('P2:Q2');
-          ws.getCell('P2').value = 'Total Estimasi MOVA';
-          ws.getCell('P2').font = { name: 'Calibri', size: 10, bold: true };
-          ws.getCell('P2').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
-          ws.getCell('P2').border = thinBorder;
-          ws.getCell('Q2').border = thinBorder;
-
-          ws.getCell('R2').value = { formula: `SUM(R${startDataRow}:R${endDataRow})` };
-          ws.getCell('R2').font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF047857' } };
-          ws.getCell('R2').numFmt = numFmtRp;
-          ws.getCell('R2').border = thinBorder;
-
-          const headers = [
-            'No.', 'Tanggal Order', 'Nomor Invoice', 'Payment Method', 'PT', 'Nama',
-            'Keperluan', 'Rute/ Hotel', 'Tanggal Penerbangan/ Ci-Co', 'Maskapai/ Hotel',
-            'Vendor', 'Nominal', 'Status Pengajuan', 'Tujuan Pembayaran', 'No. GR',
-            'Status Pembayaran', 'Status', 'Estimasi Pendapatan MOVA'
-          ];
-          const headerRow = ws.getRow(4);
-          headerRow.height = 28;
-          headers.forEach((h, idx) => {
-            const cell = headerRow.getCell(idx + 1);
-            cell.value = h;
-            cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF000000' } };
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00B0F0' } };
-            cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-            cell.border = thinBorder;
-          });
-
-          expandedRows.forEach((item, idx) => {
-            const r = ws.getRow(startDataRow + idx);
-            r.height = 22;
-            const vals = [
-              idx + 1, item.tanggalOrder, item.invoice, item.payment, item.pt, item.nama,
-              item.keperluan, item.rute, item.tglTerbang, item.maskapai, item.vendor,
-              item.nominal, item.statusPengajuan, item.tujuan, item.noGr,
-              item.statusBayar, item.statusKet, item.mova
-            ];
-            vals.forEach((v, cIdx) => {
-              const cell = r.getCell(cIdx + 1);
-              cell.value = v;
-              cell.font = { name: 'Calibri', size: 10, bold: (cIdx === 4 || cIdx === 11) };
-              cell.border = thinBorder;
-              cell.alignment = {
-                vertical: 'middle',
-                horizontal: (cIdx === 0 || cIdx === 4 || cIdx === 10 || cIdx === 15) ? 'center' : (cIdx === 11 || cIdx === 17 ? 'right' : 'left'),
-                wrapText: true
-              };
-              if (cIdx === 11 || cIdx === 17) {
-                cell.numFmt = numFmtRp;
-              }
-              if (cIdx === 15) {
-                cell.fill = {
-                  type: 'pattern',
-                  pattern: 'solid',
-                  fgColor: { argb: v === 'PAID' ? 'FFD1FAE5' : 'FFFEF3C7' }
-                };
-              }
-            });
-          });
-
-          const totRow = ws.getRow(totalRowIdx);
-          totRow.height = 24;
-          ws.mergeCells(`A${totalRowIdx}:K${totalRowIdx}`);
-          totRow.getCell(1).value = 'TOTAL KESELURUHAN';
-          totRow.getCell(1).font = { name: 'Calibri', size: 10, bold: true };
-          totRow.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
-
-          totRow.getCell(12).value = { formula: `SUM(L${startDataRow}:L${endDataRow})` };
-          totRow.getCell(12).font = { name: 'Calibri', size: 10, bold: true };
-          totRow.getCell(12).numFmt = numFmtRp;
-
-          totRow.getCell(18).value = { formula: `SUM(R${startDataRow}:R${endDataRow})` };
-          totRow.getCell(18).font = { name: 'Calibri', size: 10, bold: true };
-          totRow.getCell(18).numFmt = numFmtRp;
-
-          for (let c = 1; c <= 18; c++) {
-            const cell = totRow.getCell(c);
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } };
-            cell.border = thinBorder;
-          }
-
-          const wsSum = wb.addWorksheet('Ringkasan per PT', {
-            views: [{ showGridLines: true }]
-          });
-          wsSum.columns = [
-            { width: 6 },
-            { width: 14 },
-            { width: 32 },
-            { width: 14 },
-            { width: 20 },
-            { width: 20 },
-            { width: 20 },
-            { width: 20 }
-          ];
-          wsSum.mergeCells('A1:H1');
-          wsSum.getCell('A1').value = 'RINGKASAN REKAPITULASI PER ENTITAS PT & REKONSILIASI';
-          wsSum.getCell('A1').font = { name: 'Calibri', size: 12, bold: true };
-
-          const sumHeaders = ['No.', 'Kode PT', 'Nama Perusahaan', 'Jml Pax', 'Total UNPAID', 'Total PAID', 'Total Keseluruhan', 'Estimasi MOVA'];
-          const sHeadRow = wsSum.getRow(3);
-          sHeadRow.height = 25;
-          sumHeaders.forEach((h, i) => {
-            const c = sHeadRow.getCell(i + 1);
-            c.value = h;
-            c.font = { name: 'Calibri', size: 10, bold: true };
-            c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00B0F0' } };
-            c.alignment = { vertical: 'middle', horizontal: 'center' };
-            c.border = thinBorder;
-          });
-
-          const byPtMap = {};
-          expandedRows.forEach(row => {
-            if (!byPtMap[row.pt]) byPtMap[row.pt] = { pax: 0, unpaid: 0, paid: 0, total: 0, mova: 0 };
-            byPtMap[row.pt].pax += 1;
-            byPtMap[row.pt].total += row.nominal;
-            byPtMap[row.pt].mova += row.mova;
-            if (row.statusBayar === 'PAID') byPtMap[row.pt].paid += row.nominal;
-            else byPtMap[row.pt].unpaid += row.nominal;
-          });
-
-          Object.keys(byPtMap).forEach((ptCode, idx) => {
-            const st = byPtMap[ptCode];
-            const r = wsSum.getRow(4 + idx);
-            r.height = 20;
-            const vals = [idx + 1, ptCode, PT_FULL_INFO[ptCode]?.fullName || ptCode, st.pax, st.unpaid, st.paid, st.total, st.mova];
-            vals.forEach((v, ci) => {
-              const c = r.getCell(ci + 1);
-              c.value = v;
-              c.font = { name: 'Calibri', size: 10, bold: ci === 1 || ci === 6 };
-              c.border = thinBorder;
-              c.alignment = { vertical: 'middle', horizontal: (ci === 0 || ci === 1 || ci === 3) ? 'center' : (ci >= 4 ? 'right' : 'left') };
-              if (ci >= 4) c.numFmt = numFmtRp;
-            });
-          });
-
-          const buffer = await wb.xlsx.writeBuffer();
-          const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = `REKAPITULASI_TIKET_HOTEL_${getTodayIso()}.xlsx`;
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          showToast(`Excel REKAPITULASI_TIKET_HOTEL_${getTodayIso()}.xlsx berhasil diunduh!`, 'success');
-          return;
-        } catch (err) {
-          console.warn('ExcelJS fallback ke XLSX:', err);
-        }
-      }
-
+    function exportCleanRekapExcel() {
       if (typeof XLSX === 'undefined') return;
-      const fallbackRows = expandedRows.map((r, i) => ({
+      const rows = records.map((r, i) => ({
         'No.': i + 1,
         'Tanggal Order': r.tanggalOrder,
         'Nomor Invoice': r.invoice,
@@ -6159,29 +6560,27 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
         'Nama': r.nama,
         'Keperluan': r.keperluan,
         'Rute/ Hotel': r.rute,
-        'Tanggal Penerbangan/ Ci-Co': r.tglTerbang,
-        'Maskapai/ Hotel': r.maskapai,
+        'Tanggal Penerbangan/ Ci-Co': r.departDate,
+        'Maskapai/ Hotel': r.maskapaiHotel,
         'Vendor': r.vendor,
-        'Nominal': r.nominal,
+        'Nominal': Number(r.nominal) || 0,
         'Status Pengajuan': r.statusPengajuan,
         'Tujuan Pembayaran': r.tujuan,
         'No. GR': r.noGr,
         'Status Pembayaran': r.statusBayar,
-        'Status': r.statusKet,
-        'Estimasi Pendapatan MOVA': r.mova
+        'Estimasi Pendapatan MOVA': Number(r.mova) || 0
       }));
-      const ws = XLSX.utils.json_to_sheet(fallbackRows);
+      const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Rekap Tiket & Hotel');
-      XLSX.writeFile(wb, `REKAPITULASI_TIKET_HOTEL_${getTodayIso()}.xlsx`);
-      showToast('File Excel Rekap GA berhasil diunduh.', 'success');
+      XLSX.utils.book_append_sheet(wb, ws, 'REKAP_TICKETING_GA');
+      XLSX.writeFile(wb, `Rekap_Ticketing_GA_GEL_${getTodayIso()}.xlsx`);
     }
 
     function backupJsonData() {
       const blob = new Blob([localStorage.getItem(STORAGE_KEY) || '{}'], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `Backup_GA_Portal_${getTodayIso()}.json`;
+      a.download = `Backup_Portal_GA_GEL_${getTodayIso()}.json`;
       a.click();
     }
 
@@ -6190,13 +6589,9 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       const reader = new FileReader();
       reader.onload = ev => {
         try {
-          localStorage.setItem(STORAGE_KEY, ev.target.result);
-          loadStorage();
-          renderRekapTable();
-          renderSewaLvTable();
-          ctRender();
-          renderKtpTable();
-          showToast('Restore JSON berhasil!', 'success');
+          applyRemoteWorkspacePayload(JSON.parse(ev.target.result));
+          saveStorage();
+          showToast('Backup JSON berhasil dipulihkan & digabungkan!', 'success');
         } catch (err) {
           showToast('File JSON tidak valid.', 'error');
         }
@@ -6204,688 +6599,76 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       reader.readAsText(files[0]);
     }
 
-    // =========================================================================
-    // SCAN KTP OTOMATIS (NAMA LENGKAP, NIK 16 DIGIT & FOTO KTP + PAS FOTO)
-    // =========================================================================
-    function preprocessKtpImageForOcr(imgElement) {
-      const natW = imgElement.naturalWidth || 1500;
-      const natH = imgElement.naturalHeight || 950;
-      const targetW = Math.max(1800, Math.min(2600, natW));
-      const scale = targetW / natW;
-
-      const canvas = document.createElement('canvas');
-      canvas.width = targetW;
-      canvas.height = Math.round(natH * scale);
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
-
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const d = imgData.data;
-      for (let i = 0; i < d.length; i += 4) {
-        // KTP Indonesia berlatar biru muda: saluran merah (R) memberi kontras tertinggi terhadap teks hitam
-        const gray = 0.55 * d[i] + 0.35 * d[i + 1] + 0.10 * d[i + 2];
-        const boosted = gray < 128 ? Math.max(0, gray * 0.22) : Math.min(255, 185 + (gray - 128) * 0.6);
-        d[i] = d[i + 1] = d[i + 2] = boosted;
-      }
-      ctx.putImageData(imgData, 0, 0);
-
-      const textCropCanvas = document.createElement('canvas');
-      textCropCanvas.width = Math.round(canvas.width * 0.74);
-      textCropCanvas.height = Math.round(canvas.height * 0.62);
-      const tctx = textCropCanvas.getContext('2d');
-      tctx.drawImage(canvas, 0, Math.round(canvas.height * 0.10), textCropCanvas.width, textCropCanvas.height, 0, 0, textCropCanvas.width, textCropCanvas.height);
-
-      const faceCanvas = document.createElement('canvas');
-      const fw = Math.round(natW * 0.27);
-      const fh = Math.round(natH * 0.52);
-      faceCanvas.width = fw;
-      faceCanvas.height = fh;
-      const fctx = faceCanvas.getContext('2d');
-      fctx.drawImage(imgElement,
-        Math.round(natW * 0.68),
-        Math.round(natH * 0.22),
-        fw,
-        fh,
-        0, 0, fw, fh
-      );
-
-      return {
-        ocrDataUrl: canvas.toDataURL('image/png'),
-        textCropDataUrl: textCropCanvas.toDataURL('image/png'),
-        faceDataUrl: faceCanvas.toDataURL('image/jpeg', 0.90)
-      };
-    }
-
-    function parseKtpOcrText(rawText) {
-      const lines = String(rawText || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-      const joined = lines.join(' ');
-
-      let nik = '';
-      for (const line of lines) {
-        const cleanedDigits = line
-          .replace(/[OoQD]/g, '0')
-          .replace(/[Iil|!]/g, '1')
-          .replace(/[Zz]/g, '2')
-          .replace(/[Ss]/g, '5')
-          .replace(/[Bb]/g, '8')
-          .replace(/[^\d]/g, '');
-        const nikMatch = cleanedDigits.match(/\d{16}/);
-        if (nikMatch) {
-          nik = nikMatch[0];
-          break;
-        }
-      }
-
-      let nama = '';
-      const ktpNoiseRegex = /^(?:PROVINSI|KABUPATEN|KOTA|NIK|TEMPAT|TGL|LAHIR|JENIS|KELAMIN|ALAMAT|RT|RW|KEL|DESA|KECAMATAN|AGAMA|STATUS|PERKAWINAN|PEKERJAAN|KEWARGANEGARAAN|BERLAKU|HINGGA|GOL|DARAH|SEUMUR|HIDUP|WNI|WNA|ISLAM|KRISTEN|KATOLIK|HINDU|BUDDHA|KONGHUCU|KAWIN|BELUM|CERAI|MALE|FEMALE|LAKI|PEREMPUAN)\b/i;
-      const cleanKtpNameCandidate = (rawStr) => {
-        return String(rawStr || '')
-          .replace(/^.*?(?:N[aou]m[ao]|Narna|Name)\s*[:;\-=\.]?\s*/i, '')
-          .replace(/\b(?:Tempat|Tgl|Lahir|Jenis|Kelamin|Gol|Darah|Alamat)\b.*$/i, '')
-          .replace(/[0-9:;=\-_|\\\/\[\]{}()<>?!@#$%^&*+~`"']/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-          .toUpperCase();
-      };
-
-      for (let i = 0; i < lines.length; i++) {
-        if (/(?:N[aou]m[ao]|Narna|Name)\b/i.test(lines[i])) {
-          let cand = cleanKtpNameCandidate(lines[i]);
-          if (cand.length < 3 && lines[i + 1]) {
-            cand = cleanKtpNameCandidate(lines[i + 1]);
-          }
-          if (cand.length >= 3 && !ktpNoiseRegex.test(cand)) {
-            nama = cand;
-            break;
-          }
-        }
-        if (!nama && nik && lines[i].replace(/[^\d]/g, '').includes(nik.slice(0, 6)) && lines[i + 1]) {
-          const nextCand = cleanKtpNameCandidate(lines[i + 1]);
-          if (nextCand.length >= 3 && !ktpNoiseRegex.test(nextCand)) {
-            nama = nextCand;
-            break;
-          }
-        }
-      }
-
-      if (!nama) {
-        for (let i = 0; i < Math.min(lines.length, 10); i++) {
-          if (/TEMPAT|LAHIR|KELAMIN|ALAMAT/i.test(lines[i])) break;
-          const cand = cleanKtpNameCandidate(lines[i]);
-          if (cand.length >= 4 && /^[A-Z\s'.]+$/.test(cand) && !ktpNoiseRegex.test(cand)) {
-            nama = cand;
-            break;
-          }
-        }
-      }
-
-      let gender = 'LAKI-LAKI';
-      if (/PEREMPUAN|FEMALE|WANITA/i.test(joined)) {
-        gender = 'PEREMPUAN';
-      } else if (/LAKI|MALE|PRIA/i.test(joined)) {
-        gender = 'LAKI-LAKI';
-      }
-
-      return { nik, nama, gender };
-    }
-
-    async function handleKtpImageUpload(event) {
-      const file = event.target?.files?.[0];
-      if (!file) return;
-
-      const progressBox = getEl('ktpOcrProgressBox');
-      if (progressBox) {
-        progressBox.textContent = '⏳ Sedang memindai KTP dengan OCR... Mohon tunggu beberapa detik.';
-        progressBox.classList.remove('hidden');
-      }
-
-      compressImageToDataUrl(file, async fullPreviewUrl => {
-        currentKtpPhotoData = fullPreviewUrl;
-        const prevImg = getEl('ktpPhotoPreviewImg');
-        const emptyPh = getEl('ktpEmptyPlaceholder');
-        if (prevImg) { prevImg.src = fullPreviewUrl; prevImg.classList.remove('hidden'); }
-        if (emptyPh) emptyPh.classList.add('hidden');
-
-        const tempImg = new Image();
-        tempImg.onload = async () => {
-          try {
-            const { ocrDataUrl, textCropDataUrl, faceDataUrl } = preprocessKtpImageForOcr(tempImg);
-            currentKtpFaceData = faceDataUrl;
-            const faceImg = getEl('ktpFaceCropPreview');
-            const faceTxt = getEl('ktpFaceEmptyText');
-            if (faceImg) { faceImg.src = faceDataUrl; faceImg.classList.remove('hidden'); }
-            if (faceTxt) faceTxt.classList.add('hidden');
-
-            let extracted = { nik: '', nama: '', gender: 'LAKI-LAKI' };
-            let rawText = '';
-
-            if (typeof Tesseract !== 'undefined') {
-              const cropRes = await Tesseract.recognize(textCropDataUrl, 'eng');
-              const cropText = cropRes?.data?.text || '';
-              const cropExt = parseKtpOcrText(cropText);
-              if (cropExt.nik) extracted.nik = cropExt.nik;
-              if (cropExt.nama) extracted.nama = cropExt.nama;
-              if (cropExt.gender) extracted.gender = cropExt.gender;
-              rawText = cropText;
-
-              if (!extracted.nik || !extracted.nama) {
-                const fullRes = await Tesseract.recognize(ocrDataUrl, 'eng');
-                const fullText = fullRes?.data?.text || '';
-                const fullExt = parseKtpOcrText(fullText);
-                if (!extracted.nik && fullExt.nik) extracted.nik = fullExt.nik;
-                if (!extracted.nama && fullExt.nama) extracted.nama = fullExt.nama;
-                if (fullExt.gender && extracted.gender === 'LAKI-LAKI') extracted.gender = fullExt.gender;
-                rawText = (cropText + '\n---\n' + fullText).trim();
-              }
-            }
-
-            setElVal('ktpRawOcrText', rawText);
-            if (extracted.nik) setElVal('ktpNikInput', extracted.nik);
-            if (extracted.nama) setElVal('ktpNameInput', extracted.nama);
-            if (extracted.gender) setElVal('ktpGenderSelect', extracted.gender);
-
-            if (extracted.nik || extracted.nama) {
-              showToast(`Scan KTP berhasil! ${extracted.nama || ''} (${extracted.nik || 'NIK terdeteksi'})`, 'success');
-            } else {
-              showToast('Foto KTP & Pas Foto terpasang. Silakan cek/lengkapi NIK & Nama.', 'warning');
-            }
-          } catch (err) {
-            console.warn('KTP OCR error:', err);
-            showToast('Foto KTP terpasang. Silakan lengkapi NIK & Nama secara manual.', 'info');
-          } finally {
-            if (progressBox) progressBox.classList.add('hidden');
-            event.target.value = '';
-          }
-        };
-        tempImg.onerror = () => {
-          if (progressBox) progressBox.classList.add('hidden');
-          showToast('Gagal memuat gambar KTP.', 'error');
-        };
-        tempImg.src = fullPreviewUrl;
-      }, 1500, 0.90);
-    }
-
-    function resetKtpScannerForm() {
-      setElVal('ktpNikInput', '');
-      setElVal('ktpNameInput', '');
-      setElVal('ktpRoleInput', '');
-      setElVal('ktpRawOcrText', '');
-      currentKtpPhotoData = '';
-      currentKtpFaceData = '';
-      const prevImg = getEl('ktpPhotoPreviewImg');
-      const emptyPh = getEl('ktpEmptyPlaceholder');
-      if (prevImg) { prevImg.src = ''; prevImg.classList.add('hidden'); }
-      if (emptyPh) emptyPh.classList.remove('hidden');
-      const faceImg = getEl('ktpFaceCropPreview');
-      const faceTxt = getEl('ktpFaceEmptyText');
-      if (faceImg) { faceImg.src = ''; faceImg.classList.add('hidden'); }
-      if (faceTxt) faceTxt.classList.remove('hidden');
-    }
-
-    function handleSaveKtpRecord(e) {
-      e.preventDefault();
-      const nik = getElVal('ktpNikInput', '').trim();
-      const nama = getElVal('ktpNameInput', '').trim().toUpperCase();
-      if (!nik || !nama) {
-        showToast('NIK dan Nama Lengkap wajib diisi.', 'warning');
-        return;
-      }
-      ktpRecords.unshift({
-        id: 'KTP-' + Date.now(),
-        nik,
-        nama,
-        gender: getElVal('ktpGenderSelect', 'LAKI-LAKI'),
-        pt: getElVal('ktpPtSelect', 'EPM'),
-        role: getElVal('ktpRoleInput', '').trim(),
-        photo: currentKtpPhotoData,
-        facePhoto: currentKtpFaceData
-      });
+    function clearAllRecordsConfirm() {
+      records.forEach(r => markEntityDeleted(r.id));
+      records = [];
       saveStorage();
-      renderKtpTable();
-      showToast(`Data KTP a/n ${nama} berhasil disimpan ke database.`, 'success');
-    }
-
-    function useScannedKtpForBooking() {
-      const nama = getElVal('ktpNameInput', '').trim().toUpperCase();
-      const nik = getElVal('ktpNikInput', '').trim();
-      const gender = getElVal('ktpGenderSelect', 'LAKI-LAKI');
-      const role = getElVal('ktpRoleInput', '').trim();
-      const pt = getElVal('ktpPtSelect', 'EPM');
-      if (!nama) {
-        showToast('Isi atau scan Nama KTP terlebih dahulu.', 'warning');
-        return;
-      }
-      const title = gender === 'PEREMPUAN' ? 'Mrs.' : 'Mr.';
-      setElVal('fPt', pt);
-      const box = getEl('passengerRowsContainer');
-      if (box) {
-        box.innerHTML = '';
-        addPassengerRow({ title, name: nama, role: role || (nik ? `NIK: ${nik}` : '') });
-      }
-      switchMainTab('input');
-      refreshFormDerivedOutputs();
-      showToast(`Data ${title} ${nama} otomatis dimasukkan ke Form Tiket!`, 'success');
-    }
-
-    function renderKtpTable() {
-      const tbody = getEl('ktpTableBody');
-      if (!tbody) return;
-      const q = getElVal('ktpSearchInput', '').toLowerCase();
-      const filtered = ktpRecords.filter(k => !q || [k.nik, k.nama, k.pt, k.role].some(v => String(v || '').toLowerCase().includes(q)));
-      if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 italic">Belum ada data hasil scan KTP tersimpan.</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = filtered.map((k, i) => `
-        <tr class="hover:bg-slate-50">
-          <td class="py-2.5 px-3 font-bold">${i + 1}</td>
-          <td class="py-2.5 px-3">
-            <div class="flex items-center gap-1.5">
-              ${k.photo ? `<img src="${k.photo}" class="w-12 h-8 object-cover rounded border border-slate-300" title="Foto KTP"/>` : ''}
-              ${k.facePhoto ? `<img src="${k.facePhoto}" class="w-8 h-9 object-cover rounded border border-amber-400" title="Pas Foto"/>` : ''}
-            </div>
-          </td>
-          <td class="py-2.5 px-3 font-mono font-black text-blue-900">${escapeHtml(k.nik)}</td>
-          <td class="py-2.5 px-3 font-extrabold text-slate-900">${escapeHtml(k.nama)}</td>
-          <td class="py-2.5 px-3 font-bold">${escapeHtml(k.gender || 'LAKI-LAKI')}</td>
-          <td class="py-2.5 px-3 font-bold">${escapeHtml(k.pt)} <span class="text-slate-500 font-normal">${escapeHtml(k.role)}</span></td>
-          <td class="py-2.5 px-3 text-center">
-            <div class="flex items-center justify-center gap-1">
-              <button type="button" onclick="applySavedKtpToTicket('${k.id}')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-extrabold">Pakai Tiket</button>
-              <button type="button" onclick="ktpRecords=ktpRecords.filter(x=>x.id!=='${k.id}');saveStorage();renderKtpTable();" class="px-2 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function applySavedKtpToTicket(id) {
-      const k = ktpRecords.find(x => x.id === id);
-      if (!k) return;
-      const title = k.gender === 'PEREMPUAN' ? 'Mrs.' : 'Mr.';
-      setElVal('fPt', k.pt || 'EPM');
-      const box = getEl('passengerRowsContainer');
-      if (box) {
-        box.innerHTML = '';
-        addPassengerRow({ title, name: k.nama, role: k.role || `NIK: ${k.nik}` });
-      }
-      switchMainTab('input');
-      refreshFormDerivedOutputs();
-      showToast(`${title} ${k.nama} dimasukkan ke form tiket.`, 'success');
-    }
-
-    function exportKtpExcel() {
-      if (typeof XLSX === 'undefined') return;
-      const rows = ktpRecords.map((k, i) => ({
-        'No.': i + 1,
-        'NIK': k.nik,
-        'Nama Lengkap': k.nama,
-        'Jenis Kelamin': k.gender || 'LAKI-LAKI',
-        'Entitas PT': k.pt,
-        'Jabatan': k.role
-      }));
-      const ws = XLSX.utils.json_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'DATABASE_KTP');
-      XLSX.writeFile(wb, `Database_Scan_KTP_${getTodayIso()}.xlsx`);
-      showToast('Database KTP berhasil diunduh ke Excel.', 'success');
-    }
-
-    // =========================================================================
-    // MODUL 2: OPERASIONAL GA PT. GEL HELPERS (UNIT KHUSUS ATK SAJA)
-    // =========================================================================
-    function toggleBulkPasteOpsModal(show) {
-      if (!show) return closeUniversalModal();
-      openUniversalModal(`
-        <div class="space-y-3">
-          <h3 class="text-sm font-black text-slate-900">📋 Paste Daftar Barang dari Excel</h3>
-          <textarea id="bulkPasteOpsTextarea" rows="8" placeholder="Kertas A4 80gr\t10\tRim\t52000" class="w-full p-3 text-xs border border-slate-300 rounded-xl font-mono"></textarea>
-          <div class="flex justify-end gap-2">
-            <button type="button" onclick="closeUniversalModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-xs font-bold">Batal</button>
-            <button type="button" onclick="processBulkPasteOps()" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-extrabold">Masukkan ke Tabel</button>
-          </div>
-        </div>
-      `);
-    }
-
-    function processBulkPasteOps() {
-      const raw = getElVal('bulkPasteOpsTextarea', '');
-      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-      const isAtk = isOpsAtkCategory(getElVal('opsKategori', 'Tagihan ATK & Perlengkapan'));
-      lines.forEach(line => {
-        const parts = line.split(/\t|;/);
-        if (isAtk) {
-          addOpsInputRow({
-            name: parts[0] || '',
-            qty: Number(parts[1]) || 1,
-            unit: parts[2] || 'Pcs',
-            price: Number(String(parts[3] || '0').replace(/[^\d]/g, '')) || 0
-          });
-        } else {
-          const has4Cols = parts.length >= 4;
-          addOpsInputRow({
-            name: parts[0] || '',
-            qty: Number(parts[1]) || 1,
-            unit: '',
-            price: Number(String((has4Cols ? parts[3] : parts[2]) || '0').replace(/[^\d]/g, '')) || 0
-          });
-        }
-      });
-      closeUniversalModal();
-      recalcOpsDraftTotal();
-    }
-
-    function addOpsInputRow(data = {}) {
-      const tbody = getEl('opsInputItemsBody');
-      if (!tbody) return;
-      const isAtk = isOpsAtkCategory(getElVal('opsKategori', 'Tagihan ATK & Perlengkapan'));
-      const idx = tbody.children.length + 1;
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="py-1.5 px-2.5 font-bold text-slate-500">${idx}</td>
-        <td class="py-1.5 px-2.5"><input type="text" value="${escapeHtml(data.name || '')}" placeholder="${isAtk ? 'Nama item barang ATK...' : 'Uraian pengajuan...'}" class="ops-item-name w-full h-8 px-2 border border-slate-200 rounded-lg font-semibold" /></td>
-        <td class="py-1.5 px-2.5"><input type="number" value="${data.qty || 1}" min="1" oninput="recalcOpsDraftTotal()" class="ops-item-qty w-full h-8 px-2 border border-slate-200 rounded-lg font-bold" /></td>
-        <td class="ops-td-unit py-1.5 px-2.5 ${isAtk ? '' : 'hidden'}"><input type="text" value="${escapeHtml(data.unit || 'Pcs')}" class="ops-item-unit w-full h-8 px-2 border border-slate-200 rounded-lg" /></td>
-        <td class="py-1.5 px-2.5"><input type="number" value="${data.price || 0}" min="0" oninput="recalcOpsDraftTotal()" class="ops-item-price w-full h-8 px-2 border border-slate-200 rounded-lg font-bold" /></td>
-        <td class="py-1.5 px-2.5 text-right font-extrabold ops-item-sub">Rp 0</td>
-        <td class="py-1.5 px-2.5 text-center"><button type="button" onclick="this.closest('tr').remove();recalcOpsDraftTotal();" class="text-rose-600 font-bold">✕</button></td>
-      `;
-      tbody.appendChild(tr);
-      recalcOpsDraftTotal();
-    }
-
-    function addMultipleOpsInputRows(count = 5) {
-      for (let i = 0; i < count; i++) addOpsInputRow();
-    }
-
-    function recalcOpsDraftTotal() {
-      const tbody = getEl('opsInputItemsBody');
-      if (!tbody) return 0;
-      let total = 0;
-      Array.from(tbody.children).forEach(tr => {
-        const q = Number(tr.querySelector('.ops-item-qty')?.value || 0);
-        const p = Number(tr.querySelector('.ops-item-price')?.value || 0);
-        const sub = q * p;
-        total += sub;
-        const subCell = tr.querySelector('.ops-item-sub');
-        if (subCell) subCell.textContent = formatRupiah(sub);
-      });
-      setElText('opsDraftTotalLabel', `Total: ${formatRupiah(total)}`);
-      return total;
-    }
-
-    function resetOpsGelForm() {
-      const f = getEl('opsGelForm');
-      if (f) f.reset();
-      setElVal('opsDate', getTodayIso());
-      onOpsKategoriChange();
-      const tbody = getEl('opsInputItemsBody');
-      if (tbody) { tbody.innerHTML = ''; addOpsInputRow(); }
-    }
-
-    function handleSaveOpsGel(e) {
-      e.preventDefault();
-      const kategori = getElVal('opsKategori', '');
-      const isAtk = isOpsAtkCategory(kategori);
-      const tbody = getEl('opsInputItemsBody');
-      const items = tbody ? Array.from(tbody.children).map(tr => ({
-        name: (tr.querySelector('.ops-item-name')?.value || '').trim(),
-        qty: Number(tr.querySelector('.ops-item-qty')?.value || 1),
-        unit: isAtk ? (tr.querySelector('.ops-item-unit')?.value || 'Pcs').trim() : '',
-        price: Number(tr.querySelector('.ops-item-price')?.value || 0)
-      })).filter(it => it.name) : [];
-      const total = recalcOpsDraftTotal();
-      opsGelRecords.unshift({
-        id: 'GEL-' + Date.now(),
-        date: getElVal('opsDate', getTodayIso()),
-        kategori,
-        applicant: getElVal('opsApplicant', ''),
-        invoice: getElVal('opsInvoice', ''),
-        rekNo: getElVal('opsRekNo', ''),
-        rekName: getElVal('opsRekName', ''),
-        rekBank: getElVal('opsRekBank', ''),
-        title: getElVal('opsTitle', ''),
-        items,
-        total
-      });
-      saveStorage();
-      renderOpsGelTable();
-      resetOpsGelForm();
-      showToast('Pengajuan Operasional GA PT GEL tersimpan & PVR A4 diperbarui.', 'success');
-    }
-
-    function loadSampleOpsGel() {
-      setElVal('opsKategori', 'Tagihan ATK & Perlengkapan');
-      onOpsKategoriChange();
-      setElVal('opsApplicant', 'Eliza Putri Nadya');
-      setElVal('opsRekNo', '1807-6383-59');
-      setElVal('opsRekName', 'TONY');
-      setElVal('opsRekBank', 'BNI');
-      setElVal('opsTitle', 'Pembelian ATK & Perlengkapan Kantor PT GEL');
-      const tbody = getEl('opsInputItemsBody');
-      if (tbody) {
-        tbody.innerHTML = '';
-        addOpsInputRow({ name: 'Kertas HVS A4 80gr Sinar Dunia', qty: 10, unit: 'Rim', price: 54000 });
-        addOpsInputRow({ name: 'Tinta Printer Epson 003 Black & Color', qty: 4, unit: 'Set', price: 320000 });
-      }
-    }
-
-    function exportOpsGelExcel() {
-      if (typeof XLSX === 'undefined') return;
-      const ws = XLSX.utils.json_to_sheet(opsGelRecords);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'OPS_GA_GEL');
-      XLSX.writeFile(wb, `Operasional_GA_PT_GEL_${getTodayIso()}.xlsx`);
-    }
-
-    function printOpsGelPvr() { window.print(); }
-    function resetStnkForm() { getEl('stnkForm')?.reset(); setElVal('stnkDueDate', getTodayIso()); }
-    function loadSampleStnk() {
-      stnkRecords.unshift({ id: 'STNK-SMP', nopol: 'B 9124 KXA', unit: 'Toyota Hilux 4x4 DC', pt: 'GEL', type: 'Pajak Tahunan (1 Thn)', dueDate: addDaysIso(getTodayIso(), 20), status: 'Segera Perpanjang', cost: 4850000, pic: 'Site Kalimantan', photo: '' });
-      saveStorage();
-      renderStnkTable();
-    }
-    function exportStnkExcel() {
-      if (typeof XLSX === 'undefined') return;
-      const ws = XLSX.utils.json_to_sheet(stnkRecords);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'PERPANJANGAN_STNK');
-      XLSX.writeFile(wb, `Monitoring_STNK_${getTodayIso()}.xlsx`);
-    }
-
-    // =========================================================================
-    // KOP LOGO 17 PT & PVR PREVIEW
-    // =========================================================================
-    function buildPtKopLogoMarkup(ptCode) {
-      if (ptCustomLogos && ptCustomLogos[ptCode]) {
-        return `
-          <div class="flex items-center justify-start text-left">
-            <img src="${ptCustomLogos[ptCode]}" alt="Logo ${escapeHtml(ptCode)}" class="max-h-16 w-auto object-contain block" />
-          </div>
-        `;
-      }
-      switch (ptCode) {
-        case 'EPM':
-          return `
-            <div class="flex items-center justify-start text-left">
-              <div style="font-family:'Arial Black',Impact,sans-serif;font-size:17pt;font-weight:900;letter-spacing:0.6px;line-height:1.1;background:linear-gradient(180deg,#60a5fa 0%,#1d4ed8 55%,#1e3a8a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(1px 1px 0px #7f1d1d);">
-                PT ERA PERKASA MINING
-              </div>
-            </div>
-          `;
-        case 'GEL':
-        case 'GEL-PKU':
-          return `
-            <div class="inline-flex flex-col items-center justify-center text-center pb-2.5 mb-1 border-b-2 border-black min-w-[230px]">
-              <img src="https://gelgroup.co.id/images/logo-gel.png" alt="Logo GEL" onerror="this.onerror=null;this.style.display='none';" class="h-12 w-auto object-contain block mx-auto" />
-              <div class="flex items-center justify-center gap-2 w-full mt-1">
-                <span class="flex-1 h-[1.5px] bg-[#b59449]"></span>
-                <span style="font-family:'Times New Roman',Georgia,serif;color:#9a7b32;font-weight:700;font-size:10.5pt;letter-spacing:2px;">GEL</span>
-                <span class="flex-1 h-[1.5px] bg-[#b59449]"></span>
-              </div>
-              <div style="font-family:'Times New Roman',Georgia,serif;color:#9a7b32;font-weight:700;font-size:8.5pt;letter-spacing:1.6px;" class="mt-0.5 uppercase">
-                PT. GLOBAL ENERGI LESTARI
-              </div>
-            </div>
-          `;
-        default:
-          return `
-            <div class="flex items-center justify-start text-left">
-              <div class="px-4 h-12 rounded-xl bg-slate-900 text-amber-300 font-black text-base flex items-center justify-center border border-amber-400">${escapeHtml(ptCode)}</div>
-            </div>
-          `;
-      }
-    }
-
-    function handleUploadPtLogo(files) {
-      if (!files || !files.length) return;
-      const pt = getElVal('pvrPtSelect', 'EPM');
-      if (ptCustomLogos && ptCustomLogos[pt]) {
-        showToast(`Logo asli ${pt} sudah terkunci permanen dan tidak diubah.`, 'warning');
-        return;
-      }
-      compressImageToDataUrl(files[0], url => {
-        ptCustomLogos[pt] = url;
-        saveStorage();
-        renderPvrPreview(false);
-        showToast(`Logo resmi ${pt} berhasil disimpan & dikunci permanen.`, 'success');
-      }, 650, 0.88);
-    }
-
-    function openLogoManagerModal() {
-      const codes = Object.keys(PT_FULL_INFO);
-      openUniversalModal(`
-        <div class="space-y-4">
-          <div class="flex items-center justify-between border-b pb-2">
-            <div>
-              <h3 class="text-base font-black text-slate-900">🎨 Galeri 17 Logo PT Resmi</h3>
-              <p class="text-[11px] text-slate-500">Klik <strong>⬇ JPG</strong> untuk mengunduh gambar logo.</p>
-            </div>
-            <button type="button" onclick="closeUniversalModal()" class="text-slate-500 font-bold">✕</button>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[62vh] overflow-y-auto pr-1">
-            ${codes.map(c => `
-              <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-2">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  ${ptCustomLogos[c]
-                    ? `<img src="${ptCustomLogos[c]}" class="w-10 h-10 object-contain rounded bg-white border p-0.5 shrink-0" />`
-                    : `<span class="w-10 h-10 rounded bg-slate-900 text-amber-300 text-[10px] font-black flex items-center justify-center shrink-0">${c}</span>`}
-                  <div class="min-w-0">
-                    <div class="text-xs font-black text-slate-900">${c}</div>
-                    <div class="text-[10px] text-slate-500 truncate">${escapeHtml(PT_FULL_INFO[c].fullName)}</div>
-                  </div>
-                </div>
-                <div class="flex items-center gap-1.5 shrink-0">
-                  <button type="button" onclick="downloadSinglePtLogoJpg('${c}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-extrabold shadow-xs">
-                    ⬇ JPG
-                  </button>
-                  ${!ptCustomLogos[c] ? `<button type="button" onclick="setElVal('pvrPtSelect','${c}');closeUniversalModal();document.getElementById('ptLogoFileInput').click();" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-extrabold">Upload</button>` : ''}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `);
-    }
-
-    function downloadSinglePtLogoJpg(ptCode) {
-      const info = PT_FULL_INFO[ptCode] || { fullName: ptCode, sub: '' };
-      const triggerDownload = (jpgDataUrl) => {
-        const link = document.createElement('a');
-        link.href = jpgDataUrl;
-        link.download = `LOGO_${ptCode}_${info.fullName.replace(/[^A-Za-z0-9]+/g, '_')}.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        showToast(`Logo ${ptCode} (.JPG) berhasil diunduh.`, 'success');
-      };
-
-      if (ptCustomLogos && ptCustomLogos[ptCode]) {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = Math.max(600, img.naturalWidth || 600);
-          canvas.height = Math.max(220, img.naturalHeight || 220);
-          const ctx = canvas.getContext('2d');
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          triggerDownload(canvas.toDataURL('image/jpeg', 0.95));
-        };
-        img.src = ptCustomLogos[ptCode];
-        return;
-      }
-
-      const canvas = document.createElement('canvas');
-      canvas.width = 1100;
-      canvas.height = 260;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.roundRect(36, 48, 148, 148, 24);
-      ctx.fill();
-      ctx.fillStyle = '#fbbf24';
-      ctx.font = '900 32px Arial, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(ptCode.replace('-PORT', '').replace('-PKU', ''), 110, 122);
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#0f172a';
-      ctx.font = '900 34px Arial, sans-serif';
-      ctx.fillText(info.fullName, 212, 102);
-      ctx.fillStyle = '#475569';
-      ctx.font = 'bold 18px Arial, sans-serif';
-      ctx.fillText(info.sub || '', 212, 148);
-      triggerDownload(canvas.toDataURL('image/jpeg', 0.95));
+      renderRekapTable();
+      renderPvrPreview(false);
+      showToast('Data rekap tiket dikosongkan.', 'info');
     }
 
     function onPvrPtSelectChange() {
-      const pt = getElVal('pvrPtSelect', 'EPM');
-      const divFilter = getElVal('pvrDivisiFilter', 'ALL');
-      const divCode = divFilter === 'CORSEC' ? 'CORSEC' : 'GA';
+      const pt = getElVal('pvrPtSelect', 'GSM');
       const m = ROMAN_MONTHS[new Date().getMonth()];
       const y = new Date().getFullYear();
-      setElVal('pvrNoDoc', `${pt}/${divCode}/GR-____/${m}/${y}`);
-      setElVal('pvrTglPengajuan', getTodayIso());
-      setElVal('pvrDueDate', addDaysIso(getTodayIso(), 14));
-      renderPvrPreview(true);
-    }
-
-    function onPvrDivisiFilterChange() {
-      const pt = getElVal('pvrPtSelect', 'EPM');
-      const divFilter = getElVal('pvrDivisiFilter', 'ALL');
-      const divCode = divFilter === 'CORSEC' ? 'CORSEC' : 'GA';
-      const m = ROMAN_MONTHS[new Date().getMonth()];
-      const y = new Date().getFullYear();
-      setElVal('pvrNoDoc', `${pt}/${divCode}/GR-____/${m}/${y}`);
-      customPvrDeskripsiEdited = false;
+      setElVal('pvrNoDoc', `${pt}/GA/GR-____/${m}/${y}`);
       renderPvrPreview(false);
     }
 
-    function onPvrBankPresetChange() {
-      const preset = getElVal('pvrBankAccount', 'BNI_TONY');
-      const box = getEl('customBankInputsBox');
-      if (box) box.classList.toggle('hidden', preset !== 'CUSTOM_EMPLOYEE');
-      renderPvrPreview(false);
-    }
-
-    function onCustomBankInputChange() { renderPvrPreview(false); }
+    function onPvrDivisiFilterChange() { renderPvrPreview(false); }
     function syncPvrMetaInputs() { renderPvrPreview(false); }
+    function onPvrBankPresetChange() {
+      const val = getElVal('pvrBankAccount', 'BNI_TONY');
+      getEl('customBankInputsBox')?.classList.toggle('hidden', val !== 'CUSTOM_EMPLOYEE');
+      renderPvrPreview(false);
+    }
+    function onCustomBankInputChange() { renderPvrPreview(false); }
+    function regeneratePvrDeskripsiBtn() { customPvrDeskripsiEdited = false; renderPvrPreview(false); }
+    function resetPvrTableEdits() { renderPvrPreview(false); }
+    function addManualPvrLine() {
+      const pt = getElVal('pvrPtSelect', 'GSM');
+      records.unshift({
+        id: 'REC-MAN-' + Date.now(),
+        tanggalOrder: getTodayIso(),
+        divisi: 'GA',
+        jenisLayanan: 'FLIGHT',
+        pt,
+        keperluan: 'Perdin',
+        nama: 'MANUAL ITEM',
+        invoice: 'MAN-' + Date.now().toString().slice(-5),
+        maskapaiHotel: 'Pengajuan Manual',
+        rute: '-',
+        departDate: getTodayIso(),
+        vendor: 'Traveloka',
+        nominal: 0,
+        statusBayar: 'UNPAID',
+        pvrKeterangan: `Pembayaran Manual PT ${pt}`,
+        _updatedAt: Date.now()
+      });
+      saveStorage();
+      renderPvrPreview(false);
+    }
 
-    function renderPvrPreview(resetDates = false) {
-      const pt = getElVal('pvrPtSelect', 'EPM');
+    function onEditReimbursementHeader() {}
+    function onEditRekeningLines() {}
+    function onTaxCellBlur() { renderPvrPreview(false); }
+    function onEditDocDeskripsi() {}
+
+    function renderPvrPreview() {
+      const pt = getElVal('pvrPtSelect', 'GSM');
+      const venFilter = getElVal('pvrVendorFilter', 'ALL');
+      const statFilter = getElVal('pvrStatusFilter', 'UNPAID');
       const divFilter = getElVal('pvrDivisiFilter', 'ALL');
+
       const kop = getEl('pvrKopHeader');
       if (kop) kop.innerHTML = buildPtKopLogoMarkup(pt);
 
       const m = ROMAN_MONTHS[new Date().getMonth()];
       const y = new Date().getFullYear();
-      const divCode = divFilter === 'CORSEC' ? 'CORSEC' : 'GA';
-      if (!getElVal('pvrNoDoc')) setElVal('pvrNoDoc', `${pt}/${divCode}/GR-____/${m}/${y}`);
-      if (resetDates || !getElVal('pvrTglPengajuan')) setElVal('pvrTglPengajuan', getTodayIso());
-      if (resetDates || !getElVal('pvrDueDate')) setElVal('pvrDueDate', addDaysIso(getTodayIso(), 14));
+      if (!getElVal('pvrNoDoc')) setElVal('pvrNoDoc', `${pt}/GA/GR-____/${m}/${y}`);
+      if (!getElVal('pvrTglPengajuan')) setElVal('pvrTglPengajuan', getTodayIso());
+      if (!getElVal('pvrDueDate')) setElVal('pvrDueDate', addDaysIso(getTodayIso(), 14));
       if (!getElVal('pvrSignMaker')) setElVal('pvrSignMaker', 'Eliza Putri Nadya');
       if (!getElVal('pvrSignReviewer')) setElVal('pvrSignReviewer', 'Eunike Priskila');
       if (!getElVal('pvrSignApprover')) setElVal('pvrSignApprover', 'Tony');
@@ -6893,787 +6676,140 @@ ${escapeHtml((activeRec.rekBank || '-').toUpperCase())}</div>
       setElText('docPvrNo', getElVal('pvrNoDoc'));
       setElText('docKepada', `Finance PT ${pt}`);
       setElText('docDari', getElVal('pvrSignMaker'));
-      setElText('docDepartement', divFilter === 'CORSEC' ? 'Corporate Secretary (CORSEC)' : 'General Affair');
+      setElText('docDepartement', divFilter === 'CORSEC' ? 'Corporate Secretary' : 'General Affair');
       setElText('docTanggal', formatDateIndo(getElVal('pvrTglPengajuan')));
       setElText('docDueDate', formatDateIndo(getElVal('pvrDueDate')));
       setElText('docSignMaker', getElVal('pvrSignMaker'));
       setElText('docSignReviewer', getElVal('pvrSignReviewer'));
       setElText('docSignApprover', getElVal('pvrSignApprover'));
 
-      const preset = getElVal('pvrBankAccount', 'BNI_TONY');
-      let rekText = '';
-      if (preset === 'CUSTOM_EMPLOYEE') {
-        rekText = `REKENING : ${getElVal('pvrCustomRekNo', '-')}\nA/N ${getElVal('pvrCustomRekName', '-')}\n${getElVal('pvrCustomRekBank', '-')}`;
-      } else {
-        const b = PVR_BANK_ACCOUNTS[preset] || PVR_BANK_ACCOUNTS.BNI_TONY;
-        rekText = `${b.rekening}\n${b.atasNama}\n${b.bankName}`;
-      }
-      setElText('docRekeningLines', rekText);
-
-      const venFilter = getElVal('pvrVendorFilter', 'ALL');
-      const statFilter = getElVal('pvrStatusFilter', 'UNPAID');
-      const ptItems = records.filter(r => r.pt === pt
-        && (divFilter === 'ALL' || (r.divisi || 'GA') === divFilter)
-        && (venFilter === 'ALL' || r.vendor === venFilter)
-        && (statFilter === 'ALL' || r.statusBayar === statFilter));
-
-      const body = getEl('docPvrLinesBody');
-      let subtotal = 0;
-      if (body) {
-        if (!ptItems.length) {
-          body.innerHTML = `
-            <tr>
-              <td class="text-center">1</td>
-              <td contenteditable="true">Tidak ada transaksi UNPAID (${divFilter === 'ALL' ? 'GA/CORSEC' : divFilter}) untuk PT ${escapeHtml(pt)}.</td>
-              <td class="text-center" contenteditable="true">1</td>
-              <td class="text-right" contenteditable="true">Rp 0</td>
-              <td class="text-right" contenteditable="true">Rp -</td>
-              <td class="text-right font-bold">Rp 0</td>
-            </tr>
-          `;
+      const bankKey = getElVal('pvrBankAccount', 'BNI_TONY');
+      const rekBox = getEl('docRekeningLines');
+      if (rekBox) {
+        if (bankKey === 'CUSTOM_EMPLOYEE') {
+          rekBox.textContent = `REKENING : ${getElVal('pvrCustomRekNo', '-')}\nA/N ${getElVal('pvrCustomRekName', '-')}\n${getElVal('pvrCustomRekBank', '-')}`;
         } else {
-          body.innerHTML = ptItems.map((r, i) => {
-            const nom = Number(r.nominal) || 0;
-            const qty = Math.max(1, Number(r.paxCount) || (Array.isArray(r.passengers) && r.passengers.length) || 1);
-            const hargaSatuan = qty > 1 ? Math.round(nom / qty) : nom;
-            subtotal += nom;
-            return `
-              <tr>
-                <td class="text-center">${i + 1}</td>
-                <td contenteditable="true" style="white-space:pre-line;">${escapeHtml(r.pvrKeterangan || `${r.maskapai} ${r.rute} a/n ${r.nama}`)}</td>
-                <td class="text-center" contenteditable="true">${qty}</td>
-                <td class="text-right" contenteditable="true">${formatRupiahPvr(hargaSatuan)}</td>
-                <td class="text-right" contenteditable="true">Rp -</td>
-                <td class="text-right font-bold">${formatRupiahPvr(nom)}</td>
-              </tr>
-            `;
-          }).join('');
+          const b = PVR_BANK_ACCOUNTS[bankKey] || PVR_BANK_ACCOUNTS.BNI_TONY;
+          rekBox.textContent = `${b.rekening}\n${b.atasNama}\n${b.bankName}`;
         }
       }
 
-      setElText('docSubtotal', formatRupiahPvr(subtotal));
-      setElText('docGrandTotal', formatRupiahPvr(subtotal));
-      const divLabel = divFilter === 'CORSEC' ? 'Divisi CORSEC' : (divFilter === 'GA' ? 'Divisi GA' : 'Divisi GA & CORSEC');
-      const desk = `Pengajuan Pembayaran Tiket & Akomodasi PT ${pt} — ${divLabel} (${ptItems.length} Transaksi UNPAID)`;
-      if (!customPvrDeskripsiEdited) setElVal('pvrDeskripsiInput', desk);
-      setElText('docDeskripsiText', getElVal('pvrDeskripsiInput', desk));
+      const items = records.filter(r => {
+        const mPt = r.pt === pt;
+        const mVen = venFilter === 'ALL' || r.vendor === venFilter;
+        const mStat = statFilter === 'ALL' || (r.statusBayar || 'UNPAID') === statFilter;
+        const mDiv = divFilter === 'ALL' || (r.divisi || 'GA') === divFilter;
+        return mPt && mVen && mStat && mDiv;
+      });
+
+      const tbody = getEl('docPvrLinesBody');
+      let sub = 0;
+      if (tbody) {
+        tbody.innerHTML = items.length ? items.map((r, i) => {
+          const val = Number(r.nominal) || 0;
+          sub += val;
+          return `
+            <tr>
+              <td class="text-center">${i + 1}</td>
+              <td>${escapeHtml(r.pvrKeterangan || `${r.maskapaiHotel} ${r.rute} a.n. ${r.nama}`)}</td>
+              <td class="text-center">1</td>
+              <td class="text-right">${formatRupiahPvr(val)}</td>
+              <td class="text-right">Rp -</td>
+              <td class="text-right font-bold">${formatRupiahPvr(val)}</td>
+            </tr>
+          `;
+        }).join('') : `<tr><td class="text-center">1</td><td>Belum ada tagihan ${statFilter} untuk PT ${escapeHtml(pt)}</td><td class="text-center">1</td><td class="text-right">Rp -</td><td class="text-right">Rp -</td><td class="text-right font-bold">Rp -</td></tr>`;
+      }
+
+      setElText('docSubtotal', formatRupiahPvr(sub));
+      setElText('docGrandTotal', formatRupiahPvr(sub));
+
+      if (!customPvrDeskripsiEdited) {
+        const desc = `Pengajuan Pembayaran Tiket & Akomodasi Perjalanan Dinas PT ${pt} (${items.length} Transaksi)`;
+        setElVal('pvrDeskripsiInput', desc);
+        setElText('docDeskripsiText', desc);
+      } else {
+        setElText('docDeskripsiText', getElVal('pvrDeskripsiInput', ''));
+      }
       requestAnimationFrame(fitPvrSheetsToViewport);
     }
 
-    function addManualPvrLine() {
-      const body = getEl('docPvrLinesBody');
-      if (!body) return;
-      const idx = body.children.length + 1;
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="text-center">${idx}</td>
-        <td contenteditable="true">Item Tambahan Manual #${idx}</td>
-        <td class="text-center" contenteditable="true">1</td>
-        <td class="text-right" contenteditable="true">Rp 0</td>
-        <td class="text-right" contenteditable="true">Rp -</td>
-        <td class="text-right font-bold" contenteditable="true">Rp 0</td>
-      `;
-      body.appendChild(tr);
+    function exportSinglePtPvrExcel() {
+      if (typeof XLSX === 'undefined') return;
+      const pt = getElVal('pvrPtSelect', 'GSM');
+      const items = records.filter(r => r.pt === pt && (r.statusBayar || 'UNPAID') !== 'PAID');
+      const rows = items.map((r, i) => ({
+        'NO.': i + 1,
+        'KETERANGAN': r.pvrKeterangan || r.nama,
+        'QUANTITY': 1,
+        'HARGA': Number(r.nominal) || 0,
+        'JUMLAH': Number(r.nominal) || 0
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, `PVR_${pt}`);
+      XLSX.writeFile(wb, `PVR_${pt}_${getTodayIso()}.xlsx`);
     }
 
-    function regeneratePvrDeskripsiBtn() {
-      customPvrDeskripsiEdited = false;
-      renderPvrPreview(false);
+    function exportAllPtsPvrExcel() {
+      if (typeof XLSX === 'undefined') return;
+      const wb = XLSX.utils.book_new();
+      Object.keys(PT_FULL_INFO).forEach(pt => {
+        const items = records.filter(r => r.pt === pt && (r.statusBayar || 'UNPAID') !== 'PAID');
+        if (items.length) {
+          const rows = items.map((r, i) => ({
+            'NO.': i + 1,
+            'KETERANGAN': r.pvrKeterangan || r.nama,
+            'QUANTITY': 1,
+            'HARGA': Number(r.nominal) || 0,
+            'JUMLAH': Number(r.nominal) || 0
+          }));
+          XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), pt.slice(0, 31));
+        }
+      });
+      if (!wb.SheetNames.length) {
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{ Info: 'Tidak ada tagihan UNPAID' }]), 'PVR_KOSONG');
+      }
+      XLSX.writeFile(wb, `PVR_Semua_PT_GEL_Group_${getTodayIso()}.xlsx`);
     }
-
-    function resetPvrTableEdits() { renderPvrPreview(false); }
-    function onTaxCellBlur() {}
-    function onEditReimbursementHeader() {}
-    function onEditRekeningLines() {}
-    function onEditDocDeskripsi() {}
-    function exportSinglePtPvrExcel() { exportCleanRekapExcel(); }
-    function exportAllPtsPvrExcel() { exportCleanRekapExcel(); }
 
     // =========================================================================
-    // MODUL 1: FORM CALCULATIONS, FORMAT BAKU TRAVELOKA/TIKET.COM & PDF PARSER
+    // INISIALISASI SAAT HALAMAN SELESAI DIMUAT
     // =========================================================================
-    function recalculateMova() {
-      const jenis = getElVal('fJenisLayanan', 'FLIGHT');
-      const vendor = getElVal('fVendor', 'Traveloka');
-      const nominal = Number(getElVal('fNominal', 0)) || 0;
-      let rate = 0.00135;
-      let label = 'Tarif MOVA: 0.135% (Tiket)';
-      if (jenis === 'HOTEL') {
-        rate = 0.005;
-        label = 'Tarif MOVA: 0.50% (Hotel)';
-      } else if (vendor === 'Direct Maskapai / Hotel') {
-        rate = 0;
-        label = 'Tarif MOVA: 0% (Direct)';
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       }
-      setElText('movaRateHint', label);
-      setElVal('fMova', Math.round(nominal * rate));
-    }
+      initPwaAppExperience();
+      syncAllPtSelectOptions();
+      loadStorage();
 
-    function getFormPassengers() {
-      const box = getEl('passengerRowsContainer');
-      if (!box) return [];
-      return Array.from(box.children).map(row => {
-        const title = row.querySelector('.pax-title')?.value || 'Mr.';
-        const name = (row.querySelector('.pax-name')?.value || '').trim().toUpperCase();
-        const role = (row.querySelector('.pax-role')?.value || '').trim();
-        return name ? { title, name, role } : null;
-      }).filter(Boolean);
-    }
+      setElVal('fTanggalOrder', getTodayIso());
+      setElVal('fDepartDate', getTodayIso());
+      setElVal('opsDate', getTodayIso());
+      setElVal('stnkDueDate', getTodayIso());
+      setElVal('lvTanggalPo', getTodayIso());
+      setElVal('psPeriodeDari', getTodayIso());
+      setElVal('psPeriodeSampai', addDaysIso(getTodayIso(), 30));
+      setElVal('gpTanggalEfektif', getTodayIso());
 
-    function buildAutoPvrKeterangan() {
-      const jenis = getElVal('fJenisLayanan', 'FLIGHT');
-      const vendor = getElVal('fVendor', 'Traveloka');
-      const invoice = getElVal('fInvoice', '').trim();
-      const receipt = getElVal('fReceiptCode', '').trim();
-      const maskapaiHotel = getElVal('fMaskapaiHotel', '').trim() || (jenis === 'HOTEL' ? 'Hotel' : 'Garuda Indonesia');
-      const flightNoRoom = getElVal('fFlightNoRoom', '').trim();
-      const pnrNights = getElVal('fPnrNights', '').trim().toUpperCase();
-      const rute = getElVal('fRute', '').trim().toUpperCase();
-      const departIso = getElVal('fDepartDate', getTodayIso());
-      const returnIso = getElVal('fReturnDate', '');
-      const depart = formatDateIndo(departIso);
-      const ret = returnIso ? formatDateIndo(returnIso) : '';
-      const paxList = getFormPassengers();
-      const keperluanRaw = getElVal('fKeperluan', 'Perdin');
-      const keperluanLabel = keperluanRaw === 'Perdin' ? 'Perjalanan Dinas' : keperluanRaw;
-
-      const paxStr = paxList.length
-        ? paxList.map(p => {
-            const tcName = toTitleCaseName(p.name);
-            const roleTag = p.role ? ` *${p.role}*` : '';
-            return `${p.title} ${tcName}${roleTag}`;
-          }).join(' & ')
-        : 'Karyawan';
-
-      const prefixNum = vendor === 'Tiket.com' ? (invoice || receipt) : (receipt || invoice);
-      const prefixHead = prefixNum ? `${prefixNum} - ` : '';
-
-      const expandRoute = rawRute => {
-        const clean = String(rawRute || '').replace(/\s+/g, '');
-        const parts = clean.split(/[-–→]/).filter(Boolean);
-        if (parts.length >= 2) {
-          const c1 = IATA_CITY_MAP[parts[0]] || { upper: parts[0], name: toTitleCaseName(parts[0]) };
-          const c2 = IATA_CITY_MAP[parts[1]] || { upper: parts[1], name: toTitleCaseName(parts[1]) };
-          return {
-            codePair: `${parts[0]}-${parts[1]}`,
-            upperPair: `${c1.upper}-${c2.upper}`,
-            fromCity: c1.name,
-            toCity: c2.name
-          };
-        }
-        return { codePair: clean, upperPair: clean, fromCity: '', toCity: '' };
-      };
-
-      if (vendor === 'Traveloka' || vendor === 'Tiket.com') {
-        if (jenis === 'HOTEL') {
-          const roomLabel = flightNoRoom ? ` - ${flightNoRoom}` : '';
-          const nightsNum = pnrNights ? (pnrNights.replace(/\D/g, '') || pnrNights) : '1';
-          let dateRangeStr = depart;
-          if (departIso && returnIso && departIso.slice(0, 7) === returnIso.slice(0, 7)) {
-            const d1 = departIso.split('-')[2];
-            dateRangeStr = `${d1}-${ret}`;
-          } else if (depart && ret) {
-            dateRangeStr = `${depart} s/d ${ret}`;
-          }
-          return `${prefixHead}Biaya hotel a/n ${paxStr} ${maskapaiHotel}${roomLabel} (1 Room) tanggal ${dateRangeStr} (${nightsNum} Malam)\nKeperluan: ${keperluanLabel}`;
-        }
-
-        const isRoundTrip = Boolean(returnIso);
-        const tripTypeLabel = isRoundTrip ? 'pergi dan pulang' : 'pergi';
-        const airlineUpper = maskapaiHotel.toUpperCase();
-        const flightCodePart = flightNoRoom ? ` ${flightNoRoom.toUpperCase()}` : '';
-        const pnrPart = pnrNights ? ` (${pnrNights})` : '';
-        const routeInfo = expandRoute(rute);
-        const routeSegment = routeInfo.codePair
-          ? ` ${routeInfo.codePair}${routeInfo.upperPair && routeInfo.upperPair !== routeInfo.codePair ? ` (${routeInfo.upperPair})` : ''}`
-          : '';
-        const fromToPhrase = routeInfo.fromCity && routeInfo.toCity
-          ? ` dari ${routeInfo.fromCity} menuju ${routeInfo.toCity}`
-          : '';
-        const depDatePhrase = depart ? ` tanggal ${depart}` : '';
-
-        let legText = `${airlineUpper}${flightCodePart}${pnrPart}${routeSegment}${fromToPhrase}${depDatePhrase}`;
-        if (isRoundTrip && routeInfo.fromCity && routeInfo.toCity) {
-          const revParts = routeInfo.codePair.split('-');
-          const revCode = revParts.length === 2 ? `${revParts[1]}-${revParts[0]}` : '';
-          const revUpper = `${routeInfo.toCity.toUpperCase()}-${routeInfo.fromCity.toUpperCase()}`;
-          legText += `, ${airlineUpper}${pnrPart}${revCode ? ` ${revCode} (${revUpper})` : ''} dari ${routeInfo.toCity} menuju ${routeInfo.fromCity} tanggal ${ret}`;
-        }
-
-        return `${prefixHead}Biaya tiket pesawat ${tripTypeLabel} a/n ${paxStr} ${legText}\nKeperluan: ${keperluanLabel}`;
-      }
-
-      const jenisLabel = jenis === 'TRAIN' ? 'Tiket Kereta Api' : 'Tiket Pesawat';
-      const dateStr = ret ? `${depart} s/d ${ret}` : depart;
-      return `${prefixHead}Pembayaran ${jenisLabel} ${maskapaiHotel}${rute ? ' Rute ' + rute : ''} Tanggal ${dateStr} a/n ${paxStr}\nKeperluan: ${keperluanLabel}`;
-    }
-
-    function resetCustomPvrText() {
-      customPvrTextEdited = false;
-      setElVal('fPvrKeterangan', buildAutoPvrKeterangan());
-    }
-
-    function refreshFormDerivedOutputs() {
-      const pt = getElVal('fPt', 'EPM');
-      setElText('ptGrHint', `GR: ${pt}`);
-      if (!customPvrTextEdited) {
-        setElVal('fPvrKeterangan', buildAutoPvrKeterangan());
-      }
-      const pax = getFormPassengers();
-      const paxCount = Math.max(1, pax.length);
-      const nom = Number(getElVal('fNominal', 0)) || 0;
-      const unitNom = Math.round(nom / paxCount);
-      setElText('nominalPerPaxHint', `${paxCount} Orang • @ ${formatRupiah(unitNom)} / orang`);
-
-      const tbody = getEl('livePreviewRowBody');
-      if (!tbody) return;
-      const namaStr = pax.length ? pax.map(p => `${p.title} ${p.name}`).join(', ') : '-';
-      const mova = Number(getElVal('fMova', 0)) || 0;
-      tbody.innerHTML = `
-        <tr>
-          <td class="border border-slate-300 px-2 py-1.5 text-center font-bold">1</td>
-          <td class="border border-slate-300 px-2 py-1.5">${formatDateShort(getElVal('fTanggalOrder'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 font-mono">${escapeHtml(getElVal('fInvoice', '-'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fPayment'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(pt)}</td>
-          <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(namaStr)}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fKeperluan'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fRute', '-'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${formatDateShort(getElVal('fDepartDate'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fMaskapaiHotel', '-'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fVendor'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 text-right font-bold">${formatNumber(nom)}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fStatusPengajuan'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fTujuan'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 font-mono">${escapeHtml(getElVal('fNoGr', '-'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(getElVal('fStatusBayar'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fStatusKet', '-'))}</td>
-          <td class="border border-slate-300 px-2 py-1.5 text-right font-bold text-emerald-700">${formatNumber(mova)}</td>
-        </tr>
-      `;
-    }
-
-    function onServiceTypeChange() {
-      const jenis = getElVal('fJenisLayanan', 'FLIGHT');
-      if (jenis === 'HOTEL') {
-        setElText('lblMaskapaiHotel', 'Nama Hotel *');
-        setElText('lblFlightNoRoom', 'Tipe Kamar');
-        setElText('lblPnrNights', 'Jumlah Malam / PNR');
-        setElText('lblRuteDetail', 'Kota / Lokasi Hotel *');
-        setElText('lblDepartCi', 'Check-In Date *');
-        setElText('lblReturnCo', 'Check-Out Date');
-      } else if (jenis === 'TRAIN') {
-        setElText('lblMaskapaiHotel', 'Nama Kereta *');
-        setElText('lblFlightNoRoom', 'No. Kereta / Gerbong');
-        setElText('lblPnrNights', 'Kode Booking (PNR)');
-        setElText('lblRuteDetail', 'Rute Stasiun *');
-        setElText('lblDepartCi', 'Depart Date *');
-        setElText('lblReturnCo', 'Return Date (PP)');
-      } else {
-        setElText('lblMaskapaiHotel', 'Maskapai / Transport *');
-        setElText('lblFlightNoRoom', 'No. Penerbangan');
-        setElText('lblPnrNights', 'Kode Booking (PNR)');
-        setElText('lblRuteDetail', 'Rute Perjalanan *');
-        setElText('lblDepartCi', 'Depart Date *');
-        setElText('lblReturnCo', 'Return Date (PP)');
-      }
-      recalculateMova();
+      addPassengerRow();
+      addOpsInputRow();
+      onOpsKategoriChange();
       refreshFormDerivedOutputs();
-    }
 
-    function onPtChange() { refreshFormDerivedOutputs(); }
-    function onPaymentMethodChange() {
-      setElVal('fTujuan', getElVal('fPayment', 'DC BNI Pak Tony'));
-      refreshFormDerivedOutputs();
-    }
-
-    function applyGrTemplate() {
-      const pt = getElVal('fPt', 'EPM');
-      const m = ROMAN_MONTHS[new Date().getMonth()];
-      const y = new Date().getFullYear();
-      setElVal('fNoGr', `____/GR/${pt}/${m}/${y}`);
-      refreshFormDerivedOutputs();
-    }
-
-    async function extractTextFromPdfFile(file) {
-      if (!file) return '';
-      if (typeof pdfjsLib === 'undefined') {
-        showToast('Library PDF.js sedang dimuat, tunggu 2 detik lalu unggah ulang.', 'warning');
-        return '';
-      }
-      try {
-        if (pdfjsLib.GlobalWorkerOptions) {
-          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        }
-        const buf = await file.arrayBuffer();
-        let pdf;
-        try {
-          pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
-        } catch (workerErr) {
-          pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf), disableWorker: true }).promise;
-        }
-        let fullText = '';
-        for (let p = 1; p <= pdf.numPages; p++) {
-          const page = await pdf.getPage(p);
-          const content = await page.getTextContent();
-          const linesMap = {};
-          content.items.forEach(it => {
-            const y = Math.round((it.transform?.[5] || 0) / 4) * 4;
-            if (!linesMap[y]) linesMap[y] = [];
-            linesMap[y].push({ x: it.transform?.[4] || 0, str: it.str });
-          });
-          const sortedY = Object.keys(linesMap).map(Number).sort((a, b) => b - a);
-          sortedY.forEach(y => {
-            const rowStr = linesMap[y].sort((a, b) => a.x - b.x).map(i => i.str).join(' ');
-            fullText += rowStr + '\n';
-          });
-        }
-        if (fullText.replace(/\s+/g, '').length < 30 && typeof Tesseract !== 'undefined') {
-          const maxPagesOcr = Math.min(pdf.numPages, 3);
-          let ocrCombined = '';
-          for (let p = 1; p <= maxPagesOcr; p++) {
-            const page = await pdf.getPage(p);
-            const vp = page.getViewport({ scale: 2.2 });
-            const canvas = document.createElement('canvas');
-            canvas.width = vp.width;
-            canvas.height = vp.height;
-            await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-            const ocrRes = await Tesseract.recognize(canvas.toDataURL('image/png'), 'eng');
-            if (ocrRes?.data?.text) ocrCombined += ocrRes.data.text + '\n';
-          }
-          if (ocrCombined.trim()) fullText = ocrCombined.trim();
-        }
-        return fullText.trim();
-      } catch (err) {
-        console.warn('PDF extract warning:', err);
-        return '';
-      }
-    }
-
-    function parseTravelPdfText(rawText, fileName = '') {
-      const combined = `${fileName}\n${rawText || ''}`;
-      const upper = combined.toUpperCase();
-      const lines = combined.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-      const parsed = {
-        fileName,
-        pt: '',
-        jenis: 'FLIGHT',
-        maskapai: '',
-        flightNo: '',
-        pnr: '',
-        rute: '',
-        tanggalOrder: '',
-        departDate: '',
-        returnDate: '',
-        invoice: '',
-        receiptCode: '',
-        nominal: 0,
-        divisi: /CORSEC|CORPORATE\s*SECRETARY/i.test(combined) ? 'CORSEC' : 'GA',
-        vendor: upper.includes('TIKET.COM') ? 'Tiket.com' : 'Traveloka',
-        keperluan: upper.includes('CUTI') ? 'Cuti Roster' : 'Perdin',
-        passengers: []
-      };
-
-      for (const code of Object.keys(PT_FULL_INFO)) {
-        const fullNm = PT_FULL_INFO[code].fullName.replace(/^PT\.?\s*/i, '');
-        if (new RegExp(`\\b${code}\\b`, 'i').test(combined) || (fullNm.length > 6 && upper.includes(fullNm.toUpperCase()))) {
-          parsed.pt = code;
-          break;
-        }
-      }
-
-      if (/GARUDA/i.test(combined)) parsed.maskapai = 'Garuda Indonesia';
-      else if (/BATIK\s*AIR/i.test(combined)) parsed.maskapai = 'Batik Air';
-      else if (/SUPER\s*AIR\s*JET/i.test(combined)) parsed.maskapai = 'Super Air Jet';
-      else if (/CITILINK/i.test(combined)) parsed.maskapai = 'Citilink';
-      else if (/LION\s*AIR/i.test(combined)) parsed.maskapai = 'Lion Air';
-      else if (/SRIWIJAYA/i.test(combined)) parsed.maskapai = 'Sriwijaya Air';
-      else if (/PELITA\s*AIR/i.test(combined)) parsed.maskapai = 'Pelita Air';
-      else if (/WINGS\s*AIR/i.test(combined)) parsed.maskapai = 'Wings Air';
-      else if (/NAM\s*AIR/i.test(combined)) parsed.maskapai = 'NAM Air';
-      else if (/KERETA\s*API|\bKAI\b/i.test(combined) && !/GARUDA|LION|BATIK|CITILINK|SUPER\s*AIR/i.test(combined)) {
-        parsed.jenis = 'TRAIN';
-        parsed.maskapai = 'PT Kereta Api Indonesia (KAI)';
-      } else if (/VOUCHER\s*HOTEL|CHECK[\s-]*IN|HOTEL\s*RESERVATION|BUKTI\s*PEMBAYARAN\s*HOTEL|HOTEL\s*VOUCHER/i.test(combined) && !/GARUDA|LION|BATIK|CITILINK|SUPER\s*AIR/i.test(combined)) {
-        parsed.jenis = 'HOTEL';
-        const hotelLine = lines.find(l => /HOTEL|SWISS-BEL|ASTON|HARRIS|MERCURE|NOVOTEL|IBIS|SANTIKA|FAVEHOTEL|GRAND|PREMIERE|ARYADUTA|WHIZ|POP!|ZEST|AMARIS/i.test(l) && !/BUKTI|PEMBAYARAN|VOUCHER|ORDER|RECEIPT|DETAIL/i.test(l));
-        if (hotelLine) parsed.maskapai = hotelLine.replace(/\s+/g, ' ').trim();
-      }
-
-      const fnMatch = combined.match(/\b(GA|ID|IU|QG|JT|SJ|IP|IN|IW)[-\s]?(\d{2,4})\b/i);
-      if (fnMatch) parsed.flightNo = `${fnMatch[1].toUpperCase()}-${fnMatch[2]}`;
-
-      const pnrBlacklist = /^(?:CODE|NUMBER|NOMOR|ID|BOOKING|FLIGHT|TICKET|STATUS|REFUND|ADULT|DEWASA|TRAVEL|CLASS|CABIN|ECONOMY|BUSINESS|PASSENGER|ISSUED|DATE|TIME|ONLINE|CHECK|DIRECT|NONSTOP)$/i;
-      const pnrInline = combined.match(/(?:PNR|AIRLINE\s*BOOKING\s*CODE|BOOKING\s*(?:CODE|ID)|KODE\s*BOOKING)\s*(?:\(PNR\))?\s*[:#\-]?\s*([A-Z0-9]{5,7})\b/i);
-      if (pnrInline && !pnrBlacklist.test(pnrInline[1]) && /[A-Z]/i.test(pnrInline[1])) {
-        parsed.pnr = pnrInline[1].toUpperCase();
-      } else {
-        for (let i = 0; i < lines.length; i++) {
-          if (/AIRLINE\s*BOOKING\s*CODE|KODE\s*BOOKING|BOOKING\s*CODE|\bPNR\b/i.test(lines[i])) {
-            const nextWin = `${lines[i]} ${lines[i + 1] || ''} ${lines[i + 2] || ''}`;
-            const candMatches = [...nextWin.matchAll(/\b([A-Z0-9]{6})\b/g)];
-            const validPnr = candMatches.map(m => m[1]).find(c => !pnrBlacklist.test(c) && /[A-Z]/.test(c) && !/^\d{6}$/.test(c));
-            if (validPnr) {
-              parsed.pnr = validPnr.toUpperCase();
-              break;
-            }
-          }
-        }
-      }
-
-      const iataBlacklist = new Set(['MR', 'MRS', 'MDF', 'EPM', 'GEL', 'GSM', 'GSJ', 'KMC', 'QIN', 'SIP', 'TER', 'KKS', 'ARC', 'PNR', 'PDF', 'JAN', 'FEB', 'MAR', 'APR', 'MEI', 'MAY', 'JUN', 'JUL', 'AGU', 'AUG', 'SEP', 'OKT', 'OCT', 'NOV', 'DES', 'DEC', 'WIB', 'WITA', 'WIT', 'IDR', 'TAX', 'PPN', 'PPH', 'GA', 'JT', 'QG', 'ID', 'IU', 'VIA', 'NON', 'ALL', 'FOR', 'THE', 'AND', 'PER', 'DIN', 'KTT', 'HO', 'NIK', 'KTP']);
-      const iataMatches = [...upper.matchAll(/\b([A-Z]{3})\s*(?:-|–|—|→|TO|KE|\s+-\s+)\s*([A-Z]{3})\b/g)];
-      for (const m of iataMatches) {
-        if (!iataBlacklist.has(m[1]) && !iataBlacklist.has(m[2]) && m[1] !== m[2]) {
-          parsed.rute = `${m[1]} - ${m[2]}`;
-          break;
-        }
-      }
-
-      if (parsed.vendor === 'Tiket.com') {
-        const orderMatch = combined.match(/ORDER\s*ID\s*[:#\-]?\s*#?\s*(\d{7,15})\b/i);
-        if (orderMatch) {
-          parsed.invoice = orderMatch[1];
-          parsed.receiptCode = orderMatch[1];
-        }
-      } else {
-        const trvBookMatch = combined.match(/(?:TRAVELOKA\s*BOOKING\s*ID|NO\.?\s*PESANAN\s*TRAVELOKA|BOOKING\s*ID|NO\.?\s*PESANAN)\s*[:#\-]?\s*#?\s*(\d{8,14})\b/i);
-        if (trvBookMatch) parsed.invoice = trvBookMatch[1];
-        else {
-          const fallbackInv = combined.match(/\b(1\d{8,11})\b/);
-          if (fallbackInv) parsed.invoice = fallbackInv[1];
-        }
-        const rec19LabelMatch = combined.match(/(?:NUMBER|NOMOR|RECEIPT)\s*[:#\-]?\s*#?\s*(\d{19})\b/i) || combined.match(/#?\b(\d{19})\b/);
-        if (rec19LabelMatch) parsed.receiptCode = rec19LabelMatch[1];
-      }
-
-      const monthMap = {
-        JAN: '01', JANUARI: '01', JANUARY: '01', FEB: '02', FEBRUARI: '02', FEBRUARY: '02',
-        MAR: '03', MARET: '03', MARCH: '03', APR: '04', APRIL: '04', MEI: '05', MAY: '05',
-        JUN: '06', JUNI: '06', JUNE: '06', JUL: '07', JULI: '07', JULY: '07',
-        AGU: '08', AGUSTUS: '08', AUG: '08', AUGUST: '08', SEP: '09', SEPTEMBER: '09',
-        OKT: '10', OKTOBER: '10', OCT: '10', OCTOBER: '10', NOV: '11', NOVEMBER: '11',
-        DES: '12', DESEMBER: '12', DEC: '12', DECEMBER: '12'
-      };
-      const orderDateMatch = combined.match(/(?:DATE|TANGGAL|TGL\s*ORDER)\s*[:\-]\s*(\d{1,2})\s+(JAN(?:UARI|UARY)?|FEB(?:RUARI|RUARY)?|MAR(?:ET|CH)?|APR(?:IL)?|MEI|MAY|JUN(?:I|E)?|JUL(?:I|Y)?|AGU(?:STUS)?|AUG(?:UST)?|SEP(?:TEMBER)?|OKT(?:OBER)?|OCT(?:OBER)?|NOV(?:EMBER)?|DES(?:EMBER)?|DEC(?:EMBER)?)\s+(202\d)/i);
-      if (orderDateMatch) {
-        parsed.tanggalOrder = `${orderDateMatch[3]}-${monthMap[orderDateMatch[2].toUpperCase()] || '01'}-${String(orderDateMatch[1]).padStart(2, '0')}`;
-      }
-
-      const dateMatches = [...combined.matchAll(/\b(\d{1,2})\s+(JAN(?:UARI|UARY)?|FEB(?:RUARI|RUARY)?|MAR(?:ET|CH)?|APR(?:IL)?|MEI|MAY|JUN(?:I|E)?|JUL(?:I|Y)?|AGU(?:STUS)?|AUG(?:UST)?|SEP(?:TEMBER)?|OKT(?:OBER)?|OCT(?:OBER)?|NOV(?:EMBER)?|DES(?:EMBER)?|DEC(?:EMBER)?)\s+(202\d)\b/gi)];
-      const uniqueDates = [];
-      dateMatches.forEach(dm => {
-        const iso = `${dm[3]}-${monthMap[dm[2].toUpperCase()] || '01'}-${String(dm[1]).padStart(2, '0')}`;
-        if (!uniqueDates.includes(iso)) uniqueDates.push(iso);
-      });
-      if (uniqueDates.length) {
-        const flightDates = uniqueDates.filter(d => d !== parsed.tanggalOrder);
-        const targetDates = flightDates.length ? flightDates : uniqueDates;
-        parsed.departDate = targetDates[0];
-        if (targetDates.length > 1 && targetDates[1] > targetDates[0]) parsed.returnDate = targetDates[1];
-      }
-
-      const receiptPayMatch = combined.match(/(?:TOTAL\s*PAYMENT|TOTAL\s*PEMBAYARAN|AMOUNT\s*PAID|TOTAL\s*BAYAR)\s*[:\-]?\s*(?:RP\.?|IDR)?\s*([\d]{1,3}(?:[.,]\d{3})+)/i);
-      if (receiptPayMatch) {
-        parsed.nominal = Number(receiptPayMatch[1].replace(/[^\d]/g, '')) || 0;
-      } else {
-        const moneyMatches = [...combined.matchAll(/(?:GRAND\s*TOTAL|TOTAL|RP\.?|IDR)\s*[:\-]?\s*(?:RP\.?|IDR)?\s*([\d]{1,3}(?:[.,]\d{3})+)/gi)];
-        if (moneyMatches.length) {
-          const vals = moneyMatches.map(m => Number(m[1].replace(/[^\d]/g, '')) || 0).filter(v => v >= 50000 && v <= 250000000);
-          if (vals.length) parsed.nominal = Math.max(...vals);
-        }
-      }
-
-      let docJabatan = '';
-      const jabMatch = combined.match(/(?:JABATAN|POSITION|DIVISI\s*\/\s*JABATAN)\s*[:\-]\s*([A-Z0-9\s\/&().-]{2,45}?)(?=\r?\n|NIK|DEPARTEMEN|TUJUAN|KEPERLUAN|TANGGAL|$)/i);
-      if (jabMatch) {
-        const cleanJab = jabMatch[1].replace(/\s+/g, ' ').trim();
-        if (cleanJab && !/^(?:NAMA|NIK|TANGGAL|TUJUAN)$/i.test(cleanJab)) docJabatan = cleanJab;
-      }
-
-      const seen = new Set();
-      const pushPassenger = (title, rawName, roleOverride = '') => {
-        const name = String(rawName || '').replace(/\s+/g, ' ').trim().toUpperCase();
-        if (name.length >= 4 && !seen.has(name) && !/GARUDA|INDONESIA|TRAVELOKA|PERDIN|FORM|SURAT|GLOBAL|ENERGI|LESTARI|PERJALANAN|DINAS|TANGGAL|JABATAN|DIVISI/.test(name)) {
-          seen.add(name);
-          const ktpMatch = ktpRecords.find(k => k.nama === name);
-          parsed.passengers.push({
-            title: ktpMatch ? (ktpMatch.gender === 'PEREMPUAN' ? 'Mrs.' : 'Mr.') : title,
-            name,
-            role: roleOverride || docJabatan || (ktpMatch?.role || (ktpMatch?.nik ? `NIK: ${ktpMatch.nik}` : ''))
-          });
-          if (!parsed.pt && ktpMatch?.pt) parsed.pt = ktpMatch.pt;
-        }
-      };
-
-      const paxMatches = [...combined.matchAll(/\b(MR|MRS|MS|TUAN|NYONYA)\.?\s+([A-Z][A-Z\s'.]{3,40}?)(?=\s*(?:\(|,|\n|\d|NIK|JABATAN|DIVISI|DEPART|FLIGHT|ETICKET|$))/gi)];
-      paxMatches.forEach(m => {
-        const rawT = m[1].toUpperCase();
-        const title = (rawT === 'MRS' || rawT === 'NYONYA') ? 'Mrs.' : (rawT === 'MS' ? 'Ms.' : 'Mr.');
-        pushPassenger(title, m[2]);
-      });
-
-      // Fallback pembacaan Nama dari Surat Perdin / Cuti Roster yang tidak memakai Mr./Mrs.
-      if (!parsed.passengers.length) {
-        const perdinNameMatches = [...combined.matchAll(/(?:NAMA\s*(?:KARYAWAN|PEMOHON|PENUMPANG)?|PASSENGER\s*NAME)\s*[:\-]\s*([A-Z][A-Z\s'.]{3,40}?)(?=\r?\n|NIK|JABATAN|DIVISI|PT|DEPARTEMEN|$)/gi)];
-        perdinNameMatches.forEach(m => pushPassenger('Mr.', m[1]));
-      }
-
-      return parsed;
-    }
-
-    function applyParsedDataToForm(parsed) {
-      if (!parsed) return;
-      if (parsed.pt && PT_FULL_INFO[parsed.pt]) setElVal('fPt', parsed.pt);
-      if (parsed.jenis) { setElVal('fJenisLayanan', parsed.jenis); onServiceTypeChange(); }
-      if (parsed.tanggalOrder) setElVal('fTanggalOrder', parsed.tanggalOrder);
-      if (parsed.maskapai) setElVal('fMaskapaiHotel', parsed.maskapai);
-      if (parsed.flightNo) setElVal('fFlightNoRoom', parsed.flightNo);
-      if (parsed.pnr) setElVal('fPnrNights', parsed.pnr);
-      if (parsed.rute) setElVal('fRute', parsed.rute);
-      if (parsed.departDate) setElVal('fDepartDate', parsed.departDate);
-      if (parsed.returnDate) setElVal('fReturnDate', parsed.returnDate);
-      if (parsed.invoice) setElVal('fInvoice', parsed.invoice);
-      if (parsed.receiptCode) setElVal('fReceiptCode', parsed.receiptCode);
-      if (parsed.nominal > 0) setElVal('fNominal', parsed.nominal);
-      if (parsed.divisi) setElVal('fDivisi', parsed.divisi);
-      if (parsed.vendor) setElVal('fVendor', parsed.vendor);
-      if (parsed.keperluan) setElVal('fKeperluan', parsed.keperluan);
-      if (parsed.passengers && parsed.passengers.length) {
-        const box = getEl('passengerRowsContainer');
-        if (box) {
-          box.innerHTML = '';
-          parsed.passengers.forEach(p => addPassengerRow(p));
-        }
-      }
-      customPvrTextEdited = false;
-      recalculateMova();
-      refreshFormDerivedOutputs();
-    }
-
-    async function handlePairedSlotUpload(slotNum, files) {
-      if (!files || !files.length) return;
-      try {
-        const list = Array.from(files);
-        setElText(`slot${slotNum}FileLabel`, list.length > 1 ? `${list.length} file dipilih` : list[0].name);
-        setElText('pairedSlotStatusText', `Memproses ${list[0].name}...`);
-
-        for (const file of list) {
-          const text = await extractTextFromPdfFile(file);
-          const parsed = parseTravelPdfText(text, file.name);
-          if (slotNum === 3) pairedSlots[3].push(parsed);
-          else pairedSlots[slotNum] = parsed;
-          pdfQueue.push(parsed);
-        }
-
-        const allParsed = [pairedSlots[1], pairedSlots[2], ...(pairedSlots[3] || [])].filter(Boolean);
-        const merged = {};
-        const paxMap = new Map();
-        allParsed.forEach(p => {
-          if (p.pt) merged.pt = p.pt;
-          if (p.jenis && p.jenis !== 'FLIGHT') merged.jenis = p.jenis;
-          else if (!merged.jenis && p.jenis) merged.jenis = p.jenis;
-          if (p.maskapai) merged.maskapai = p.maskapai;
-          if (p.flightNo) merged.flightNo = p.flightNo;
-          if (p.pnr) merged.pnr = p.pnr;
-          if (p.rute) merged.rute = p.rute;
-          if (p.tanggalOrder) merged.tanggalOrder = p.tanggalOrder;
-          if (p.departDate) merged.departDate = p.departDate;
-          if (p.returnDate) merged.returnDate = p.returnDate;
-          if (p.invoice) merged.invoice = p.invoice;
-          if (p.receiptCode) merged.receiptCode = p.receiptCode;
-          if (p.nominal > 0) merged.nominal = p.nominal;
-          if (p.divisi) merged.divisi = p.divisi;
-          if (p.vendor) merged.vendor = p.vendor;
-          if (p.keperluan) merged.keperluan = p.keperluan;
-          (p.passengers || []).forEach(px => {
-            const ex = paxMap.get(px.name);
-            if (!ex) paxMap.set(px.name, { ...px });
-            else if (!ex.role && px.role) ex.role = px.role;
-          });
-        });
-        if (paxMap.size) merged.passengers = Array.from(paxMap.values());
-
-        applyParsedDataToForm(merged);
-        renderPdfQueueList();
-        setElText('pairedSlotStatusText', `Terbaca (${allParsed.length} dok): ${list[list.length - 1].name}`);
-        showToast(`Dokumen Slot 0${slotNum} berhasil dibaca & digabungkan ke form.`, 'success');
-      } catch (err) {
-        setElText('pairedSlotStatusText', 'Gagal membaca PDF. Coba lagi.');
-        showToast('Terjadi kendala saat membaca file PDF.', 'error');
-      } finally {
-        const inp = getEl(`pdfSlot${slotNum}Input`);
-        if (inp) inp.value = '';
-      }
-    }
-
-    function resetPairedSlots() {
-      pairedSlots = { 1: null, 2: null, 3: [], slot3Parsed: null };
-      setElText('slot1FileLabel', 'Flight No, PNR, Rute, Kamar');
-      setElText('slot2FileLabel', 'Order ID, Tgl Order, Total Rp');
-      setElText('slot3FileLabel', 'Ambil Jabatan & Keperluan');
-      setElText('pairedSlotStatusText', 'Status: Belum ada file dipilih');
-    }
-
-    function renderPdfQueueList() {
-      setElText('pdfQueueCount', pdfQueue.length);
-      const box = getEl('pdfQueueList');
-      if (!box) return;
-      if (!pdfQueue.length) {
-        box.innerHTML = `<p class="text-xs text-slate-400 italic py-4 text-center">Belum ada antrian PDF terbaca.</p>`;
-        return;
-      }
-      box.innerHTML = pdfQueue.map((item, idx) => `
-        <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-2">
-          <div class="min-w-0">
-            <div class="text-[11px] font-extrabold text-slate-900 truncate">${idx + 1}. ${escapeHtml(item.fileName)}</div>
-            <div class="text-[10px] text-slate-500 truncate">${escapeHtml(item.pt || 'EPM')} • ${escapeHtml(item.maskapai || item.jenis)} • ${formatRupiah(item.nominal)}</div>
-          </div>
-          <button type="button" onclick="applyParsedDataToForm(pdfQueue[${idx}])" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-extrabold shrink-0">Isi Form</button>
-        </div>
-      `).join('');
-    }
-
-    async function handleBatchPdfFiles(files) {
-      if (!files || !files.length) return;
-      showToast(`Membaca ${files.length} file PDF...`, 'info');
-      const mergedPaxMap = new Map();
-      let mergedData = null;
-
-      for (const file of Array.from(files)) {
-        const txt = await extractTextFromPdfFile(file);
-        const p = parseTravelPdfText(txt, file.name);
-        pdfQueue.push(p);
-        if (!mergedData) mergedData = { ...p };
-        else {
-          if (p.pt) mergedData.pt = p.pt;
-          if (p.maskapai) mergedData.maskapai = p.maskapai;
-          if (p.flightNo) mergedData.flightNo = p.flightNo;
-          if (p.pnr) mergedData.pnr = p.pnr;
-          if (p.rute) mergedData.rute = p.rute;
-          if (p.tanggalOrder) mergedData.tanggalOrder = p.tanggalOrder;
-          if (p.departDate) mergedData.departDate = p.departDate;
-          if (p.returnDate) mergedData.returnDate = p.returnDate;
-          if (p.invoice) mergedData.invoice = p.invoice;
-          if (p.receiptCode) mergedData.receiptCode = p.receiptCode;
-          if (p.nominal > 0) mergedData.nominal = p.nominal;
-        }
-        (p.passengers || []).forEach(px => {
-          const existing = mergedPaxMap.get(px.name);
-          if (!existing) mergedPaxMap.set(px.name, { ...px });
-          else if (!existing.role && px.role) existing.role = px.role;
-        });
-      }
-
-      if (mergedData) {
-        mergedData.passengers = Array.from(mergedPaxMap.values());
-        applyParsedDataToForm(mergedData);
-      }
-      renderPdfQueueList();
-      showToast(`${files.length} file PDF berhasil dibaca & digabungkan ke form.`, 'success');
-    }
-
-    function saveAllQueueToRekap() {
-      if (!pdfQueue.length) {
-        showToast('Tidak ada antrian PDF untuk disimpan.', 'warning');
-        return;
-      }
-      pdfQueue.forEach(p => {
-        const pax = (p.passengers && p.passengers.length) ? p.passengers : [{ title: 'Mr.', name: 'KARYAWAN', role: '' }];
-        const paxCount = Math.max(1, pax.length);
-        const totalNom = Number(p.nominal) || 0;
-        records.unshift({
-          id: 'REC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
-          tanggalOrder: p.tanggalOrder || getTodayIso(),
-          issueTime: '11:00',
-          divisi: p.divisi || 'GA',
-          jenis: p.jenis || 'FLIGHT',
-          pt: p.pt || 'EPM',
-          keperluan: p.keperluan || 'Perdin',
-          requestBy: '',
-          passengers: pax,
-          paxCount,
-          nama: pax.map(x => `${x.title} ${x.name}`).join(', '),
-          invoice: p.invoice || '-',
-          receiptCode: p.receiptCode || '',
-          maskapai: p.maskapai || 'Garuda Indonesia',
-          flightNo: p.flightNo || '',
-          pnr: p.pnr || '',
-          rute: p.rute || '-',
-          departDate: p.departDate || getTodayIso(),
-          returnDate: p.returnDate || '',
-          vendor: p.vendor || 'Traveloka',
-          nominal: totalNom,
-          unitNominal: Math.round(totalNom / paxCount),
-          mova: Math.round(totalNom * 0.00135),
-          payment: 'DC BNI Pak Tony',
-          tujuan: 'DC BNI Pak Tony',
-          statusPengajuan: 'Sudah Diajukan',
-          noGr: '',
-          statusBayar: 'UNPAID',
-          statusKet: '',
-          pvrKeterangan: ''
-        });
-      });
-      pdfQueue = [];
-      renderPdfQueueList();
-      saveStorage();
       renderRekapTable();
-      renderPvrPreview(true);
-      showToast('Seluruh antrian PDF berhasil disimpan ke Rekap!', 'success');
-    }
+      renderPvrPreview(false);
+      renderKtpTable();
+      renderOpsGelTable();
+      renderStnkTable();
+      renderSewaLvTable();
+      renderPengajuanSewaTable();
+      renderPerubahanPoTable();
+      ctRender();
 
-    // =========================================================================
-    // BOOTSTRAP SAAT HALAMAN SELESAI DIMUAT
-    // =========================================================================
-    window.addEventListener('beforeunload', () => {
-      try {
-        saveStorage();
-      } catch (e) {}
-    });
-
-    window.addEventListener('DOMContentLoaded', () => {
-      try {
-        initPwaAppExperience();
-        loadStorage();
-        // Aktifkan penyimpanan persisten browser agar tidak terhapus otomatis oleh OS/browser
-        if (navigator.storage && navigator.storage.persist) {
-          navigator.storage.persist().catch(() => {});
-        }
-        syncAllPtSelectOptions();
-        setElVal('fTanggalOrder', getTodayIso());
-        setElVal('fDepartDate', getTodayIso());
-        setElVal('lvTanggalPo', getTodayIso());
-        setElVal('psPeriodeDari', getTodayIso());
-        setElVal('psPeriodeSampai', addDaysIso(getTodayIso(), 30));
-        setElVal('gpTanggalEfektif', getTodayIso());
-        setElVal('opsDate', getTodayIso());
-        setElVal('stnkDueDate', getTodayIso());
-        onOpsKategoriChange();
-        if (getEl('passengerRowsContainer') && !getEl('passengerRowsContainer').children.length) {
-          addPassengerRow();
-        }
-        if (getEl('opsInputItemsBody') && !getEl('opsInputItemsBody').children.length) {
-          addOpsInputRow();
-        }
-        recalculateMova();
-        refreshFormDerivedOutputs();
-        renderRekapTable();
-        renderPvrPreview(true);
-        renderKtpTable();
-        renderSewaLvTable();
-        renderPengajuanSewaTable();
-        populateExistingPoDropdownForReplacement();
-        renderPerubahanPoTable();
-        ctRender();
-        renderStnkTable();
-        renderOpsGelTable();
-        initGaAccessGate();
-        initSupabaseCloudSync();
-        requestAnimationFrame(fitPvrSheetsToViewport);
-      } catch (err) {
-        console.error('Init error:', err);
-      }
+      initGaAccessGate();
+      initSupabaseCloudSync();
     });
   </script>
 </body>
