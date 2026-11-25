@@ -2,35 +2,37 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#b45309" />
-  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="GA GEL" />
-  <title>GA GEL — Portal Operasional Terpadu PT Global Energi Lestari</title>
-  <link id="dynamicPwaManifest" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22GA%20GEL%20%E2%80%94%20PT%20Global%20Energi%20Lestari%22%2C%22short_name%22%3A%22GA%20GEL%22%2C%22start_url%22%3A%22https%3A%2F%2Fga-ptgel.github.io%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23fffdf7%22%2C%22theme_color%22%3A%22%23b45309%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fgelgroup.co.id%2Fimages%2Flogo-gel.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fgelgroup.co.id%2Fimages%2Flogo-gel.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D" />
+  <title>GA GEL — PT Global Energi Lestari</title>
+
+  <link id="dynamicPwaManifest" rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22GA%20GEL%20%E2%80%94%20PT%20Global%20Energi%20Lestari%22%2C%22short_name%22%3A%22GA%20GEL%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23fffdf7%22%2C%22theme_color%22%3A%22%23b45309%22%7D" />
   <link id="appFaviconLink" rel="icon" type="image/png" href="https://gelgroup.co.id/images/logo-gel.png" />
   <link id="appleTouchIconLink" rel="apple-touch-icon" href="https://gelgroup.co.id/images/logo-gel.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
   <script>
-    // Sinkronkan Logo Emas PT GEL langsung ke Favicon & Manifest PNG 512x512 asli (bukan SVG berlabel PNG)
-    (function bootstrapGelDesktopIcon() {
-      const gelGoldSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-        <rect x="16" y="16" width="480" height="480" rx="112" fill="#ffffff" stroke="#d4a017" stroke-width="22"/>
-        <g transform="translate(256,256)" fill="none" stroke="#c89211" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z"/>
-          <path d="M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z" transform="rotate(120)"/>
-          <path d="M0,-138 C64,-82 64,-12 0,34 C-64,-12 -64,-82 0,-138 Z" transform="rotate(240)"/>
-          <circle cx="0" cy="0" r="24" fill="#ffffff" stroke="#c89211" stroke-width="18"/>
-        </g>
-      </svg>`;
-      const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(gelGoldSvg);
-      const applyManifest = (iconUrl, mimeType) => {
+    // Pastikan ikon aplikasi menggunakan Logo Resmi PT GEL persis seperti di halaman Login
+    (function bootstrapOfficialGelLogoIcon() {
+      const GEL_LOGO_URL = 'https://gelgroup.co.id/images/logo-gel.png';
+      const applyManifestWithIcon = (iconSrc) => {
         const fav = document.getElementById('appFaviconLink');
         const app = document.getElementById('appleTouchIconLink');
-        if (fav) { fav.type = mimeType; fav.href = iconUrl; }
-        if (app) { app.href = iconUrl; }
-        const startUrl = window.location.href.split('#')[0];
-        const manifest = {
+        if (fav) { fav.type = 'image/png'; fav.href = iconSrc; }
+        if (app) { app.href = iconSrc; }
+
+        const startUrl = window.location.href.split('#')[0].split('?')[0];
+        const manifestObj = {
           id: startUrl,
           name: 'GA GEL — PT Global Energi Lestari',
           short_name: 'GA GEL',
@@ -41,41 +43,45 @@
           background_color: '#fffdf7',
           theme_color: '#b45309',
           icons: [
-            { src: iconUrl, sizes: '192x192', type: mimeType, purpose: 'any' },
-            { src: iconUrl, sizes: '512x512', type: mimeType, purpose: 'any maskable' }
+            { src: iconSrc, sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: iconSrc, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
           ]
         };
         const mEl = document.getElementById('dynamicPwaManifest');
-        if (mEl) mEl.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
+        if (mEl) {
+          mEl.href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestObj));
+        }
       };
-      applyManifest(svgDataUrl, 'image/svg+xml');
+
+      // Pasang URL resmi langsung pada milidetik pertama, lalu konversi ke PNG 512x512 berbingkai putih agar tidak jatuh ke huruf G
+      applyManifestWithIcon(GEL_LOGO_URL);
       try {
         const img = new Image();
+        img.crossOrigin = 'anonymous';
         img.onload = () => {
           const c = document.createElement('canvas');
-          c.width = 512; c.height = 512;
+          c.width = 512;
+          c.height = 512;
           const ctx = c.getContext('2d');
-          ctx.drawImage(img, 0, 0, 512, 512);
-          applyManifest(c.toDataURL('image/png'), 'image/png');
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.roundRect(12, 12, 488, 488, 108);
+          ctx.fill();
+          ctx.lineWidth = 18;
+          ctx.strokeStyle = '#d97706';
+          ctx.stroke();
+          ctx.drawImage(img, 64, 64, 384, 384);
+          const dataPng = c.toDataURL('image/png');
+          if (dataPng && dataPng.length > 200) applyManifestWithIcon(dataPng);
         };
-        img.src = svgDataUrl;
+        img.src = GEL_LOGO_URL;
       } catch (e) {}
     })();
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f8fafc;
-      color: #0f172a;
     }
 
     /* Permanent Interactive Mining Coal HD785 Sunset Watermark */
@@ -396,19 +402,17 @@
 
       <!-- Kolom Kanan: Form Login Ringkas -->
       <div class="lg:col-span-7 bg-white/95 backdrop-blur-xl p-6 sm:p-8 flex flex-col justify-center">
-        <div class="mb-5">
+        <div class="mb-4">
           <h2 class="text-lg sm:text-xl font-black text-slate-900">Login Portal Operasional</h2>
         </div>
 
-        <!-- Tab Pemilih Mode Login (Tim Site vs Departemen GA) -->
-        <div class="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-amber-100/70 border border-amber-300/80 mb-5">
-          <button type="button" id="loginModeTabSite" onclick="switchLoginGateMode('SITE')" class="py-2.5 px-3 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-1.5 bg-white text-slate-900 shadow-sm border border-amber-400">
-            <span>👷</span>
-            <span>Tim Site</span>
+        <!-- Pilihan Akses Site vs Departemen GA -->
+        <div class="grid grid-cols-2 gap-1.5 p-1.5 rounded-2xl bg-amber-100/80 border border-amber-300/80 mb-4">
+          <button type="button" id="loginModeTabSite" onclick="switchLoginGateMode('SITE')" class="py-2.5 px-3 rounded-xl text-xs font-extrabold transition flex items-center justify-center gap-1.5 bg-white text-stone-900 shadow-sm border border-amber-400">
+            👷 Tim Site
           </button>
           <button type="button" id="loginModeTabGa" onclick="switchLoginGateMode('GA')" class="py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-stone-700 hover:text-stone-950">
-            <span>🛡️</span>
-            <span>Dept. GA</span>
+            🛡️ Dept. GA
           </button>
         </div>
 
@@ -442,23 +446,18 @@
           </button>
         </form>
 
-        <!-- Banner Prompt Install Otomatis Saat Membuka Link (Windows / MacBook / Android / iPhone) -->
+        <!-- Banner Install Langsung Aplikasi GA GEL (Hanya Tombol Install, Tanpa Tombol Bagikan) -->
         <div id="loginAutoInstallBanner" class="mt-4 p-3 rounded-2xl bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-100/80 border border-amber-300 flex items-center justify-between gap-2.5 shadow-2xs">
           <div class="flex items-center gap-2.5 min-w-0">
             <img src="https://gelgroup.co.id/images/logo-gel.png" alt="Logo GEL" onerror="this.onerror=null;this.src='https://placehold.co/40x40/101d32/f59e0b?text=GEL';" class="w-9 h-9 rounded-xl bg-white p-1 border border-amber-400 object-contain shrink-0" />
             <div class="min-w-0">
-              <div class="text-[11px] font-black text-amber-950 truncate">📲 Install Aplikasi GA GEL</div>
-              <div class="text-[10px] font-semibold text-amber-800 truncate">Windows • MacBook • Android • iPhone</div>
+              <div class="text-[11px] font-black text-amber-950 truncate">📲 Aplikasi GA GEL</div>
+              <div class="text-[10px] font-semibold text-amber-800 truncate">PT Global Energi Lestari</div>
             </div>
           </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <button type="button" onclick="copyShareInstallLink()" title="Salin Link Install untuk Dibagikan" class="px-2.5 py-2 rounded-xl bg-white hover:bg-amber-50 border border-amber-300 text-amber-950 text-[10px] font-extrabold">
-              🔗 Bagikan
-            </button>
-            <button type="button" onclick="triggerInstallPwaApp()" class="px-3 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white text-[10px] font-black shadow-xs">
-              ⬇ Install
-            </button>
-          </div>
+          <button type="button" onclick="triggerInstallPwaApp()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white text-[11px] font-black shadow-xs shrink-0">
+            ⬇ Install
+          </button>
         </div>
 
         <!-- Copyright Eksklusif di Halaman Login -->
@@ -2768,228 +2767,11 @@
         deferredPwaPrompt = e;
         const btn = getEl('installPwaBtn');
         if (btn) btn.classList.add('ring-2', 'ring-yellow-300');
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-        const params = new URLSearchParams(window.location.search);
-        if (!isStandalone && (params.get('install') === '1' || !sessionStorage.getItem('ga_gel_install_prompted'))) {
-          sessionStorage.setItem('ga_gel_install_prompted', '1');
-          setTimeout(() => triggerInstallPwaApp(), 650);
-        }
       });
 
       window.addEventListener('appinstalled', () => {
         deferredPwaPrompt = null;
-        closeUniversalModal();
-        showToast('Aplikasi GA GEL dengan Logo Emas PT GEL berhasil terpasang di Desktop!', 'success');
-      });
-
-      const isStandaloneNow = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-      if (!isStandaloneNow && new URLSearchParams(window.location.search).get('install') === '1') {
-        setTimeout(() => {
-          if (!getEl('universalModalOverlay')?.classList.contains('flex')) {
-            triggerInstallPwaApp();
-          }
-        }, 800);
-      }
-    }
-
-    function copyShareInstallLink() {
-      try {
-        const u = new URL(window.location.href.split('#')[0]);
-        u.searchParams.set('install', '1');
-        const shareUrl = u.toString();
-        const ta = document.createElement('textarea');
-        ta.value = shareUrl;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        ta.remove();
-        showToast('Link Install Otomatis (?install=1) berhasil disalin! Siap dibagikan ke tim.', 'success');
-      } catch (e) {
-        showToast('Salin URL dari address bar browser untuk dibagikan.', 'info');
-      }
-    }
-
-    function markEntityDeleted(id) {
-      if (!id) return;
-      if (!deletedEntityIds.includes(id)) {
-        deletedEntityIds.push(id);
-        if (deletedEntityIds.length > 600) {
-          deletedEntityIds = deletedEntityIds.slice(-600);
-        }
-      }
-    }
-
-    function mergeArrayByKey(localArr, remoteArr, keyFn, deletedSet) {
-      const map = new Map();
-      const addList = (arr, isLocal) => {
-        if (!Array.isArray(arr)) return;
-        arr.forEach(item => {
-          if (!item) return;
-          const k = keyFn(item);
-          if (!k || (deletedSet && deletedSet.has(k))) return;
-          if (!map.has(k)) {
-            map.set(k, item);
-          } else if (isLocal) {
-            const existing = map.get(k);
-            const locTs = Number(item._updatedAt || 0);
-            const remTs = Number(existing._updatedAt || 0);
-            if (locTs >= remTs) {
-              map.set(k, { ...existing, ...item });
-            }
-          }
-        });
-      };
-      addList(remoteArr, false);
-      addList(localArr, true);
-      return Array.from(map.values());
-    }
-
-    function mergeWorkspaceStates(remotePayload) {
-      if (!remotePayload || typeof remotePayload !== 'object') return;
-      const remoteDeleted = Array.isArray(remotePayload.deletedEntityIds) ? remotePayload.deletedEntityIds : [];
-      deletedEntityIds = Array.from(new Set([...deletedEntityIds, ...remoteDeleted])).slice(-600);
-      const delSet = new Set(deletedEntityIds);
-
-      records = mergeArrayByKey(records, remotePayload.records, r => r.id || `${r.invoice}-${r.nama}-${r.tanggalOrder}`, delSet);
-      opsGelRecords = mergeArrayByKey(opsGelRecords, remotePayload.opsGelRecords, o => o.id || `${o.date}-${o.applicant}-${o.total}`, delSet);
-      stnkRecords = mergeArrayByKey(stnkRecords, remotePayload.stnkRecords, s => s.id || `${s.nopol}-${s.dueDate}`, delSet);
-      sewaLvRecords = mergeArrayByKey(sewaLvRecords, remotePayload.sewaLvRecords, lv => lv.id || `${lv.noPo}-${lv.unit}`, delSet);
-      pengajuanSewaRecords = mergeArrayByKey(pengajuanSewaRecords, remotePayload.pengajuanSewaRecords, ps => ps.id, delSet);
-      perubahanPoRecords = mergeArrayByKey(perubahanPoRecords, remotePayload.perubahanPoRecords, gp => gp.id, delSet);
-      ktpRecords = mergeArrayByKey(ktpRecords, remotePayload.ktpRecords, k => k.nik || k.id, delSet);
-
-      if (remotePayload.ptCustomLogos && typeof remotePayload.ptCustomLogos === 'object') {
-        ptCustomLogos = { ...remotePayload.ptCustomLogos, ...ptCustomLogos };
-      }
-      if (remotePayload.pvrStateByPt && typeof remotePayload.pvrStateByPt === 'object') {
-        pvrStateByPt = { ...remotePayload.pvrStateByPt, ...pvrStateByPt };
-      }
-
-      const rCt = remotePayload.cateringTowerState;
-      if (rCt && typeof rCt === 'object') {
-        cateringTowerState.sites = mergeArrayByKey(cateringTowerState.sites, rCt.sites, s => s.id, delSet);
-        cateringTowerState.reports = mergeArrayByKey(cateringTowerState.reports, rCt.reports, r => r.id, delSet);
-        cateringTowerState.employees = mergeArrayByKey(cateringTowerState.employees, rCt.employees, e => e.id || e.nik, delSet);
-        cateringTowerState.guests = mergeArrayByKey(cateringTowerState.guests, rCt.guests, g => g.id, delSet);
-        cateringTowerState.qualityLogs = mergeArrayByKey(cateringTowerState.qualityLogs, rCt.qualityLogs, q => q.id, delSet);
-        cateringTowerState.actionLogs = mergeArrayByKey(cateringTowerState.actionLogs, rCt.actionLogs, a => a.id, delSet);
-        cateringTowerState.auditLogs = mergeArrayByKey(cateringTowerState.auditLogs, rCt.auditLogs, l => `${l.time}-${l.user}-${l.action}`, delSet).slice(0, 300);
-      }
-    }
-
-    async function pushStateToSupabase() {
-      if (!supabaseClient || isApplyingRemoteSync) return;
-      try {
-        setElText('cloudSyncBadge', '☁️ Syncing...');
-        // Tarik dulu data terbaru dari cloud agar inputan orang site lain terakumulasi (tidak tertimpa)
-        const { data: latestRow } = await supabaseClient
-          .from(SUPABASE_TABLE_NAME)
-          .select('payload')
-          .eq('id', SUPABASE_ROW_ID)
-          .maybeSingle();
-        if (latestRow && latestRow.payload) {
-          isApplyingRemoteSync = true;
-          try {
-            mergeWorkspaceStates(latestRow.payload);
-          } finally {
-            isApplyingRemoteSync = false;
-          }
-        }
-
-        const payload = {
-          records,
-          ptCustomLogos,
-          opsGelRecords,
-          stnkRecords,
-          sewaLvRecords,
-          pengajuanSewaRecords,
-          perubahanPoRecords,
-          ktpRecords,
-          pvrStateByPt,
-          cateringTowerState,
-          deletedEntityIds
-        };
-        const { error } = await supabaseClient
-          .from(SUPABASE_TABLE_NAME)
-          .upsert({ id: SUPABASE_ROW_ID, payload, updated_at: new Date().toISOString() });
-        setElText('cloudSyncBadge', error ? '☁️ Sync Error' : '☁️ Online Sync');
-      } catch (e) {
-        setElText('cloudSyncBadge', '☁️ Offline');
-      }
-    }
-
-    async function initSupabaseCloudSync() {
-      const cfg = getActiveSupabaseConfig();
-      if (!cfg.url || !cfg.anonKey || typeof window.supabase === 'undefined') {
-        setElText('cloudSyncBadge', '☁️ Local Mode');
-        return;
-      }
-      try {
-        supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
-        const { data, error } = await supabaseClient
-          .from(SUPABASE_TABLE_NAME)
-          .select('payload')
-          .eq('id', SUPABASE_ROW_ID)
-          .maybeSingle();
-        if (!error && data && data.payload) {
-          applyRemoteWorkspacePayload(data.payload);
-          // Jika perangkat lokal punya data tambahan yang belum ada di cloud, dorong hasil gabungan ke cloud
-          await pushStateToSupabase();
-        } else if (!error && !data) {
-          await pushStateToSupabase();
-        }
-        setElText('cloudSyncBadge', error ? '☁️ Setup Table' : '☁️ Online Sync');
-
-        supabaseClient
-          .channel('ga_portal_realtime')
-          .on('postgres_changes', { event: '*', schema: 'public', table: SUPABASE_TABLE_NAME, filter: `id=eq.${SUPABASE_ROW_ID}` }, payload => {
-            if (payload?.new?.payload) {
-              applyRemoteWorkspacePayload(payload.new.payload);
-            }
-          })
-          .subscribe();
-      } catch (err) {
-        setElText('cloudSyncBadge', '☁️ Local Mode');
-      }
-    }
-
-    // =========================================================================
-    // STORAGE & DATA PERSISTENCE (SEMUA 5 MODUL + KUNCI PERMANEN 17 LOGO PT)
-    // =========================================================================
-    function recoverOriginal17PtLogos() {
-      const allKeys = [
-        'ga_permanent_17_pt_logos_v1',
-        'ticketing_pvr_mining_v1',
-        'ticketing_pvr_mining_v2',
-        'ticketing_pvr_mining_v3',
-        'ticketing_pvr_mining_v4',
-        'ticketing_pvr_mining_v5'
-      ];
-      try {
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k && /logo|pvr|ticketing/i.test(k) && !allKeys.includes(k)) {
-            allKeys.push(k);
-          }
-        }
-      } catch (e) {}
-
-      allKeys.forEach(k => {
-        try {
-          const raw = localStorage.getItem(k);
-          if (!raw) return;
-          const parsed = JSON.parse(raw);
-          const candidateMap = (parsed && typeof parsed === 'object')
-            ? (parsed.ptCustomLogos && typeof parsed.ptCustomLogos === 'object' ? parsed.ptCustomLogos : parsed)
-            : null;
-          if (!candidateMap) return;
-          Object.keys(PT_FULL_INFO).forEach(ptCode => {
-            const val = candidateMap[ptCode];
-            if (typeof val === 'string' && val.startsWith('data:image') && !ptCustomLogos[ptCode]) {
-              ptCustomLogos[ptCode] = val;
-            }
-          });
-        } catch (err) {}
+        showToast('Aplikasi GA GEL berhasil terpasang di perangkat Anda!', 'success');
       });
     }
 
@@ -4097,237 +3879,15 @@
         const choice = await deferredPwaPrompt.userChoice;
         if (choice && choice.outcome === 'accepted') {
           deferredPwaPrompt = null;
-          closeUniversalModal();
-          showToast('Sedang memasang aplikasi GA GEL dengan Logo Resmi PT GEL...', 'success');
-          return;
+          showToast('Memasang aplikasi GA GEL dengan Logo Resmi PT GEL...', 'success');
         }
+        return;
       }
-      const isLocalFile = window.location.protocol === 'file:';
-      const ua = navigator.userAgent || '';
-      const isMac = /Macintosh|Mac OS X/i.test(ua) && !/iPhone|iPad/i.test(ua);
-      const isIos = /iPhone|iPad|iPod/i.test(ua);
-      const isAndroid = /Android/i.test(ua);
-      const deviceBadge = isIos ? '🍎 Terdeteksi: iPhone / iPad' : (isMac ? '💻 Terdeteksi: MacBook / macOS' : (isAndroid ? '🤖 Terdeteksi: Android' : '🪟 Terdeteksi: Windows / Desktop'));
-
-      openUniversalModal(`
-        <div class="space-y-4">
-          <div class="flex items-center justify-between border-b pb-3">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-2xl bg-white p-1.5 border-2 border-amber-500 flex items-center justify-center shadow-sm">
-                <img src="https://gelgroup.co.id/images/logo-gel.png" onerror="this.onerror=null;this.src='https://placehold.co/48x48/101d32/f59e0b?text=GEL';" class="w-full h-full object-contain" />
-              </div>
-              <div>
-                <div class="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black mb-0.5">${deviceBadge}</div>
-                <h3 class="text-base font-black text-slate-900">Install Aplikasi "GA GEL" (Seperti Excel)</h3>
-                <p class="text-xs text-slate-500">Ikon Desktop &amp; HP menggunakan Logo Resmi PT Global Energi Lestari</p>
-              </div>
-            </div>
-            <button type="button" onclick="closeUniversalModal()" class="text-slate-400 font-bold">✕</button>
-          </div>
-
-          ${deferredPwaPrompt ? `
-            <div class="p-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white flex flex-wrap items-center justify-between gap-3 shadow-lg">
-              <div>
-                <div class="text-xs font-black uppercase tracking-wider text-emerald-100">Siap Install Otomatis 1-Klik!</div>
-                <div class="text-xs font-bold mt-0.5">Klik tombol di samping untuk langsung memasang aplikasi GA GEL ke perangkat Anda.</div>
-              </div>
-              <button type="button" onclick="triggerInstallPwaApp()" class="px-4 py-2.5 rounded-xl bg-white hover:bg-emerald-50 text-emerald-900 text-xs font-black shadow">
-                ⚡ Install Sekarang
-              </button>
-            </div>
-          ` : ''}
-
-          ${isLocalFile ? `
-            <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-xs text-amber-950 space-y-2">
-              <div class="font-black">💡 Anda sedang membuka file lokal (file://)</div>
-              <p>Agar saat link dibagikan langsung muncul dialog <strong>Install App</strong> otomatis di Windows, MacBook, Android, &amp; iPhone:</p>
-              <ol class="list-decimal pl-4 space-y-1 font-semibold">
-                <li>Klik tombol <strong>☁️ Atur Supabase</strong> untuk mengisi URL &amp; Anon Key Supabase Anda.</li>
-                <li>Klik tombol <strong>📥 Download index.html (Siap GitHub)</strong> di bawah ini, lalu unggah ke repository GitHub Pages Anda.</li>
-                <li>Bagikan link GitHub Pages Anda dengan tombol <strong>🔗 Salin Link Install</strong>.</li>
-              </ol>
-            </div>
-          ` : ''}
-
-          <div class="flex flex-wrap items-center gap-2">
-            <button type="button" onclick="copyShareInstallLink()" class="py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black shadow">
-              🔗 Salin Link Install (?install=1)
-            </button>
-            <button type="button" onclick="downloadGitHubReadyHtml()" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-black shadow">
-              📥 Download index.html (GitHub)
-            </button>
-            <button type="button" onclick="closeUniversalModal(); openSupabaseConfigModal();" class="py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold">
-              ☁️ Supabase
-            </button>
-          </div>
-
-          <div class="space-y-2 text-xs text-slate-700">
-            <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200">
-              <strong>🪟 Windows (Chrome / Edge):</strong> Klik ikon <strong>Install GA GEL (⊕ / layar panah)</strong> di ujung kanan address bar URL, atau menu <strong>⋮ → Apps → Install this site as an app</strong>.
-            </div>
-            <div class="p-3 rounded-xl bg-purple-50/70 border border-purple-200">
-              <strong>💻 MacBook / macOS (Safari / Chrome):</strong> Di <strong>Safari</strong> klik menu atas <strong>File → Add to Dock...</strong>; di <strong>Chrome</strong> klik ikon <strong>Install (⊕)</strong> di kanan address bar.
-            </div>
-            <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200">
-              <strong>🤖 Android (Chrome):</strong> Ketuk titik tiga (<strong>⋮</strong>) di pojok kanan atas → pilih <strong>"Install app" / "Tambahkan ke Layar Utama"</strong>.
-            </div>
-            <div class="p-3 rounded-xl bg-sky-50/70 border border-sky-200">
-              <strong>🍎 iPhone / iPad (Safari):</strong> Ketuk ikon <strong>Share (kotak panah ke atas)</strong> → pilih <strong>"Add to Home Screen"</strong>.
-            </div>
-          </div>
-        </div>
-      `);
-    }
-
-    // =========================================================================
-    // MODUL 5: CATERING CONTROL TOWER HELPERS
-    // =========================================================================
-    function ctGo(page) {
-      cateringTowerState.currentPage = page;
-      ctRender();
-    }
-
-    function ctStatusBadge(st) {
-      if (st === 'approved') return `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">✓ APPROVED</span>`;
-      if (st === 'rejected') return `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-extrabold">✕ REJECTED</span>`;
-      return `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold">⏳ PENDING GA HO</span>`;
-    }
-
-    function ctHandleShiftPhoto(shiftKey, files) {
-      if (!files || !files.length) return;
-      Array.from(files).forEach(file => {
-        compressImageToDataUrl(file, url => {
-          ctDraftMealPhotos[shiftKey].push(url);
-          const cap = shiftKey === 'tengahMalam' ? 'TengahMalam' : shiftKey.charAt(0).toUpperCase() + shiftKey.slice(1);
-          setElText(`ctCnt${cap}`, ctDraftMealPhotos[shiftKey].length);
-        }, 720, 0.72);
-      });
-    }
-
-    function ctViewShiftPhotos(reportId, shiftKey) {
-      const rep = cateringTowerState.reports.find(r => r.id === reportId);
-      const imgs = rep?.mealPhotos?.[shiftKey] || [];
-      openUniversalModal(`
-        <div class="space-y-3">
-          <div class="flex items-center justify-between border-b pb-2">
-            <h3 class="text-sm font-black text-slate-900">📸 Bukti Foto Katering — ${escapeHtml(rep?.site || '')} (${shiftKey.toUpperCase()})</h3>
-            <button type="button" onclick="closeUniversalModal()" class="text-slate-500 font-bold">✕</button>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            ${imgs.map(src => `<img src="${src}" class="w-full h-56 object-cover rounded-xl border border-slate-200"/>`).join('')}
-          </div>
-        </div>
-      `);
-    }
-
-    function ctApproveReport(reportId, status) {
-      const rep = cateringTowerState.reports.find(r => r.id === reportId);
-      if (!rep) return;
-      rep.status = status;
-      rep._updatedAt = Date.now();
-      saveStorage();
-      ctRender();
-      showToast(`Laporan ${reportId} diperbarui menjadi ${status.toUpperCase()}.`, 'success');
-    }
-
-    function ctDeleteReport(reportId) {
-      markEntityDeleted(reportId);
-      cateringTowerState.reports = cateringTowerState.reports.filter(r => r.id !== reportId);
-      saveStorage();
-      ctRender();
-      showToast(`Laporan ${reportId} dihapus.`, 'info');
-    }
-
-    function ctKitchenModeLabel(mode) {
-      if (mode === 'SELF_COOK') return '🍳 Masak Sendiri / Kantin Internal';
-      if (mode === 'MULTI_VENDOR') return '🔄 Beda Vendor per Waktu Makan';
-      return '🏢 1 Vendor Utama';
-    }
-
-    function ctOpenAddSiteModal() {
-      const nextNum = String(cateringTowerState.sites.length + 1).padStart(2, '0');
-      openUniversalModal(`
-        <div class="space-y-3.5">
-          <div class="flex items-center justify-between border-b pb-2">
-            <h3 class="text-sm font-black text-slate-900">+ Tambah Master Site &amp; Pengaturan Dapur / Vendor</h3>
-            <button type="button" onclick="closeUniversalModal()" class="text-slate-500 font-bold">✕</button>
-          </div>
-          <form onsubmit="ctSaveNewSite(event)" class="space-y-3">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Kode Site *</label>
-                <input type="text" id="ctNewSiteId" required value="SITE-${nextNum}" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl font-mono font-bold uppercase" />
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Nama Site *</label>
-                <input type="text" id="ctNewSiteName" required placeholder="Contoh: Site ARC / Site Bengkulu" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl font-bold" />
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Sistem Penyediaan Makan *</label>
-                <select id="ctNewSiteMode" onchange="ctToggleVendorFields('ctNew')" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl font-extrabold text-amber-950">
-                  <option value="SINGLE_VENDOR">1 Vendor Utama (Pagi - Tengah Malam)</option>
-                  <option value="MULTI_VENDOR">Beda Vendor per Waktu Makan (Pagi/Siang/Malam/Supper)</option>
-                  <option value="SELF_COOK">Masak Sendiri / Kantin Internal Site</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">PIC Site *</label>
-                <input type="text" id="ctNewSitePic" required placeholder="Nama PIC Site" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl" />
-              </div>
-            </div>
-
-            <div id="ctNewSingleVendorBox">
-              <label class="block text-xs font-bold text-slate-700 mb-1">Nama Vendor / Keterangan Kantin *</label>
-              <input type="text" id="ctNewSiteVendor" value="PT Prima Rasa Catering" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl font-bold" />
-            </div>
-
-            <div id="ctNewMultiVendorBox" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-3 rounded-xl bg-amber-50/70 border border-amber-200">
-              <div>
-                <label class="block text-[11px] font-bold text-amber-950 mb-1">🌅 Vendor Makan Pagi</label>
-                <input type="text" id="ctNewVendorPagi" placeholder="Vendor Pagi / Kantin" class="w-full h-8 px-2.5 text-xs border border-slate-300 rounded-lg bg-white" />
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-amber-950 mb-1">☀️ Vendor Makan Siang</label>
-                <input type="text" id="ctNewVendorSiang" placeholder="Vendor Siang / Kantin" class="w-full h-8 px-2.5 text-xs border border-slate-300 rounded-lg bg-white" />
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-amber-950 mb-1">🌆 Vendor Makan Malam</label>
-                <input type="text" id="ctNewVendorMalam" placeholder="Vendor Malam / Kantin" class="w-full h-8 px-2.5 text-xs border border-slate-300 rounded-lg bg-white" />
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-amber-950 mb-1">🌙 Vendor Tengah Malam (Supper)</label>
-                <input type="text" id="ctNewVendorSupper" placeholder="Vendor Supper / Kantin" class="w-full h-8 px-2.5 text-xs border border-slate-300 rounded-lg bg-white" />
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Estimasi Tarif / Biaya Bahan per Porsi (Rp)</label>
-              <input type="number" id="ctNewSiteRate" value="38000" min="0" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl font-bold" />
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2">
-              <button type="button" onclick="closeUniversalModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-xs font-bold">Batal</button>
-              <button type="submit" class="px-5 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-extrabold">✓ Simpan Site Baru</button>
-            </div>
-          </form>
-        </div>
-      `);
-    }
-
-    function ctToggleVendorFields(prefix) {
-      const mode = getElVal(`${prefix}SiteMode`, 'SINGLE_VENDOR');
-      const singleBox = getEl(`${prefix}SingleVendorBox`);
-      const multiBox = getEl(`${prefix}MultiVendorBox`);
-      const singleInp = getEl(`${prefix}SiteVendor`);
-      if (mode === 'MULTI_VENDOR') {
-        singleBox?.classList.add('hidden');
-        multiBox?.classList.remove('hidden');
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      if (isStandalone) {
+        showToast('Aplikasi GA GEL sudah terpasang dan sedang berjalan.', 'success');
       } else {
-        singleBox?.classList.remove('hidden');
-        multiBox?.classList.add('hidden');
-        if (mode === 'SELF_COOK' && singleInp && (!singleInp.value || /catering/i.test(singleInp.value))) {
-          singleInp.value = 'Kantin Internal / Masak Sendiri Site';
-        }
+        showToast('Klik ikon Install (⊕) di ujung kanan address bar browser untuk langsung memasang aplikasi GA GEL.', 'info');
       }
     }
 
@@ -6473,6 +6033,204 @@
     // =========================================================================
     // REKAP & REKONSILIASI + PVR GENERATOR PER PT
     // =========================================================================
+    async function exportCleanRekapExcel() {
+      const headers = [
+        'No.', 'Tanggal Order', 'Nomor Invoice', 'Payment Method', 'PT', 'Nama',
+        'Keperluan', 'Rute/ Hotel', 'Tanggal Penerbangan/ Ci-Co', 'Maskapai/ Hotel',
+        'Vendor', 'Nominal', 'Status Pengajuan', 'Tujuan Pembayaran', 'No. GR',
+        'Status Pembayaran', 'Status', 'Estimasi Pendapatan MOVA'
+      ];
+
+      if (typeof ExcelJS !== 'undefined') {
+        const wb = new ExcelJS.Workbook();
+        wb.creator = 'GA GEL — PT Global Energi Lestari';
+        const ws = wb.addWorksheet('REKAPITULASI_TIKET_HOTEL', {
+          views: [{ state: 'frozen', ySplit: 4 }]
+        });
+
+        ws.mergeCells('A1:R1');
+        const titleCell = ws.getCell('A1');
+        titleCell.value = 'REKAPITULASI PEMESANAN TIKET PESAWAT, HOTEL & KERETA API — PT GLOBAL ENERGI LESTARI';
+        titleCell.font = { name: 'Calibri', size: 13, bold: true, color: { argb: 'FFFFFFFF' } };
+        titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } };
+        titleCell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+        ws.getRow(1).height = 28;
+
+        ws.mergeCells('A2:R2');
+        const subCell = ws.getCell('A2');
+        subCell.value = `Departemen General Affair (GA) • Dicetak: ${formatDateIndo(getTodayIso())} • Total Transaksi: ${records.length} Data`;
+        subCell.font = { name: 'Calibri', size: 10, italic: true, color: { argb: 'FF1E293B' } };
+        subCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } };
+        subCell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+        ws.getRow(2).height = 20;
+
+        const headerRow = ws.getRow(4);
+        headerRow.height = 28;
+        headers.forEach((h, idx) => {
+          const cell = headerRow.getCell(idx + 1);
+          cell.value = h;
+          cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF000000' } };
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00B0F0' } };
+          cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          cell.border = {
+            top: { style: 'thin', color: { argb: 'FF000000' } },
+            left: { style: 'thin', color: { argb: 'FF000000' } },
+            bottom: { style: 'thin', color: { argb: 'FF000000' } },
+            right: { style: 'thin', color: { argb: 'FF000000' } }
+          };
+        });
+
+        let sumNominal = 0;
+        let sumMova = 0;
+        records.forEach((r, i) => {
+          const nom = Number(r.nominal) || 0;
+          const mova = Number(r.mova) || 0;
+          sumNominal += nom;
+          sumMova += mova;
+
+          const row = ws.getRow(5 + i);
+          row.height = 22;
+          const vals = [
+            i + 1,
+            formatDateShort(r.tanggalOrder),
+            r.invoice || '-',
+            r.payment || '-',
+            r.pt || '-',
+            r.nama || '-',
+            r.keperluan || '-',
+            r.rute || '-',
+            formatDateShort(r.departDate),
+            r.maskapaiHotel || '-',
+            r.vendor || '-',
+            nom,
+            r.statusPengajuan || 'Sudah Diajukan',
+            r.tujuan || r.payment || '-',
+            r.noGr || '-',
+            r.statusBayar || 'UNPAID',
+            r.statusKet || '-',
+            mova
+          ];
+
+          vals.forEach((v, cIdx) => {
+            const c = row.getCell(cIdx + 1);
+            c.value = v;
+            c.font = { name: 'Calibri', size: 10, bold: (cIdx === 4 || cIdx === 11) };
+            c.alignment = {
+              vertical: 'middle',
+              horizontal: (cIdx === 0 || cIdx === 1 || cIdx === 4 || cIdx === 8 || cIdx === 15) ? 'center' : ((cIdx === 11 || cIdx === 17) ? 'right' : 'left')
+            };
+            if (cIdx === 11 || cIdx === 17) c.numFmt = '#,##0';
+            if (cIdx === 15) {
+              const isPaid = String(v).toUpperCase() === 'PAID';
+              c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: isPaid ? 'FFDCFCE7' : 'FFFEF3C7' } };
+              c.font = { name: 'Calibri', size: 10, bold: true, color: { argb: isPaid ? 'FF166534' : 'FF92400E' } };
+            }
+            c.border = {
+              top: { style: 'thin', color: { argb: 'FF94A3B8' } },
+              left: { style: 'thin', color: { argb: 'FF94A3B8' } },
+              bottom: { style: 'thin', color: { argb: 'FF94A3B8' } },
+              right: { style: 'thin', color: { argb: 'FF94A3B8' } }
+            };
+          });
+        });
+
+        const totalRowIdx = 5 + records.length;
+        const totRow = ws.getRow(totalRowIdx);
+        totRow.height = 24;
+        ws.mergeCells(`A${totalRowIdx}:K${totalRowIdx}`);
+        totRow.getCell(1).value = 'TOTAL KESELURUHAN';
+        totRow.getCell(12).value = sumNominal;
+        totRow.getCell(18).value = sumMova;
+        for (let c = 1; c <= 18; c++) {
+          const cell = totRow.getCell(c);
+          cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF000000' } };
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9E1F2' } };
+          if (c === 12 || c === 18) cell.numFmt = '#,##0';
+          cell.alignment = { vertical: 'middle', horizontal: (c === 12 || c === 18) ? 'right' : 'center' };
+          cell.border = {
+            top: { style: 'medium', color: { argb: 'FF000000' } },
+            left: { style: 'thin', color: { argb: 'FF000000' } },
+            bottom: { style: 'double', color: { argb: 'FF000000' } },
+            right: { style: 'thin', color: { argb: 'FF000000' } }
+          };
+        }
+
+        const colWidths = [6, 14, 18, 20, 10, 28, 16, 16, 18, 20, 14, 16, 18, 20, 20, 16, 18, 18];
+        colWidths.forEach((w, i) => { ws.getColumn(i + 1).width = w; });
+
+        const wsRec = wb.addWorksheet('REKONSILIASI_UNPAID_PER_PT');
+        wsRec.mergeCells('A1:D1');
+        wsRec.getCell('A1').value = 'REKONSILIASI TAGIHAN UNPAID PER ENTITAS PT (SIAP PENGAJUAN PVR)';
+        wsRec.getCell('A1').font = { name: 'Calibri', size: 12, bold: true, color: { argb: 'FFFFFFFF' } };
+        wsRec.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } };
+        wsRec.getRow(1).height = 26;
+
+        ['No.', 'Entitas PT', 'Nama Perusahaan', 'Total Tagihan UNPAID (Rp)'].forEach((h, i) => {
+          const cell = wsRec.getRow(3).getCell(i + 1);
+          cell.value = h;
+          cell.font = { bold: true };
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00B0F0' } };
+          cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+        });
+
+        let rIdx = 4;
+        Object.keys(PT_FULL_INFO).forEach(pt => {
+          const ptSum = records.filter(r => r.pt === pt && (r.statusBayar || 'UNPAID') !== 'PAID').reduce((a, r) => a + (Number(r.nominal) || 0), 0);
+          if (ptSum > 0) {
+            const row = wsRec.getRow(rIdx);
+            row.getCell(1).value = rIdx - 3;
+            row.getCell(2).value = pt;
+            row.getCell(3).value = PT_FULL_INFO[pt].fullName;
+            row.getCell(4).value = ptSum;
+            row.getCell(4).numFmt = '#,##0';
+            for (let c = 1; c <= 4; c++) {
+              row.getCell(c).border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+            }
+            rIdx++;
+          }
+        });
+        wsRec.getColumn(1).width = 6;
+        wsRec.getColumn(2).width = 14;
+        wsRec.getColumn(3).width = 42;
+        wsRec.getColumn(4).width = 24;
+
+        const buffer = await wb.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `REKAPITULASI_TIKET_HOTEL_${getTodayIso()}.xlsx`;
+        a.click();
+        showToast('File REKAPITULASI_TIKET_HOTEL (.XLSX) berformat Excel asli berhasil diunduh!', 'success');
+        return;
+      }
+
+      if (typeof XLSX === 'undefined') return;
+      const rows = records.map((r, i) => ({
+        'No.': i + 1,
+        'Tanggal Order': formatDateShort(r.tanggalOrder),
+        'Nomor Invoice': r.invoice,
+        'Payment Method': r.payment,
+        'PT': r.pt,
+        'Nama': r.nama,
+        'Keperluan': r.keperluan,
+        'Rute/ Hotel': r.rute,
+        'Tanggal Penerbangan/ Ci-Co': formatDateShort(r.departDate),
+        'Maskapai/ Hotel': r.maskapaiHotel,
+        'Vendor': r.vendor,
+        'Nominal': Number(r.nominal) || 0,
+        'Status Pengajuan': r.statusPengajuan,
+        'Tujuan Pembayaran': r.tujuan,
+        'No. GR': r.noGr,
+        'Status Pembayaran': r.statusBayar,
+        'Status': r.statusKet || '-',
+        'Estimasi Pendapatan MOVA': Number(r.mova) || 0
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'REKAPITULASI_TIKET_HOTEL');
+      XLSX.writeFile(wb, `REKAPITULASI_TIKET_HOTEL_${getTodayIso()}.xlsx`);
+    }
+
     function renderRekapTable() {
       const tbody = getEl('rekapTableBody');
       if (!tbody) return;
@@ -6484,35 +6242,35 @@
       const fStat = getElVal('filterStatusBayar', 'ALL');
 
       const filtered = records.filter(r => {
-        const mQ = !q || [r.nama, r.invoice, r.noGr, r.pt, r.maskapaiHotel, r.rute].some(v => String(v || '').toLowerCase().includes(q));
+        const mQ = !q || [r.nama, r.invoice, r.noGr, r.pt, r.rute, r.maskapaiHotel].some(v => String(v || '').toLowerCase().includes(q));
         const mPt = fPt === 'ALL' || r.pt === fPt;
         const mVen = fVen === 'ALL' || r.vendor === fVen;
-        const mPay = fPay === 'ALL' || r.payment === fPay || (fPay === 'DC BCA / CC Pak Tony' && /BCA/i.test(r.payment));
-        const mDiv = fDiv === 'ALL' || r.divisi === fDiv;
-        const mStat = fStat === 'ALL' || r.statusBayar === fStat;
+        const mPay = fPay === 'ALL' || (fPay === 'DC BCA / CC Pak Tony' ? /BCA/i.test(r.payment || '') : r.payment === fPay);
+        const mDiv = fDiv === 'ALL' || (r.divisi || 'GA') === fDiv;
+        const mStat = fStat === 'ALL' || (r.statusBayar || 'UNPAID') === fStat;
         return mQ && mPt && mVen && mPay && mDiv && mStat;
       });
 
-      const totalFiltered = filtered.reduce((a, r) => a + (Number(r.nominal) || 0), 0);
+      const totalFiltered = filtered.reduce((acc, r) => acc + (Number(r.nominal) || 0), 0);
       setElText('rekapFilteredTotal', formatRupiah(totalFiltered));
 
-      // Kartu rekonsiliasi per PT (UNPAID)
       const cardsBox = getEl('pvrReconcileCards');
       if (cardsBox) {
-        const unpaidByPt = {};
-        records.filter(r => r.statusBayar !== 'PAID').forEach(r => {
-          unpaidByPt[r.pt] = (unpaidByPt[r.pt] || 0) + (Number(r.nominal) || 0);
+        const ptGroups = {};
+        records.filter(r => (r.statusBayar || 'UNPAID') !== 'PAID').forEach(r => {
+          const code = r.pt || 'GEL';
+          ptGroups[code] = (ptGroups[code] || 0) + (Number(r.nominal) || 0);
         });
-        const pts = Object.keys(unpaidByPt);
-        cardsBox.innerHTML = pts.length ? pts.map(pt => `
-          <div onclick="setElVal('pvrPtSelect','${pt}'); switchMainTab('pvr'); renderPvrPreview(false);" class="p-3 rounded-xl bg-white border border-blue-200 hover:border-blue-500 cursor-pointer transition flex items-center justify-between">
+        const keys = Object.keys(ptGroups);
+        cardsBox.innerHTML = keys.length ? keys.map(pt => `
+          <div onclick="setElVal('pvrPtSelect','${pt}');switchMainTab('pvr');onPvrPtSelectChange();" class="p-3 rounded-xl bg-white border border-blue-200 hover:border-blue-500 cursor-pointer transition flex items-center justify-between">
             <div>
-              <div class="text-xs font-black text-slate-900">${pt}</div>
-              <div class="text-[10px] text-slate-500">Klik untuk buka PVR</div>
+              <div class="text-xs font-black text-slate-900">${escapeHtml(pt)}</div>
+              <div class="text-[10px] text-slate-500 truncate max-w-[140px]">${escapeHtml(PT_FULL_INFO[pt]?.fullName || pt)}</div>
             </div>
-            <div class="text-xs font-black text-blue-900">${formatRupiah(unpaidByPt[pt])}</div>
+            <div class="text-xs font-black text-blue-800">${formatRupiah(ptGroups[pt])}</div>
           </div>
-        `).join('') : `<p class="text-xs text-slate-500 col-span-full">Semua transaksi sudah PAID atau belum ada tagihan UNPAID.</p>`;
+        `).join('') : `<p class="text-xs text-slate-500 italic col-span-full">Tidak ada tagihan UNPAID yang menunggu PVR.</p>`;
       }
 
       tbody.innerHTML = filtered.map((r, i) => `
@@ -6548,33 +6306,6 @@
       saveStorage();
       renderRekapTable();
       renderPvrPreview(false);
-    }
-
-    function exportCleanRekapExcel() {
-      if (typeof XLSX === 'undefined') return;
-      const rows = records.map((r, i) => ({
-        'No.': i + 1,
-        'Tanggal Order': r.tanggalOrder,
-        'Nomor Invoice': r.invoice,
-        'Payment Method': r.payment,
-        'PT': r.pt,
-        'Nama': r.nama,
-        'Keperluan': r.keperluan,
-        'Rute/ Hotel': r.rute,
-        'Tanggal Penerbangan/ Ci-Co': r.departDate,
-        'Maskapai/ Hotel': r.maskapaiHotel,
-        'Vendor': r.vendor,
-        'Nominal': Number(r.nominal) || 0,
-        'Status Pengajuan': r.statusPengajuan,
-        'Tujuan Pembayaran': r.tujuan,
-        'No. GR': r.noGr,
-        'Status Pembayaran': r.statusBayar,
-        'Estimasi Pendapatan MOVA': Number(r.mova) || 0
-      }));
-      const ws = XLSX.utils.json_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'REKAP_TICKETING_GA');
-      XLSX.writeFile(wb, `Rekap_Ticketing_GA_GEL_${getTodayIso()}.xlsx`);
     }
 
     function backupJsonData() {
@@ -6772,6 +6503,212 @@
         XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{ Info: 'Tidak ada tagihan UNPAID' }]), 'PVR_KOSONG');
       }
       XLSX.writeFile(wb, `PVR_Semua_PT_GEL_Group_${getTodayIso()}.xlsx`);
+    }
+
+    // =========================================================================
+    // HELPER PENDUKUNG CLOUD SYNC, KATERING & LOGO 17 PT
+    // =========================================================================
+    function recoverOriginal17PtLogos() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('ga_permanent_17_pt_logos_v1') || '{}');
+        if (saved && typeof saved === 'object') ptCustomLogos = { ...saved, ...ptCustomLogos };
+      } catch (e) {}
+    }
+
+    function markEntityDeleted(id) {
+      if (id && !deletedEntityIds.includes(id)) deletedEntityIds.push(id);
+    }
+
+    function mergeByKey(localArr, remoteArr, keyFn) {
+      const map = new Map();
+      (Array.isArray(localArr) ? localArr : []).forEach(item => {
+        const k = keyFn(item);
+        if (k && !deletedEntityIds.includes(k)) map.set(k, item);
+      });
+      (Array.isArray(remoteArr) ? remoteArr : []).forEach(item => {
+        const k = keyFn(item);
+        if (!k || deletedEntityIds.includes(k)) return;
+        const ex = map.get(k);
+        if (!ex || (Number(item._updatedAt) || 0) >= (Number(ex._updatedAt) || 0)) {
+          map.set(k, item);
+        }
+      });
+      return Array.from(map.values());
+    }
+
+    function mergeWorkspaceStates(remote) {
+      if (!remote || typeof remote !== 'object') return;
+      if (Array.isArray(remote.deletedEntityIds)) {
+        deletedEntityIds = Array.from(new Set([...deletedEntityIds, ...remote.deletedEntityIds]));
+      }
+      records = mergeByKey(records, remote.records, r => r?.id || `${r?.invoice}-${r?.nama}-${r?.tanggalOrder}`);
+      opsGelRecords = mergeByKey(opsGelRecords, remote.opsGelRecords, o => o?.id);
+      stnkRecords = mergeByKey(stnkRecords, remote.stnkRecords, s => s?.id);
+      sewaLvRecords = mergeByKey(sewaLvRecords, remote.sewaLvRecords, lv => lv?.id);
+      pengajuanSewaRecords = mergeByKey(pengajuanSewaRecords, remote.pengajuanSewaRecords, ps => ps?.id);
+      perubahanPoRecords = mergeByKey(perubahanPoRecords, remote.perubahanPoRecords, gp => gp?.id);
+      ktpRecords = mergeByKey(ktpRecords, remote.ktpRecords, k => k?.nik || k?.id);
+      if (remote.ptCustomLogos && typeof remote.ptCustomLogos === 'object') {
+        ptCustomLogos = { ...remote.ptCustomLogos, ...ptCustomLogos };
+      }
+      if (remote.cateringTowerState && typeof remote.cateringTowerState === 'object') {
+        const rc = remote.cateringTowerState;
+        cateringTowerState.sites = mergeByKey(cateringTowerState.sites, rc.sites, s => s?.id);
+        cateringTowerState.reports = mergeByKey(cateringTowerState.reports, rc.reports, r => r?.id);
+        cateringTowerState.employees = mergeByKey(cateringTowerState.employees, rc.employees, e => e?.id);
+        cateringTowerState.guests = mergeByKey(cateringTowerState.guests, rc.guests, g => g?.id);
+        cateringTowerState.qualityLogs = mergeByKey(cateringTowerState.qualityLogs, rc.qualityLogs, q => q?.id);
+        cateringTowerState.actionLogs = mergeByKey(cateringTowerState.actionLogs, rc.actionLogs, a => a?.id);
+      }
+    }
+
+    async function pushStateToSupabase() {
+      if (!supabaseClient) return;
+      try {
+        const { data } = await supabaseClient.from(SUPABASE_TABLE_NAME).select('payload').eq('id', SUPABASE_ROW_ID).maybeSingle();
+        if (data && data.payload) {
+          isApplyingRemoteSync = true;
+          mergeWorkspaceStates(data.payload);
+          isApplyingRemoteSync = false;
+        }
+        const payload = {
+          records, ptCustomLogos, opsGelRecords, stnkRecords, sewaLvRecords, pengajuanSewaRecords, perubahanPoRecords, ktpRecords, pvrStateByPt, cateringTowerState, deletedEntityIds
+        };
+        await supabaseClient.from(SUPABASE_TABLE_NAME).upsert({ id: SUPABASE_ROW_ID, payload, updated_at: new Date().toISOString() });
+        setElText('cloudSyncBadge', '☁️ Synced');
+      } catch (err) {
+        setElText('cloudSyncBadge', '☁️ Offline');
+      }
+    }
+
+    async function initSupabaseCloudSync() {
+      const cfg = getActiveSupabaseConfig();
+      if (!cfg.url || !cfg.anonKey || typeof window.supabase === 'undefined') return;
+      try {
+        supabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
+        const { data } = await supabaseClient.from(SUPABASE_TABLE_NAME).select('payload').eq('id', SUPABASE_ROW_ID).maybeSingle();
+        if (data && data.payload) applyRemoteWorkspacePayload(data.payload);
+        setElText('cloudSyncBadge', '☁️ Synced');
+      } catch (e) {
+        setElText('cloudSyncBadge', '☁️ Cloud Error');
+      }
+    }
+
+    function ctGo(pageName) {
+      cateringTowerState.currentPage = pageName;
+      ctRender();
+    }
+
+    function ctKitchenModeLabel(mode) {
+      if (mode === 'MULTI_VENDOR') return 'Beda Vendor per Shift';
+      if (mode === 'SELF_COOK') return 'Masak Sendiri / Kantin Site';
+      return '1 Vendor Utama';
+    }
+
+    function ctStatusBadge(status) {
+      return status === 'approved'
+        ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">✓ Approved GA HO</span>`
+        : `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black">⏳ Pending GA HO</span>`;
+    }
+
+    function ctApproveReport(id, st) {
+      const r = cateringTowerState.reports.find(x => x.id === id);
+      if (!r) return;
+      r.status = st;
+      r._updatedAt = Date.now();
+      saveStorage();
+      ctRender();
+    }
+
+    function ctDeleteReport(id) {
+      markEntityDeleted(id);
+      cateringTowerState.reports = cateringTowerState.reports.filter(x => x.id !== id);
+      saveStorage();
+      ctRender();
+    }
+
+    function ctHandleShiftPhoto(shiftKey, files) {
+      if (!files || !files.length) return;
+      Array.from(files).forEach(f => {
+        compressImageToDataUrl(f, url => {
+          ctDraftMealPhotos[shiftKey].push(url);
+          const mapId = { pagi: 'ctCntPagi', siang: 'ctCntSiang', malam: 'ctCntMalam', tengahMalam: 'ctCntTengahMalam' };
+          setElText(mapId[shiftKey], ctDraftMealPhotos[shiftKey].length);
+        }, 720, 0.72);
+      });
+    }
+
+    function ctViewShiftPhotos(repId, shiftKey) {
+      const r = cateringTowerState.reports.find(x => x.id === repId);
+      const imgs = r?.mealPhotos?.[shiftKey] || [];
+      if (!imgs.length) return;
+      openUniversalModal(`
+        <div class="space-y-3">
+          <div class="flex items-center justify-between border-b pb-2">
+            <h3 class="text-sm font-black text-slate-900">📸 Bukti Foto Katering — ${escapeHtml(r.site)} (${shiftKey})</h3>
+            <button type="button" onclick="closeUniversalModal()" class="text-slate-500 font-bold">✕</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${imgs.map(src => `<img src="${src}" class="w-full rounded-xl border border-slate-200 object-cover"/>`).join('')}
+          </div>
+        </div>
+      `);
+    }
+
+    function ctToggleVendorFields(prefix) {
+      const mode = getElVal(`${prefix}SiteMode`, 'SINGLE_VENDOR');
+      getEl(`${prefix}SingleVendorBox`)?.classList.toggle('hidden', mode === 'MULTI_VENDOR');
+      getEl(`${prefix}MultiVendorBox`)?.classList.toggle('hidden', mode !== 'MULTI_VENDOR');
+    }
+
+    function ctOpenAddSiteModal() {
+      const nextNum = String(cateringTowerState.sites.length + 1).padStart(2, '0');
+      openUniversalModal(`
+        <div class="space-y-3.5">
+          <div class="flex items-center justify-between border-b pb-2">
+            <h3 class="text-sm font-black text-slate-900">+ Tambah Site Katering Baru</h3>
+            <button type="button" onclick="closeUniversalModal()" class="text-slate-500 font-bold">✕</button>
+          </div>
+          <form onsubmit="ctSaveNewSite(event)" class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Kode Site *</label>
+                <input type="text" id="ctNewSiteId" required value="SITE-${nextNum}" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl font-mono font-bold uppercase" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Nama Site *</label>
+                <input type="text" id="ctNewSiteName" required placeholder="Site ${nextNum} — PT GEL" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl font-bold" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Sistem Penyediaan Makan *</label>
+              <select id="ctNewSiteMode" onchange="ctToggleVendorFields('ctNew')" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl font-extrabold text-amber-950">
+                <option value="SINGLE_VENDOR">1 Vendor Utama</option>
+                <option value="MULTI_VENDOR">Beda Vendor per Waktu Makan</option>
+                <option value="SELF_COOK">Masak Sendiri / Kantin Internal Site</option>
+              </select>
+            </div>
+            <div id="ctNewSingleVendorBox">
+              <label class="block text-xs font-bold text-slate-700 mb-1">Vendor Catering / Kantin Internal</label>
+              <input type="text" id="ctNewSiteVendor" placeholder="Nama Vendor atau Kantin Internal Site" class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl font-bold" />
+            </div>
+            <div id="ctNewMultiVendorBox" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-xl bg-amber-50/70 border border-amber-200">
+              <input type="text" id="ctNewVendorPagi" placeholder="Vendor Makan Pagi" class="h-8 px-2.5 text-xs border border-slate-300 rounded-lg bg-white" />
+              <input type="text" id="ctNewVendorSiang" placeholder="Vendor Makan Siang" class="h-8 px-2.5 text-xs border border-slate-300 rounded-lg bg-white" />
+              <input type="text" id="ctNewVendorMalam" placeholder="Vendor Makan Malam" class="h-8 px-2.5 text-xs border border-slate-300 rounded-lg bg-white" />
+              <input type="text" id="ctNewVendorSupper" placeholder="Vendor Tengah Malam" class="h-8 px-2.5 text-xs border border-slate-300 rounded-lg bg-white" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="ctNewSitePic" placeholder="Nama PIC Site" class="h-9 px-3 text-xs border border-slate-300 rounded-xl" />
+              <input type="number" id="ctNewSiteRate" value="35000" placeholder="Tarif / Porsi (Rp)" class="h-9 px-3 text-xs border border-slate-300 rounded-xl font-bold" />
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+              <button type="button" onclick="closeUniversalModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-xs font-bold">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-extrabold">✓ Simpan Site</button>
+            </div>
+          </form>
+        </div>
+      `);
     }
 
     // =========================================================================
