@@ -22,11 +22,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <script>
-    // Kunci ikon PWA, favicon, dan manifest menggunakan Logo Asli PT GEL (https://gelgroup.co.id/images/logo-gel.png) tanpa diubah
+    // Kunci ikon PWA, favicon, dan manifest langsung mengikuti URL Logo Asli PT GEL (https://gelgroup.co.id/images/logo-gel.png)
     window.__OFFICIAL_GEL_LOGO_URL = 'https://gelgroup.co.id/images/logo-gel.png';
-    window.__GEL_ICON_PNG_DATA_URL = '';
+    window.__GEL_ICON_PNG_DATA_URL = 'https://gelgroup.co.id/images/logo-gel.png';
     (function bootstrapOfficialGelLogoIcon() {
       const startUrl = window.location.href.split('#')[0].split('?')[0];
+      const logoUrl = window.__OFFICIAL_GEL_LOGO_URL;
       const setManifestWithIcon = (iconSrc) => {
         const manifestObj = {
           id: startUrl,
@@ -34,7 +35,7 @@
           short_name: 'GA GEL',
           start_url: startUrl,
           display: 'standalone',
-          background_color: '#fffdf7',
+          background_color: '#ffffff',
           theme_color: '#b45309',
           icons: [
             { src: iconSrc, sizes: '192x192', type: 'image/png', purpose: 'any' },
@@ -47,34 +48,12 @@
         }
       };
 
-      // Pasang langsung URL Logo Resmi PT GEL sebagai manifest awal
-      setManifestWithIcon(window.__OFFICIAL_GEL_LOGO_URL);
-
-      // Konversi Logo Asli PT GEL (tanpa modifikasi) menjadi PNG 512x512 untuk unduhan file lokal GitHub
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        try {
-          const c = document.createElement('canvas');
-          c.width = 512;
-          c.height = 512;
-          const ctx = c.getContext('2d');
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, 512, 512);
-          const scale = Math.min(440 / img.width, 440 / img.height);
-          const w = img.width * scale;
-          const h = img.height * scale;
-          ctx.drawImage(img, (512 - w) / 2, (512 - h) / 2, w, h);
-          const pngUrl = c.toDataURL('image/png');
-          window.__GEL_ICON_PNG_DATA_URL = pngUrl;
-          const fav = document.getElementById('appFaviconLink');
-          const app = document.getElementById('appleTouchIconLink');
-          if (fav) { fav.type = 'image/png'; fav.href = pngUrl; }
-          if (app) { app.href = pngUrl; }
-          setManifestWithIcon(pngUrl);
-        } catch (e) {}
-      };
-      img.src = window.__OFFICIAL_GEL_LOGO_URL;
+      // Pasang langsung URL Logo Resmi PT GEL sebagai manifest & favicon
+      setManifestWithIcon(logoUrl);
+      const fav = document.getElementById('appFaviconLink');
+      const app = document.getElementById('appleTouchIconLink');
+      if (fav) { fav.type = 'image/png'; fav.href = logoUrl; }
+      if (app) { app.href = logoUrl; }
     })();
   </script>
 
@@ -388,8 +367,8 @@
       
       <!-- Kolom Kiri: Logo Tengah & CAPSLOCK PT GLOBAL ENERGI LESTARI / GA & SITE -->
       <div class="lg:col-span-5 relative p-8 sm:p-10 flex flex-col items-center justify-center text-center text-white border-b lg:border-b-0 lg:border-r border-amber-400/25 bg-gradient-to-br from-slate-950/90 via-slate-900/80 to-amber-950/70">
-        <div class="w-24 h-24 rounded-3xl bg-white p-3 flex items-center justify-center shadow-[0_0_40px_rgba(245,158,11,0.35)] ring-2 ring-amber-400/70">
-          <img src="https://gelgroup.co.id/images/logo-gel.png" alt="Logo GEL" onerror="this.onerror=null;this.src='https://placehold.co/96x96/101d32/f59e0b?text=GEL';" class="w-full h-full object-contain" />
+        <div class="w-28 h-28 rounded-3xl bg-white p-2.5 flex items-center justify-center shadow-[0_0_40px_rgba(245,158,11,0.35)] ring-2 ring-amber-400/70">
+          <img src="https://gelgroup.co.id/images/logo-gel.png" alt="Logo GEL" class="w-full h-full object-contain" />
         </div>
         <h1 class="mt-5 text-base sm:text-lg font-black uppercase tracking-wider text-white leading-snug">
           PT GLOBAL ENERGI LESTARI
@@ -3878,27 +3857,18 @@
     }
 
     function downloadGitHubManifestFiles() {
-      const pngDataUrl = window.__GEL_ICON_PNG_DATA_URL;
-      if (pngDataUrl && pngDataUrl.startsWith('data:image/png')) {
-        const aIcon = document.createElement('a');
-        aIcon.href = pngDataUrl;
-        aIcon.download = 'logo-gel-512.png';
-        document.body.appendChild(aIcon);
-        aIcon.click();
-        aIcon.remove();
-      }
-      const iconRef = (pngDataUrl && pngDataUrl.startsWith('data:image/png')) ? './logo-gel-512.png' : 'https://gelgroup.co.id/images/logo-gel.png';
+      const logoUrl = 'https://gelgroup.co.id/images/logo-gel.png';
       const manifestJson = JSON.stringify({
         name: 'GA GEL — PT Global Energi Lestari',
         short_name: 'GA GEL',
         start_url: './',
         scope: './',
         display: 'standalone',
-        background_color: '#fffdf7',
+        background_color: '#ffffff',
         theme_color: '#b45309',
         icons: [
-          { src: iconRef, sizes: '192x192', type: 'image/png', purpose: 'any' },
-          { src: iconRef, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+          { src: logoUrl, sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: logoUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
         ]
       }, null, 2);
       const aMan = document.createElement('a');
@@ -3907,7 +3877,7 @@
       document.body.appendChild(aMan);
       aMan.click();
       aMan.remove();
-      showToast('File manifest.json & logo asli PT GEL terunduh! Upload bersama index.html ke GitHub repo Anda.', 'success');
+      showToast('File manifest.json dengan URL https://gelgroup.co.id/images/logo-gel.png berhasil diunduh! Upload bersama index.html ke GitHub repo Anda.', 'success');
     }
 
     async function triggerInstallPwaApp() {
