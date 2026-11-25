@@ -2813,47 +2813,20 @@
       });
     }
 
-    function renderStnkTable() {
-      const tbody = getEl('stnkTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = stnkRecords.map((r, i) => `
-        <tr>
-          <td class="py-2.5 px-3">${i + 1}</td>
-          <td class="py-2.5 px-3">${r.photo ? `<img src="${r.photo}" class="w-10 h-10 object-cover rounded-lg"/>` : '-'}</td>
-          <td class="py-2.5 px-3 font-black">${escapeHtml(r.nopol)}</td>
-          <td class="py-2.5 px-3 font-semibold">${escapeHtml(r.unit)}</td>
-          <td class="py-2.5 px-3 font-bold">${escapeHtml(r.pt)}</td>
-          <td class="py-2.5 px-3">${escapeHtml(r.type)}</td>
-          <td class="py-2.5 px-3">${formatDateShort(r.dueDate)}</td>
-          <td class="py-2.5 px-3 font-bold text-emerald-700">${escapeHtml(r.status)}</td>
-          <td class="py-2.5 px-3 text-right font-bold">${formatRupiah(r.cost)}</td>
-          <td class="py-2.5 px-3">${escapeHtml(r.pic)}</td>
-          <td class="py-2.5 px-3 text-center"><button type="button" onclick="markEntityDeleted('${r.id}');stnkRecords.splice(${i},1);saveStorage();renderStnkTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[11px] font-bold">Hapus</button></td>
-        </tr>
-      `).join('') || `<tr><td colspan="11" class="py-6 text-center text-slate-400">Belum ada data STNK.</td></tr>`;
-    }
-
-    function isOpsAtkCategory(kategoriVal) {
-      return String(kategoriVal || '').trim() === 'Tagihan ATK & Perlengkapan';
-    }
-
-    function onOpsKategoriChange() {
-      const isAtk = isOpsAtkCategory(getElVal('opsKategori', 'Tagihan ATK & Perlengkapan'));
-      const thUnit = getEl('opsThUnit');
-      const thItem = getEl('opsThItemName');
-      const secTitle = getEl('opsItemsSectionTitle');
-      if (thUnit) thUnit.classList.toggle('hidden', !isAtk);
-      if (thItem) thItem.textContent = isAtk ? 'Nama Item / Uraian Barang ATK *' : 'Uraian Pengajuan / Keterangan *';
-      if (secTitle) secTitle.textContent = isAtk ? 'Rincian Daftar Item Barang / ATK' : 'Rincian Pengajuan Operasional';
-
-      const tbody = getEl('opsInputItemsBody');
-      if (tbody) {
-        Array.from(tbody.children).forEach(tr => {
-          const tdUnit = tr.querySelector('.ops-td-unit');
-          const inpName = tr.querySelector('.ops-item-name');
-          if (tdUnit) tdUnit.classList.toggle('hidden', !isAtk);
-          if (inpName) inpName.placeholder = isAtk ? 'Nama item barang ATK...' : 'Uraian pengajuan...';
-        });
+    function copyShareInstallLink() {
+      try {
+        const u = new URL(window.location.href.split('#')[0]);
+        u.searchParams.set('install', '1');
+        const shareUrl = u.toString();
+        const ta = document.createElement('textarea');
+        ta.value = shareUrl;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        showToast('Link Install Otomatis (?install=1) berhasil disalin!', 'success');
+      } catch (e) {
+        showToast('Salin URL dari address bar browser untuk dibagikan.', 'info');
       }
     }
 
@@ -3270,6 +3243,50 @@
       showToast('Excel Perpanjangan STNK berhasil diunduh.', 'success');
     }
 
+    function isOpsAtkCategory(kategoriVal) {
+      return String(kategoriVal || '').trim() === 'Tagihan ATK & Perlengkapan';
+    }
+
+    function onOpsKategoriChange() {
+      const isAtk = isOpsAtkCategory(getElVal('opsKategori', 'Tagihan ATK & Perlengkapan'));
+      const thUnit = getEl('opsThUnit');
+      const thItem = getEl('opsThItemName');
+      const secTitle = getEl('opsItemsSectionTitle');
+      if (thUnit) thUnit.classList.toggle('hidden', !isAtk);
+      if (thItem) thItem.textContent = isAtk ? 'Nama Item / Uraian Barang ATK *' : 'Uraian Pengajuan / Keterangan *';
+      if (secTitle) secTitle.textContent = isAtk ? 'Rincian Daftar Item Barang / ATK' : 'Rincian Pengajuan Operasional';
+
+      const tbody = getEl('opsInputItemsBody');
+      if (tbody) {
+        Array.from(tbody.children).forEach(tr => {
+          const tdUnit = tr.querySelector('.ops-td-unit');
+          const inpName = tr.querySelector('.ops-item-name');
+          if (tdUnit) tdUnit.classList.toggle('hidden', !isAtk);
+          if (inpName) inpName.placeholder = isAtk ? 'Nama item barang ATK...' : 'Uraian pengajuan...';
+        });
+      }
+    }
+
+    function renderStnkTable() {
+      const tbody = getEl('stnkTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = stnkRecords.map((r, i) => `
+        <tr>
+          <td class="py-2.5 px-3">${i + 1}</td>
+          <td class="py-2.5 px-3">${r.photo ? `<img src="${r.photo}" class="w-10 h-10 object-cover rounded-lg"/>` : '-'}</td>
+          <td class="py-2.5 px-3 font-black">${escapeHtml(r.nopol)}</td>
+          <td class="py-2.5 px-3 font-semibold">${escapeHtml(r.unit)}</td>
+          <td class="py-2.5 px-3 font-bold">${escapeHtml(r.pt)}</td>
+          <td class="py-2.5 px-3">${escapeHtml(r.type)}</td>
+          <td class="py-2.5 px-3">${formatDateShort(r.dueDate)}</td>
+          <td class="py-2.5 px-3 font-bold text-emerald-700">${escapeHtml(r.status)}</td>
+          <td class="py-2.5 px-3 text-right font-bold">${formatRupiah(r.cost)}</td>
+          <td class="py-2.5 px-3">${escapeHtml(r.pic)}</td>
+          <td class="py-2.5 px-3 text-center"><button type="button" onclick="markEntityDeleted('${r.id}');stnkRecords.splice(${i},1);saveStorage();renderStnkTable();" class="px-2 py-1 rounded bg-rose-100 text-rose-800 text-[11px] font-bold">Hapus</button></td>
+        </tr>
+      `).join('') || `<tr><td colspan="11" class="py-6 text-center text-slate-400">Belum ada data STNK.</td></tr>`;
+    }
+
     // =========================================================================
     // KOP LOGO 17 PT, TICKETING PDF PARSER, OCR KTP, REKAP & PVR GENERATOR
     // =========================================================================
@@ -3347,11 +3364,1082 @@
     function getFormPassengers() {
       const box = getEl('passengerRowsContainer');
       if (!box) return [];
-      return Array.from(box.children).map(row => ({
-        title: row.querySelector('.pax-title')?.value || 'Mr.',
-        name: (row.querySelector('.pax-name')?.value || '').trim().toUpperCase(),
-        role: (row.querySelector('.pax-role')?.value || '').trim()
-      })).filter(p => p.name);
+      return Array.from(box.children).map(row => {
+        const title = row.querySelector('.pax-title')?.value || 'Mr.';
+        const name = (row.querySelector('.pax-name')?.value || '').trim().toUpperCase();
+        const role = (row.querySelector('.pax-role')?.value || '').trim();
+        return name ? { title, name, role } : null;
+      }).filter(Boolean);
+    }
+
+    function buildAutoPvrKeterangan() {
+      const jenis = getElVal('fJenisLayanan', 'FLIGHT');
+      const vendor = getElVal('fVendor', 'Traveloka');
+      const invoice = getElVal('fInvoice', '').trim();
+      const receipt = getElVal('fReceiptCode', '').trim();
+      const maskapaiHotel = getElVal('fMaskapaiHotel', '').trim() || (jenis === 'HOTEL' ? 'Hotel' : 'Garuda Indonesia');
+      const flightNoRoom = getElVal('fFlightNoRoom', '').trim();
+      const pnrNights = getElVal('fPnrNights', '').trim().toUpperCase();
+      const rute = getElVal('fRute', '').trim().toUpperCase();
+      const departIso = getElVal('fDepartDate', getTodayIso());
+      const returnIso = getElVal('fReturnDate', '');
+      const depart = formatDateIndo(departIso);
+      const ret = returnIso ? formatDateIndo(returnIso) : '';
+      const paxList = getFormPassengers();
+      const keperluanRaw = getElVal('fKeperluan', 'Perdin');
+      const keperluanLabel = keperluanRaw === 'Perdin' ? 'Perjalanan Dinas' : keperluanRaw;
+
+      const paxStr = paxList.length
+        ? paxList.map(p => {
+            const tcName = toTitleCaseName(p.name);
+            const roleTag = p.role ? ` *${p.role}*` : '';
+            return `${p.title} ${tcName}${roleTag}`;
+          }).join(' & ')
+        : 'Karyawan';
+
+      const prefixNum = vendor === 'Tiket.com' ? (invoice || receipt) : (receipt || invoice);
+      const prefixHead = prefixNum ? `${prefixNum} - ` : '';
+
+      const expandRoute = rawRute => {
+        const clean = String(rawRute || '').replace(/\s+/g, '');
+        const parts = clean.split(/[-–→]/).filter(Boolean);
+        if (parts.length >= 2) {
+          const c1 = IATA_CITY_MAP[parts[0]] || { upper: parts[0], name: toTitleCaseName(parts[0]) };
+          const c2 = IATA_CITY_MAP[parts[1]] || { upper: parts[1], name: toTitleCaseName(parts[1]) };
+          return {
+            codePair: `${parts[0]}-${parts[1]}`,
+            upperPair: `${c1.upper}-${c2.upper}`,
+            fromCity: c1.name,
+            toCity: c2.name
+          };
+        }
+        return { codePair: clean, upperPair: clean, fromCity: '', toCity: '' };
+      };
+
+      if (vendor === 'Traveloka' || vendor === 'Tiket.com') {
+        if (jenis === 'HOTEL') {
+          const roomLabel = flightNoRoom ? ` - ${flightNoRoom}` : '';
+          const nightsNum = pnrNights ? (pnrNights.replace(/\D/g, '') || pnrNights) : '1';
+          let dateRangeStr = depart;
+          if (departIso && returnIso && departIso.slice(0, 7) === returnIso.slice(0, 7)) {
+            const d1 = departIso.split('-')[2];
+            dateRangeStr = `${d1}-${ret}`;
+          } else if (depart && ret) {
+            dateRangeStr = `${depart} s/d ${ret}`;
+          }
+          return `${prefixHead}Biaya hotel a/n ${paxStr} ${maskapaiHotel}${roomLabel} (1 Room) tanggal ${dateRangeStr} (${nightsNum} Malam)\nKeperluan: ${keperluanLabel}`;
+        }
+
+        const isRoundTrip = Boolean(returnIso);
+        const tripTypeLabel = isRoundTrip ? 'pergi dan pulang' : 'pergi';
+        const airlineUpper = maskapaiHotel.toUpperCase();
+        const flightCodePart = flightNoRoom ? ` ${flightNoRoom.toUpperCase()}` : '';
+        const pnrPart = pnrNights ? ` (${pnrNights})` : '';
+        const routeInfo = expandRoute(rute);
+        const routeSegment = routeInfo.codePair
+          ? ` ${routeInfo.codePair}${routeInfo.upperPair && routeInfo.upperPair !== routeInfo.codePair ? ` (${routeInfo.upperPair})` : ''}`
+          : '';
+        const fromToPhrase = routeInfo.fromCity && routeInfo.toCity
+          ? ` dari ${routeInfo.fromCity} menuju ${routeInfo.toCity}`
+          : '';
+        const depDatePhrase = depart ? ` tanggal ${depart}` : '';
+
+        let legText = `${airlineUpper}${flightCodePart}${pnrPart}${routeSegment}${fromToPhrase}${depDatePhrase}`;
+        if (isRoundTrip && routeInfo.fromCity && routeInfo.toCity) {
+          const revParts = routeInfo.codePair.split('-');
+          const revCode = revParts.length === 2 ? `${revParts[1]}-${revParts[0]}` : '';
+          const revUpper = `${routeInfo.toCity.toUpperCase()}-${routeInfo.fromCity.toUpperCase()}`;
+          legText += `, ${airlineUpper}${pnrPart}${revCode ? ` ${revCode} (${revUpper})` : ''} dari ${routeInfo.toCity} menuju ${routeInfo.fromCity} tanggal ${ret}`;
+        }
+
+        return `${prefixHead}Biaya tiket pesawat ${tripTypeLabel} a/n ${paxStr} ${legText}\nKeperluan: ${keperluanLabel}`;
+      }
+
+      const jenisLabel = jenis === 'TRAIN' ? 'Tiket Kereta Api' : 'Tiket Pesawat';
+      const dateStr = ret ? `${depart} s/d ${ret}` : depart;
+      return `${prefixHead}Pembayaran ${jenisLabel} ${maskapaiHotel}${rute ? ' Rute ' + rute : ''} Tanggal ${dateStr} a/n ${paxStr}\nKeperluan: ${keperluanLabel}`;
+    }
+
+    function onServiceTypeChange() {
+      const jenis = getElVal('fJenisLayanan', 'FLIGHT');
+      if (jenis === 'HOTEL') {
+        setElText('lblMaskapaiHotel', 'Nama Hotel *');
+        setElText('lblFlightNoRoom', 'Tipe Kamar');
+        setElText('lblPnrNights', 'Jumlah Malam / PNR');
+        setElText('lblRuteDetail', 'Kota / Lokasi Hotel *');
+        setElText('lblDepartCi', 'Check-In Date *');
+        setElText('lblReturnCo', 'Check-Out Date');
+      } else if (jenis === 'TRAIN') {
+        setElText('lblMaskapaiHotel', 'Nama Kereta *');
+        setElText('lblFlightNoRoom', 'No. Kereta / Gerbong');
+        setElText('lblPnrNights', 'Kode Booking (PNR)');
+        setElText('lblRuteDetail', 'Rute Stasiun *');
+        setElText('lblDepartCi', 'Depart Date *');
+        setElText('lblReturnCo', 'Return Date (PP)');
+      } else {
+        setElText('lblMaskapaiHotel', 'Maskapai / Transport *');
+        setElText('lblFlightNoRoom', 'No. Penerbangan');
+        setElText('lblPnrNights', 'Kode Booking (PNR)');
+        setElText('lblRuteDetail', 'Rute Perjalanan *');
+        setElText('lblDepartCi', 'Depart Date *');
+        setElText('lblReturnCo', 'Return Date (PP)');
+      }
+      recalculateMova();
+      refreshFormDerivedOutputs();
+    }
+
+    function onPtChange() { refreshFormDerivedOutputs(); }
+    function onPaymentMethodChange() {
+      setElVal('fTujuan', getElVal('fPayment', 'DC BNI Pak Tony'));
+      refreshFormDerivedOutputs();
+    }
+
+    function recalculateMova() {
+      const jenis = getElVal('fJenisLayanan', 'FLIGHT');
+      const vendor = getElVal('fVendor', 'Traveloka');
+      const nominal = Number(getElVal('fNominal', 0)) || 0;
+      let rate = 0.00135;
+      let label = 'Tarif MOVA: 0.135% (Tiket)';
+      if (jenis === 'HOTEL') {
+        rate = 0.005;
+        label = 'Tarif MOVA: 0.50% (Hotel)';
+      } else if (vendor === 'Direct Maskapai / Hotel') {
+        rate = 0;
+        label = 'Tarif MOVA: 0% (Direct)';
+      }
+      setElText('movaRateHint', label);
+      setElVal('fMova', Math.round(nominal * rate));
+    }
+
+    function applyGrTemplate() {
+      const pt = getElVal('fPt', 'EPM');
+      const m = ROMAN_MONTHS[new Date().getMonth()];
+      const y = new Date().getFullYear();
+      setElVal('fNoGr', `____/GR/${pt}/${m}/${y}`);
+      refreshFormDerivedOutputs();
+    }
+
+    function resetCustomPvrText() {
+      customPvrTextEdited = false;
+      setElVal('fPvrKeterangan', buildAutoPvrKeterangan());
+    }
+
+    function refreshFormDerivedOutputs() {
+      const pt = getElVal('fPt', 'EPM');
+      setElText('ptGrHint', `GR: ${pt}`);
+      if (!customPvrTextEdited) {
+        setElVal('fPvrKeterangan', buildAutoPvrKeterangan());
+      }
+      const pax = getFormPassengers();
+      const paxCount = Math.max(1, pax.length);
+      const nom = Number(getElVal('fNominal', 0)) || 0;
+      const unitNom = Math.round(nom / paxCount);
+      setElText('nominalPerPaxHint', `${paxCount} Orang • @ ${formatRupiah(unitNom)} / orang`);
+
+      const tbody = getEl('livePreviewRowBody');
+      if (!tbody) return;
+      const namaStr = pax.length ? pax.map(p => `${p.title} ${p.name}`).join(', ') : '-';
+      const mova = Number(getElVal('fMova', 0)) || 0;
+      tbody.innerHTML = `
+        <tr>
+          <td class="border border-slate-300 px-2 py-1.5 text-center font-bold">1</td>
+          <td class="border border-slate-300 px-2 py-1.5">${formatDateShort(getElVal('fTanggalOrder'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5 font-mono">${escapeHtml(getElVal('fInvoice', '-'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fPayment'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(pt)}</td>
+          <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(namaStr)}</td>
+          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fKeperluan'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fRute', '-'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5">${formatDateShort(getElVal('fDepartDate'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fMaskapaiHotel', '-'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fVendor'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5 text-right font-bold">${formatNumber(nom)}</td>
+          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fStatusPengajuan'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fTujuan'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5 font-mono">${escapeHtml(getElVal('fNoGr', '-'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5 font-bold">${escapeHtml(getElVal('fStatusBayar'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5">${escapeHtml(getElVal('fStatusKet', '-'))}</td>
+          <td class="border border-slate-300 px-2 py-1.5 text-right font-bold text-emerald-700">${formatNumber(mova)}</td>
+        </tr>
+      `;
+    }
+
+    async function triggerInstallPwaApp() {
+      if (deferredPwaPrompt) {
+        deferredPwaPrompt.prompt();
+        const choice = await deferredPwaPrompt.userChoice;
+        if (choice && choice.outcome === 'accepted') {
+          deferredPwaPrompt = null;
+          showToast('Sedang memasang aplikasi GA GEL dengan Logo Resmi PT GEL...', 'success');
+        }
+        return;
+      }
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      if (isStandalone) {
+        showToast('Aplikasi GA GEL sudah terpasang dan sedang berjalan.', 'success');
+        return;
+      }
+      const isLocal = window.location.protocol === 'file:';
+      const ua = navigator.userAgent || '';
+      const isSafariMacOrIos = /Safari/i.test(ua) && !/Chrome|Chromium|Edg/i.test(ua);
+      if (isLocal) {
+        showToast('Upload file index.html ini ke GitHub Pages terlebih dahulu agar tombol Install 1-Klik aktif di browser.', 'warning');
+      } else if (isSafariMacOrIos) {
+        showToast('Di Safari MacBook: klik File → Add to Dock... | Di iPhone: ketuk Share (↑) → Add to Home Screen.', 'info');
+      } else {
+        showToast('Klik ikon Install (⊕) di ujung kanan address bar browser untuk langsung memasang aplikasi GA GEL.', 'info');
+      }
+    }
+
+    function resetBookingForm() {
+      const f = getEl('bookingForm');
+      if (f) f.reset();
+      editingRecordId = null;
+      customPvrTextEdited = false;
+      setElVal('fTanggalOrder', getTodayIso());
+      setElVal('fDepartDate', getTodayIso());
+      const box = getEl('passengerRowsContainer');
+      if (box) { box.innerHTML = ''; addPassengerRow(); }
+      refreshFormDerivedOutputs();
+    }
+
+    function handleSaveForm(e) {
+      e.preventDefault();
+      const pax = getFormPassengers();
+      if (!pax.length) {
+        showToast('Isi minimal 1 nama penumpang terlebih dahulu.', 'warning');
+        return;
+      }
+      const paxCount = Math.max(1, pax.length);
+      const nom = Number(getElVal('fNominal', 0)) || 0;
+      const unitNom = Math.round(nom / paxCount);
+      const item = {
+        id: editingRecordId || 'REC-' + Date.now(),
+        tanggalOrder: getElVal('fTanggalOrder', getTodayIso()),
+        issueTime: getElVal('fIssueTime', '11:00'),
+        divisi: getElVal('fDivisi', 'GA'),
+        jenis: getElVal('fJenisLayanan', 'FLIGHT'),
+        pt: getElVal('fPt', 'EPM'),
+        keperluan: getElVal('fKeperluan', 'Perdin'),
+        requestBy: getElVal('fRequestBy', ''),
+        passengers: pax,
+        paxCount,
+        nama: pax.map(p => `${p.title} ${p.name}`).join(', '),
+        invoice: getElVal('fInvoice', '').trim(),
+        receiptCode: getElVal('fReceiptCode', '').trim(),
+        maskapai: getElVal('fMaskapaiHotel', '').trim(),
+        flightNo: getElVal('fFlightNoRoom', '').trim().toUpperCase(),
+        pnr: getElVal('fPnrNights', '').trim().toUpperCase(),
+        rute: getElVal('fRute', '').trim(),
+        departDate: getElVal('fDepartDate', getTodayIso()),
+        returnDate: getElVal('fReturnDate', ''),
+        vendor: getElVal('fVendor', 'Traveloka'),
+        nominal: nom,
+        unitNominal: unitNom,
+        mova: Number(getElVal('fMova', 0)) || 0,
+        payment: getElVal('fPayment', 'DC BNI Pak Tony'),
+        tujuan: getElVal('fTujuan', 'DC BNI Pak Tony'),
+        statusPengajuan: getElVal('fStatusPengajuan', 'Sudah Diajukan'),
+        noGr: getElVal('fNoGr', '').trim(),
+        statusBayar: getElVal('fStatusBayar', 'UNPAID'),
+        statusKet: getElVal('fStatusKet', '').trim(),
+        pvrKeterangan: getElVal('fPvrKeterangan', buildAutoPvrKeterangan()),
+        _updatedAt: Date.now()
+      };
+
+      if (editingRecordId) {
+        const idx = records.findIndex(r => r.id === editingRecordId);
+        if (idx >= 0) records[idx] = item;
+        editingRecordId = null;
+        showToast('Data pemesanan berhasil diperbarui!', 'success');
+      } else {
+        records.unshift(item);
+        showToast(`Data ${item.pt} (${item.nama}) tersimpan ke Rekap & PVR!`, 'success');
+      }
+      saveStorage();
+      renderRekapTable();
+      renderPvrPreview(true);
+      resetBookingForm();
+    }
+
+    function loadSampleMdfFromUserPdf() {
+      setElVal('fPt', 'MDF');
+      setElVal('fJenisLayanan', 'FLIGHT');
+      setElVal('fVendor', 'Traveloka');
+      setElVal('fInvoice', '1411719008');
+      setElVal('fReceiptCode', '1882273426528302129');
+      setElVal('fMaskapaiHotel', 'Garuda Indonesia');
+      setElVal('fFlightNoRoom', 'GA-513');
+      setElVal('fPnrNights', '5IZNPQ');
+      setElVal('fRute', 'PNK - CGK');
+      setElVal('fNominal', 4597900);
+      const box = getEl('passengerRowsContainer');
+      if (box) {
+        box.innerHTML = '';
+        addPassengerRow({ title: 'Mr.', name: 'BUDI SANTOSO', role: 'Estate Manager' });
+      }
+      customPvrTextEdited = false;
+      recalculateMova();
+      refreshFormDerivedOutputs();
+      showToast('Contoh data PDF MDF (Garuda Indonesia PNK - CGK) dimuat ke form.', 'info');
+    }
+
+    async function extractTextFromPdfFile(file) {
+      if (!file) return '';
+      if (typeof pdfjsLib === 'undefined') {
+        showToast('Library PDF.js sedang dimuat, tunggu 2 detik lalu unggah ulang.', 'warning');
+        return '';
+      }
+      try {
+        if (pdfjsLib.GlobalWorkerOptions) {
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+        const buf = await file.arrayBuffer();
+        let pdf;
+        try {
+          pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
+        } catch (workerErr) {
+          pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf), disableWorker: true }).promise;
+        }
+        let fullText = '';
+        for (let p = 1; p <= pdf.numPages; p++) {
+          const page = await pdf.getPage(p);
+          const content = await page.getTextContent();
+          const linesMap = {};
+          content.items.forEach(it => {
+            const y = Math.round((it.transform?.[5] || 0) / 4) * 4;
+            if (!linesMap[y]) linesMap[y] = [];
+            linesMap[y].push({ x: it.transform?.[4] || 0, str: it.str });
+          });
+          const sortedY = Object.keys(linesMap).map(Number).sort((a, b) => b - a);
+          sortedY.forEach(y => {
+            const rowStr = linesMap[y].sort((a, b) => a.x - b.x).map(i => i.str).join(' ');
+            fullText += rowStr + '\n';
+          });
+        }
+        if (fullText.replace(/\s+/g, '').length < 30 && typeof Tesseract !== 'undefined') {
+          const maxPagesOcr = Math.min(pdf.numPages, 3);
+          let ocrCombined = '';
+          for (let p = 1; p <= maxPagesOcr; p++) {
+            const page = await pdf.getPage(p);
+            const vp = page.getViewport({ scale: 2.2 });
+            const canvas = document.createElement('canvas');
+            canvas.width = vp.width;
+            canvas.height = vp.height;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+            const ocrRes = await Tesseract.recognize(canvas.toDataURL('image/png'), 'eng');
+            if (ocrRes?.data?.text) ocrCombined += ocrRes.data.text + '\n';
+          }
+          if (ocrCombined.trim()) fullText = ocrCombined.trim();
+        }
+        return fullText.trim();
+      } catch (err) {
+        console.warn('PDF extract warning:', err);
+        return '';
+      }
+    }
+
+    function parseTravelPdfText(rawText, fileName = '') {
+      const combined = `${fileName}\n${rawText || ''}`;
+      const upper = combined.toUpperCase();
+      const lines = combined.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const parsed = {
+        fileName,
+        pt: '',
+        jenis: 'FLIGHT',
+        maskapai: '',
+        flightNo: '',
+        pnr: '',
+        rute: '',
+        tanggalOrder: '',
+        departDate: '',
+        returnDate: '',
+        invoice: '',
+        receiptCode: '',
+        nominal: 0,
+        divisi: /CORSEC|CORPORATE\s*SECRETARY/i.test(combined) ? 'CORSEC' : 'GA',
+        vendor: upper.includes('TIKET.COM') ? 'Tiket.com' : 'Traveloka',
+        keperluan: upper.includes('CUTI') ? 'Cuti Roster' : 'Perdin',
+        passengers: []
+      };
+
+      for (const code of Object.keys(PT_FULL_INFO)) {
+        const fullNm = PT_FULL_INFO[code].fullName.replace(/^PT\.?\s*/i, '');
+        if (new RegExp(`\\b${code}\\b`, 'i').test(combined) || (fullNm.length > 6 && upper.includes(fullNm.toUpperCase()))) {
+          parsed.pt = code;
+          break;
+        }
+      }
+
+      if (/GARUDA/i.test(combined)) parsed.maskapai = 'Garuda Indonesia';
+      else if (/BATIK\s*AIR/i.test(combined)) parsed.maskapai = 'Batik Air';
+      else if (/SUPER\s*AIR\s*JET/i.test(combined)) parsed.maskapai = 'Super Air Jet';
+      else if (/CITILINK/i.test(combined)) parsed.maskapai = 'Citilink';
+      else if (/LION\s*AIR/i.test(combined)) parsed.maskapai = 'Lion Air';
+      else if (/SRIWIJAYA/i.test(combined)) parsed.maskapai = 'Sriwijaya Air';
+      else if (/PELITA\s*AIR/i.test(combined)) parsed.maskapai = 'Pelita Air';
+      else if (/WINGS\s*AIR/i.test(combined)) parsed.maskapai = 'Wings Air';
+      else if (/NAM\s*AIR/i.test(combined)) parsed.maskapai = 'NAM Air';
+      else if (/KERETA\s*API|\bKAI\b/i.test(combined) && !/GARUDA|LION|BATIK|CITILINK|SUPER\s*AIR/i.test(combined)) {
+        parsed.jenis = 'TRAIN';
+        parsed.maskapai = 'PT Kereta Api Indonesia (KAI)';
+      } else if (/VOUCHER\s*HOTEL|CHECK[\s-]*IN|HOTEL\s*RESERVATION|BUKTI\s*PEMBAYARAN\s*HOTEL|HOTEL\s*VOUCHER/i.test(combined) && !/GARUDA|LION|BATIK|CITILINK|SUPER\s*AIR/i.test(combined)) {
+        parsed.jenis = 'HOTEL';
+        const hotelLine = lines.find(l => /HOTEL|SWISS-BEL|ASTON|HARRIS|MERCURE|NOVOTEL|IBIS|SANTIKA|FAVEHOTEL|GRAND|PREMIERE|ARYADUTA|WHIZ|POP!|ZEST|AMARIS/i.test(l) && !/BUKTI|PEMBAYARAN|VOUCHER|ORDER|RECEIPT|DETAIL/i.test(l));
+        if (hotelLine) parsed.maskapai = hotelLine.replace(/\s+/g, ' ').trim();
+      }
+
+      const fnMatch = combined.match(/\b(GA|ID|IU|QG|JT|SJ|IP|IN|IW)[-\s]?(\d{2,4})\b/i);
+      if (fnMatch) parsed.flightNo = `${fnMatch[1].toUpperCase()}-${fnMatch[2]}`;
+
+      const pnrBlacklist = /^(?:CODE|NUMBER|NOMOR|ID|BOOKING|FLIGHT|TICKET|STATUS|REFUND|ADULT|DEWASA|TRAVEL|CLASS|CABIN|ECONOMY|BUSINESS|PASSENGER|ISSUED|DATE|TIME|ONLINE|CHECK|DIRECT|NONSTOP)$/i;
+      const pnrInline = combined.match(/(?:PNR|AIRLINE\s*BOOKING\s*CODE|BOOKING\s*(?:CODE|ID)|KODE\s*BOOKING)\s*(?:\(PNR\))?\s*[:#\-]?\s*([A-Z0-9]{5,7})\b/i);
+      if (pnrInline && !pnrBlacklist.test(pnrInline[1]) && /[A-Z]/i.test(pnrInline[1])) {
+        parsed.pnr = pnrInline[1].toUpperCase();
+      } else {
+        for (let i = 0; i < lines.length; i++) {
+          if (/AIRLINE\s*BOOKING\s*CODE|KODE\s*BOOKING|BOOKING\s*CODE|\bPNR\b/i.test(lines[i])) {
+            const nextWin = `${lines[i]} ${lines[i + 1] || ''} ${lines[i + 2] || ''}`;
+            const candMatches = [...nextWin.matchAll(/\b([A-Z0-9]{6})\b/g)];
+            const validPnr = candMatches.map(m => m[1]).find(c => !pnrBlacklist.test(c) && /[A-Z]/.test(c) && !/^\d{6}$/.test(c));
+            if (validPnr) {
+              parsed.pnr = validPnr.toUpperCase();
+              break;
+            }
+          }
+        }
+      }
+
+      const iataBlacklist = new Set(['MR', 'MRS', 'MDF', 'EPM', 'GEL', 'GSM', 'GSJ', 'KMC', 'QIN', 'SIP', 'TER', 'KKS', 'ARC', 'PNR', 'PDF', 'JAN', 'FEB', 'MAR', 'APR', 'MEI', 'MAY', 'JUN', 'JUL', 'AGU', 'AUG', 'SEP', 'OKT', 'OCT', 'NOV', 'DES', 'DEC', 'WIB', 'WITA', 'WIT', 'IDR', 'TAX', 'PPN', 'PPH', 'GA', 'JT', 'QG', 'ID', 'IU', 'VIA', 'NON', 'ALL', 'FOR', 'THE', 'AND', 'PER', 'DIN', 'KTT', 'HO', 'NIK', 'KTP']);
+      const iataMatches = [...upper.matchAll(/\b([A-Z]{3})\s*(?:-|–|—|→|TO|KE|\s+-\s+)\s*([A-Z]{3})\b/g)];
+      for (const m of iataMatches) {
+        if (!iataBlacklist.has(m[1]) && !iataBlacklist.has(m[2]) && m[1] !== m[2]) {
+          parsed.rute = `${m[1]} - ${m[2]}`;
+          break;
+        }
+      }
+
+      if (parsed.vendor === 'Tiket.com') {
+        const orderMatch = combined.match(/ORDER\s*ID\s*[:#\-]?\s*#?\s*(\d{7,15})\b/i);
+        if (orderMatch) {
+          parsed.invoice = orderMatch[1];
+          parsed.receiptCode = orderMatch[1];
+        }
+      } else {
+        const trvBookMatch = combined.match(/(?:TRAVELOKA\s*BOOKING\s*ID|NO\.?\s*PESANAN\s*TRAVELOKA|BOOKING\s*ID|NO\.?\s*PESANAN)\s*[:#\-]?\s*#?\s*(\d{8,14})\b/i);
+        if (trvBookMatch) parsed.invoice = trvBookMatch[1];
+        else {
+          const fallbackInv = combined.match(/\b(1\d{8,11})\b/);
+          if (fallbackInv) parsed.invoice = fallbackInv[1];
+        }
+        const rec19LabelMatch = combined.match(/(?:NUMBER|NOMOR|RECEIPT)\s*[:#\-]?\s*#?\s*(\d{19})\b/i) || combined.match(/#?\b(\d{19})\b/);
+        if (rec19LabelMatch) parsed.receiptCode = rec19LabelMatch[1];
+      }
+
+      const monthMap = {
+        JAN: '01', JANUARI: '01', JANUARY: '01', FEB: '02', FEBRUARI: '02', FEBRUARY: '02',
+        MAR: '03', MARET: '03', MARCH: '03', APR: '04', APRIL: '04', MEI: '05', MAY: '05',
+        JUN: '06', JUNI: '06', JUNE: '06', JUL: '07', JULI: '07', JULY: '07',
+        AGU: '08', AGUSTUS: '08', AUG: '08', AUGUST: '08', SEP: '09', SEPTEMBER: '09',
+        OKT: '10', OKTOBER: '10', OCT: '10', OCTOBER: '10', NOV: '11', NOVEMBER: '11',
+        DES: '12', DESEMBER: '12', DEC: '12', DECEMBER: '12'
+      };
+      const orderDateMatch = combined.match(/(?:DATE|TANGGAL|TGL\s*ORDER)\s*[:\-]\s*(\d{1,2})\s+(JAN(?:UARI|UARY)?|FEB(?:RUARI|RUARY)?|MAR(?:ET|CH)?|APR(?:IL)?|MEI|MAY|JUN(?:I|E)?|JUL(?:I|Y)?|AGU(?:STUS)?|AUG(?:UST)?|SEP(?:TEMBER)?|OKT(?:OBER)?|OCT(?:OBER)?|NOV(?:EMBER)?|DES(?:EMBER)?|DEC(?:EMBER)?)\s+(202\d)/i);
+      if (orderDateMatch) {
+        parsed.tanggalOrder = `${orderDateMatch[3]}-${monthMap[orderDateMatch[2].toUpperCase()] || '01'}-${String(orderDateMatch[1]).padStart(2, '0')}`;
+      }
+
+      const dateMatches = [...combined.matchAll(/\b(\d{1,2})\s+(JAN(?:UARI|UARY)?|FEB(?:RUARI|RUARY)?|MAR(?:ET|CH)?|APR(?:IL)?|MEI|MAY|JUN(?:I|E)?|JUL(?:I|Y)?|AGU(?:STUS)?|AUG(?:UST)?|SEP(?:TEMBER)?|OKT(?:OBER)?|OCT(?:OBER)?|NOV(?:EMBER)?|DES(?:EMBER)?|DEC(?:EMBER)?)\s+(202\d)\b/gi)];
+      const uniqueDates = [];
+      dateMatches.forEach(dm => {
+        const iso = `${dm[3]}-${monthMap[dm[2].toUpperCase()] || '01'}-${String(dm[1]).padStart(2, '0')}`;
+        if (!uniqueDates.includes(iso)) uniqueDates.push(iso);
+      });
+      if (uniqueDates.length) {
+        const flightDates = uniqueDates.filter(d => d !== parsed.tanggalOrder);
+        const targetDates = flightDates.length ? flightDates : uniqueDates;
+        parsed.departDate = targetDates[0];
+        if (targetDates.length > 1 && targetDates[1] > targetDates[0]) parsed.returnDate = targetDates[1];
+      }
+
+      const receiptPayMatch = combined.match(/(?:TOTAL\s*PAYMENT|TOTAL\s*PEMBAYARAN|AMOUNT\s*PAID|TOTAL\s*BAYAR)\s*[:\-]?\s*(?:RP\.?|IDR)?\s*([\d]{1,3}(?:[.,]\d{3})+)/i);
+      if (receiptPayMatch) {
+        parsed.nominal = Number(receiptPayMatch[1].replace(/[^\d]/g, '')) || 0;
+      } else {
+        const moneyMatches = [...combined.matchAll(/(?:GRAND\s*TOTAL|TOTAL|RP\.?|IDR)\s*[:\-]?\s*(?:RP\.?|IDR)?\s*([\d]{1,3}(?:[.,]\d{3})+)/gi)];
+        if (moneyMatches.length) {
+          const vals = moneyMatches.map(m => Number(m[1].replace(/[^\d]/g, '')) || 0).filter(v => v >= 50000 && v <= 250000000);
+          if (vals.length) parsed.nominal = Math.max(...vals);
+        }
+      }
+
+      let docJabatan = '';
+      const jabMatch = combined.match(/(?:JABATAN|POSITION|DIVISI\s*\/\s*JABATAN)\s*[:\-]\s*([A-Z0-9\s\/&().-]{2,45}?)(?=\r?\n|NIK|DEPARTEMEN|TUJUAN|KEPERLUAN|TANGGAL|$)/i);
+      if (jabMatch) {
+        const cleanJab = jabMatch[1].replace(/\s+/g, ' ').trim();
+        if (cleanJab && !/^(?:NAMA|NIK|TANGGAL|TUJUAN)$/i.test(cleanJab)) docJabatan = cleanJab;
+      }
+
+      const seen = new Set();
+      const pushPassenger = (title, rawName, roleOverride = '') => {
+        const name = String(rawName || '').replace(/\s+/g, ' ').trim().toUpperCase();
+        if (name.length >= 4 && !seen.has(name) && !/GARUDA|INDONESIA|TRAVELOKA|PERDIN|FORM|SURAT|GLOBAL|ENERGI|LESTARI|PERJALANAN|DINAS|TANGGAL|JABATAN|DIVISI/.test(name)) {
+          seen.add(name);
+          const ktpMatch = ktpRecords.find(k => (k.nama || k.name) === name);
+          parsed.passengers.push({
+            title: ktpMatch ? (ktpMatch.gender === 'PEREMPUAN' ? 'Mrs.' : 'Mr.') : title,
+            name,
+            role: roleOverride || docJabatan || (ktpMatch?.role || (ktpMatch?.nik ? `NIK: ${ktpMatch.nik}` : ''))
+          });
+          if (!parsed.pt && ktpMatch?.pt) parsed.pt = ktpMatch.pt;
+        }
+      };
+
+      const paxMatches = [...combined.matchAll(/\b(MR|MRS|MS|TUAN|NYONYA)\.?\s+([A-Z][A-Z\s'.]{3,40}?)(?=\s*(?:\(|,|\n|\d|NIK|JABATAN|DIVISI|DEPART|FLIGHT|ETICKET|$))/gi)];
+      paxMatches.forEach(m => {
+        const rawT = m[1].toUpperCase();
+        const title = (rawT === 'MRS' || rawT === 'NYONYA') ? 'Mrs.' : (rawT === 'MS' ? 'Ms.' : 'Mr.');
+        pushPassenger(title, m[2]);
+      });
+
+      // Fallback pembacaan Nama dari Surat Perdin / Cuti Roster yang tidak memakai Mr./Mrs.
+      if (!parsed.passengers.length) {
+        const perdinNameMatches = [...combined.matchAll(/(?:NAMA\s*(?:KARYAWAN|PEMOHON|PENUMPANG)?|PASSENGER\s*NAME)\s*[:\-]\s*([A-Z][A-Z\s'.]{3,40}?)(?=\r?\n|NIK|JABATAN|DIVISI|PT|DEPARTEMEN|$)/gi)];
+        perdinNameMatches.forEach(m => pushPassenger('Mr.', m[1]));
+      }
+
+      return parsed;
+    }
+
+    function applyParsedDataToForm(parsed) {
+      if (!parsed) return;
+      if (parsed.pt && PT_FULL_INFO[parsed.pt]) setElVal('fPt', parsed.pt);
+      if (parsed.jenis) { setElVal('fJenisLayanan', parsed.jenis); onServiceTypeChange(); }
+      if (parsed.tanggalOrder) setElVal('fTanggalOrder', parsed.tanggalOrder);
+      if (parsed.maskapai) setElVal('fMaskapaiHotel', parsed.maskapai);
+      if (parsed.flightNo) setElVal('fFlightNoRoom', parsed.flightNo);
+      if (parsed.pnr) setElVal('fPnrNights', parsed.pnr);
+      if (parsed.rute) setElVal('fRute', parsed.rute);
+      if (parsed.departDate) setElVal('fDepartDate', parsed.departDate);
+      if (parsed.returnDate) setElVal('fReturnDate', parsed.returnDate);
+      if (parsed.invoice) setElVal('fInvoice', parsed.invoice);
+      if (parsed.receiptCode) setElVal('fReceiptCode', parsed.receiptCode);
+      if (parsed.nominal > 0) setElVal('fNominal', parsed.nominal);
+      if (parsed.divisi) setElVal('fDivisi', parsed.divisi);
+      if (parsed.vendor) setElVal('fVendor', parsed.vendor);
+      if (parsed.keperluan) setElVal('fKeperluan', parsed.keperluan);
+      if (parsed.passengers && parsed.passengers.length) {
+        const box = getEl('passengerRowsContainer');
+        if (box) {
+          box.innerHTML = '';
+          parsed.passengers.forEach(p => addPassengerRow(p));
+        }
+      }
+      customPvrTextEdited = false;
+      recalculateMova();
+      refreshFormDerivedOutputs();
+    }
+
+    async function handlePairedSlotUpload(slotNum, files) {
+      if (!files || !files.length) return;
+      try {
+        const list = Array.from(files);
+        setElText(`slot${slotNum}FileLabel`, list.length > 1 ? `${list.length} file dipilih` : list[0].name);
+        setElText('pairedSlotStatusText', `Memproses ${list[0].name}...`);
+
+        for (const file of list) {
+          const text = await extractTextFromPdfFile(file);
+          const parsed = parseTravelPdfText(text, file.name);
+          if (slotNum === 3) pairedSlots[3].push(parsed);
+          else pairedSlots[slotNum] = parsed;
+          pdfQueue.push(parsed);
+        }
+
+        const allParsed = [pairedSlots[1], pairedSlots[2], ...(pairedSlots[3] || [])].filter(Boolean);
+        const merged = {};
+        const paxMap = new Map();
+        allParsed.forEach(p => {
+          if (p.pt) merged.pt = p.pt;
+          if (p.jenis && p.jenis !== 'FLIGHT') merged.jenis = p.jenis;
+          else if (!merged.jenis && p.jenis) merged.jenis = p.jenis;
+          if (p.maskapai) merged.maskapai = p.maskapai;
+          if (p.flightNo) merged.flightNo = p.flightNo;
+          if (p.pnr) merged.pnr = p.pnr;
+          if (p.rute) merged.rute = p.rute;
+          if (p.tanggalOrder) merged.tanggalOrder = p.tanggalOrder;
+          if (p.departDate) merged.departDate = p.departDate;
+          if (p.returnDate) merged.returnDate = p.returnDate;
+          if (p.invoice) merged.invoice = p.invoice;
+          if (p.receiptCode) merged.receiptCode = p.receiptCode;
+          if (p.nominal > 0) merged.nominal = p.nominal;
+          if (p.divisi) merged.divisi = p.divisi;
+          if (p.vendor) merged.vendor = p.vendor;
+          if (p.keperluan) merged.keperluan = p.keperluan;
+          (p.passengers || []).forEach(px => {
+            const ex = paxMap.get(px.name);
+            if (!ex) paxMap.set(px.name, { ...px });
+            else if (!ex.role && px.role) ex.role = px.role;
+          });
+        });
+        if (paxMap.size) merged.passengers = Array.from(paxMap.values());
+
+        applyParsedDataToForm(merged);
+        renderPdfQueueList();
+        setElText('pairedSlotStatusText', `Terbaca (${allParsed.length} dok): ${list[list.length - 1].name}`);
+        showToast(`Dokumen Slot 0${slotNum} berhasil dibaca & digabungkan ke form.`, 'success');
+      } catch (err) {
+        setElText('pairedSlotStatusText', 'Gagal membaca PDF. Coba lagi.');
+        showToast('Terjadi kendala saat membaca file PDF.', 'error');
+      } finally {
+        const inp = getEl(`pdfSlot${slotNum}Input`);
+        if (inp) inp.value = '';
+      }
+    }
+
+    function resetPairedSlots() {
+      pairedSlots = { 1: null, 2: null, 3: [], slot3Parsed: null };
+      setElText('slot1FileLabel', 'Flight No, PNR, Rute, Kamar');
+      setElText('slot2FileLabel', 'Order ID, Tgl Order, Total Rp');
+      setElText('slot3FileLabel', 'Ambil Jabatan & Keperluan');
+      setElText('pairedSlotStatusText', 'Status: Belum ada file dipilih');
+    }
+
+    function renderPdfQueueList() {
+      setElText('pdfQueueCount', pdfQueue.length);
+      const box = getEl('pdfQueueList');
+      if (!box) return;
+      if (!pdfQueue.length) {
+        box.innerHTML = `<p class="text-xs text-slate-400 italic py-4 text-center">Belum ada antrian PDF terbaca.</p>`;
+        return;
+      }
+      box.innerHTML = pdfQueue.map((item, idx) => `
+        <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <div class="text-[11px] font-extrabold text-slate-900 truncate">${idx + 1}. ${escapeHtml(item.fileName)}</div>
+            <div class="text-[10px] text-slate-500 truncate">${escapeHtml(item.pt || 'EPM')} • ${escapeHtml(item.maskapai || item.jenis)} • ${formatRupiah(item.nominal)}</div>
+          </div>
+          <button type="button" onclick="applyParsedDataToForm(pdfQueue[${idx}])" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-extrabold shrink-0">Isi Form</button>
+        </div>
+      `).join('');
+    }
+
+    async function handleBatchPdfFiles(files) {
+      if (!files || !files.length) return;
+      showToast(`Membaca ${files.length} file PDF...`, 'info');
+      const mergedPaxMap = new Map();
+      let mergedData = null;
+
+      for (const file of Array.from(files)) {
+        const txt = await extractTextFromPdfFile(file);
+        const p = parseTravelPdfText(txt, file.name);
+        pdfQueue.push(p);
+        if (!mergedData) mergedData = { ...p };
+        else {
+          if (p.pt) mergedData.pt = p.pt;
+          if (p.maskapai) mergedData.maskapai = p.maskapai;
+          if (p.flightNo) mergedData.flightNo = p.flightNo;
+          if (p.pnr) mergedData.pnr = p.pnr;
+          if (p.rute) mergedData.rute = p.rute;
+          if (p.tanggalOrder) mergedData.tanggalOrder = p.tanggalOrder;
+          if (p.departDate) mergedData.departDate = p.departDate;
+          if (p.returnDate) mergedData.returnDate = p.returnDate;
+          if (p.invoice) mergedData.invoice = p.invoice;
+          if (p.receiptCode) mergedData.receiptCode = p.receiptCode;
+          if (p.nominal > 0) mergedData.nominal = p.nominal;
+        }
+        (p.passengers || []).forEach(px => {
+          const existing = mergedPaxMap.get(px.name);
+          if (!existing) mergedPaxMap.set(px.name, { ...px });
+          else if (!existing.role && px.role) existing.role = px.role;
+        });
+      }
+
+      if (mergedData) {
+        mergedData.passengers = Array.from(mergedPaxMap.values());
+        applyParsedDataToForm(mergedData);
+      }
+      renderPdfQueueList();
+      showToast(`${files.length} file PDF berhasil dibaca & digabungkan ke form.`, 'success');
+    }
+
+    function saveAllQueueToRekap() {
+      if (!pdfQueue.length) {
+        showToast('Tidak ada antrian PDF untuk disimpan.', 'warning');
+        return;
+      }
+      pdfQueue.forEach(p => {
+        const pax = (p.passengers && p.passengers.length) ? p.passengers : [{ title: 'Mr.', name: 'KARYAWAN', role: '' }];
+        const paxCount = Math.max(1, pax.length);
+        const totalNom = Number(p.nominal) || 0;
+        records.unshift({
+          id: 'REC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+          tanggalOrder: p.tanggalOrder || getTodayIso(),
+          issueTime: '11:00',
+          divisi: p.divisi || 'GA',
+          jenis: p.jenis || 'FLIGHT',
+          pt: p.pt || 'EPM',
+          keperluan: p.keperluan || 'Perdin',
+          requestBy: '',
+          passengers: pax,
+          paxCount,
+          nama: pax.map(x => `${x.title} ${x.name}`).join(', '),
+          invoice: p.invoice || '-',
+          receiptCode: p.receiptCode || '',
+          maskapai: p.maskapai || 'Garuda Indonesia',
+          flightNo: p.flightNo || '',
+          pnr: p.pnr || '',
+          rute: p.rute || '-',
+          departDate: p.departDate || getTodayIso(),
+          returnDate: p.returnDate || '',
+          vendor: p.vendor || 'Traveloka',
+          nominal: totalNom,
+          unitNominal: Math.round(totalNom / paxCount),
+          mova: Math.round(totalNom * 0.00135),
+          payment: 'DC BNI Pak Tony',
+          tujuan: 'DC BNI Pak Tony',
+          statusPengajuan: 'Sudah Diajukan',
+          noGr: '',
+          statusBayar: 'UNPAID',
+          statusKet: '',
+          pvrKeterangan: '',
+          _updatedAt: Date.now()
+        });
+      });
+      pdfQueue = [];
+      renderPdfQueueList();
+      saveStorage();
+      renderRekapTable();
+      renderPvrPreview(true);
+      showToast('Seluruh antrian PDF berhasil disimpan ke Rekap!', 'success');
+    }
+
+    // =========================================================================
+    // SCAN KTP OTOMATIS (NAMA LENGKAP, NIK 16 DIGIT & FOTO KTP + PAS FOTO)
+    // =========================================================================
+    function preprocessKtpImageForOcr(imgElement) {
+      const natW = imgElement.naturalWidth || 1500;
+      const natH = imgElement.naturalHeight || 950;
+      const targetW = Math.max(1800, Math.min(2600, natW));
+      const scale = targetW / natW;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = targetW;
+      canvas.height = Math.round(natH * scale);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        // KTP Indonesia berlatar biru muda: saluran merah (R) memberi kontras tertinggi terhadap teks hitam
+        const gray = 0.55 * d[i] + 0.35 * d[i + 1] + 0.10 * d[i + 2];
+        const boosted = gray < 128 ? Math.max(0, gray * 0.22) : Math.min(255, 185 + (gray - 128) * 0.6);
+        d[i] = d[i + 1] = d[i + 2] = boosted;
+      }
+      ctx.putImageData(imgData, 0, 0);
+
+      const textCropCanvas = document.createElement('canvas');
+      textCropCanvas.width = Math.round(canvas.width * 0.74);
+      textCropCanvas.height = Math.round(canvas.height * 0.62);
+      const tctx = textCropCanvas.getContext('2d');
+      tctx.drawImage(canvas, 0, Math.round(canvas.height * 0.10), textCropCanvas.width, textCropCanvas.height, 0, 0, textCropCanvas.width, textCropCanvas.height);
+
+      const faceCanvas = document.createElement('canvas');
+      const fw = Math.round(natW * 0.27);
+      const fh = Math.round(natH * 0.52);
+      faceCanvas.width = fw;
+      faceCanvas.height = fh;
+      const fctx = faceCanvas.getContext('2d');
+      fctx.drawImage(imgElement,
+        Math.round(natW * 0.68),
+        Math.round(natH * 0.22),
+        fw,
+        fh,
+        0, 0, fw, fh
+      );
+
+      return {
+        ocrDataUrl: canvas.toDataURL('image/png'),
+        textCropDataUrl: textCropCanvas.toDataURL('image/png'),
+        faceDataUrl: faceCanvas.toDataURL('image/jpeg', 0.90)
+      };
+    }
+
+    function parseKtpOcrText(rawText) {
+      const lines = String(rawText || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const joined = lines.join(' ');
+
+      let nik = '';
+      for (const line of lines) {
+        const cleanedDigits = line
+          .replace(/[OoQD]/g, '0')
+          .replace(/[Iil|!]/g, '1')
+          .replace(/[Zz]/g, '2')
+          .replace(/[Ss]/g, '5')
+          .replace(/[Bb]/g, '8')
+          .replace(/[^\d]/g, '');
+        const nikMatch = cleanedDigits.match(/\d{16}/);
+        if (nikMatch) {
+          nik = nikMatch[0];
+          break;
+        }
+      }
+
+      let nama = '';
+      const ktpNoiseRegex = /^(?:PROVINSI|KABUPATEN|KOTA|NIK|TEMPAT|TGL|LAHIR|JENIS|KELAMIN|ALAMAT|RT|RW|KEL|DESA|KECAMATAN|AGAMA|STATUS|PERKAWINAN|PEKERJAAN|KEWARGANEGARAAN|BERLAKU|HINGGA|GOL|DARAH|SEUMUR|HIDUP|WNI|WNA|ISLAM|KRISTEN|KATOLIK|HINDU|BUDDHA|KONGHUCU|KAWIN|BELUM|CERAI|MALE|FEMALE|LAKI|PEREMPUAN)\b/i;
+      const cleanKtpNameCandidate = (rawStr) => {
+        return String(rawStr || '')
+          .replace(/^.*?(?:N[aou]m[ao]|Narna|Name)\s*[:;\-=\.]?\s*/i, '')
+          .replace(/\b(?:Tempat|Tgl|Lahir|Jenis|Kelamin|Gol|Darah|Alamat)\b.*$/i, '')
+          .replace(/[0-9:;=\-_|\\\/\[\]{}()<>?!@#$%^&*+~`"']/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .toUpperCase();
+      };
+
+      for (let i = 0; i < lines.length; i++) {
+        if (/(?:N[aou]m[ao]|Narna|Name)\b/i.test(lines[i])) {
+          let cand = cleanKtpNameCandidate(lines[i]);
+          if (cand.length < 3 && lines[i + 1]) {
+            cand = cleanKtpNameCandidate(lines[i + 1]);
+          }
+          if (cand.length >= 3 && !ktpNoiseRegex.test(cand)) {
+            nama = cand;
+            break;
+          }
+        }
+        if (!nama && nik && lines[i].replace(/[^\d]/g, '').includes(nik.slice(0, 6)) && lines[i + 1]) {
+          const nextCand = cleanKtpNameCandidate(lines[i + 1]);
+          if (nextCand.length >= 3 && !ktpNoiseRegex.test(nextCand)) {
+            nama = nextCand;
+            break;
+          }
+        }
+      }
+
+      if (!nama) {
+        for (let i = 0; i < Math.min(lines.length, 10); i++) {
+          if (/TEMPAT|LAHIR|KELAMIN|ALAMAT/i.test(lines[i])) break;
+          const cand = cleanKtpNameCandidate(lines[i]);
+          if (cand.length >= 4 && /^[A-Z\s'.]+$/.test(cand) && !ktpNoiseRegex.test(cand)) {
+            nama = cand;
+            break;
+          }
+        }
+      }
+
+      let gender = 'LAKI-LAKI';
+      if (/PEREMPUAN|FEMALE|WANITA/i.test(joined)) {
+        gender = 'PEREMPUAN';
+      } else if (/LAKI|MALE|PRIA/i.test(joined)) {
+        gender = 'LAKI-LAKI';
+      }
+
+      return { nik, nama, gender };
+    }
+
+    async function handleKtpImageUpload(event) {
+      const file = event.target?.files?.[0];
+      if (!file) return;
+
+      const progressBox = getEl('ktpOcrProgressBox');
+      if (progressBox) {
+        progressBox.textContent = '⏳ Sedang memindai KTP dengan OCR... Mohon tunggu beberapa detik.';
+        progressBox.classList.remove('hidden');
+      }
+
+      compressImageToDataUrl(file, async fullPreviewUrl => {
+        currentKtpPhotoData = fullPreviewUrl;
+        const prevImg = getEl('ktpPhotoPreviewImg');
+        const emptyPh = getEl('ktpEmptyPlaceholder');
+        if (prevImg) { prevImg.src = fullPreviewUrl; prevImg.classList.remove('hidden'); }
+        if (emptyPh) emptyPh.classList.add('hidden');
+
+        const tempImg = new Image();
+        tempImg.onload = async () => {
+          try {
+            const { ocrDataUrl, textCropDataUrl, faceDataUrl } = preprocessKtpImageForOcr(tempImg);
+            currentKtpFaceData = faceDataUrl;
+            const faceImg = getEl('ktpFaceCropPreview');
+            const faceTxt = getEl('ktpFaceEmptyText');
+            if (faceImg) { faceImg.src = faceDataUrl; faceImg.classList.remove('hidden'); }
+            if (faceTxt) faceTxt.classList.add('hidden');
+
+            let extracted = { nik: '', nama: '', gender: 'LAKI-LAKI' };
+            let rawText = '';
+
+            if (typeof Tesseract !== 'undefined') {
+              const cropRes = await Tesseract.recognize(textCropDataUrl, 'eng');
+              const cropText = cropRes?.data?.text || '';
+              const cropExt = parseKtpOcrText(cropText);
+              if (cropExt.nik) extracted.nik = cropExt.nik;
+              if (cropExt.nama) extracted.nama = cropExt.nama;
+              if (cropExt.gender) extracted.gender = cropExt.gender;
+              rawText = cropText;
+
+              if (!extracted.nik || !extracted.nama) {
+                const fullRes = await Tesseract.recognize(ocrDataUrl, 'eng');
+                const fullText = fullRes?.data?.text || '';
+                const fullExt = parseKtpOcrText(fullText);
+                if (!extracted.nik && fullExt.nik) extracted.nik = fullExt.nik;
+                if (!extracted.nama && fullExt.nama) extracted.nama = fullExt.nama;
+                if (fullExt.gender && extracted.gender === 'LAKI-LAKI') extracted.gender = fullExt.gender;
+                rawText = (cropText + '\n---\n' + fullText).trim();
+              }
+            }
+
+            setElVal('ktpRawOcrText', rawText);
+            if (extracted.nik) setElVal('ktpNikInput', extracted.nik);
+            if (extracted.nama) setElVal('ktpNameInput', extracted.nama);
+            if (extracted.gender) setElVal('ktpGenderSelect', extracted.gender);
+
+            if (extracted.nik || extracted.nama) {
+              showToast(`Scan KTP berhasil! ${extracted.nama || ''} (${extracted.nik || 'NIK terdeteksi'})`, 'success');
+            } else {
+              showToast('Foto KTP & Pas Foto terpasang. Silakan cek/lengkapi NIK & Nama.', 'warning');
+            }
+          } catch (err) {
+            console.warn('KTP OCR error:', err);
+            showToast('Foto KTP terpasang. Silakan lengkapi NIK & Nama secara manual.', 'info');
+          } finally {
+            if (progressBox) progressBox.classList.add('hidden');
+            event.target.value = '';
+          }
+        };
+        tempImg.onerror = () => {
+          if (progressBox) progressBox.classList.add('hidden');
+          showToast('Gagal memuat gambar KTP.', 'error');
+        };
+        tempImg.src = fullPreviewUrl;
+      }, 1500, 0.90);
+    }
+
+    function resetKtpScannerForm() {
+      setElVal('ktpNikInput', '');
+      setElVal('ktpNameInput', '');
+      setElVal('ktpRoleInput', '');
+      setElVal('ktpRawOcrText', '');
+      currentKtpPhotoData = '';
+      currentKtpFaceData = '';
+      const prevImg = getEl('ktpPhotoPreviewImg');
+      const emptyPh = getEl('ktpEmptyPlaceholder');
+      if (prevImg) { prevImg.src = ''; prevImg.classList.add('hidden'); }
+      if (emptyPh) emptyPh.classList.remove('hidden');
+      const faceImg = getEl('ktpFaceCropPreview');
+      const faceTxt = getEl('ktpFaceEmptyText');
+      if (faceImg) { faceImg.src = ''; faceImg.classList.add('hidden'); }
+      if (faceTxt) faceTxt.classList.remove('hidden');
+    }
+
+    function handleSaveKtpRecord(e) {
+      e.preventDefault();
+      const nik = getElVal('ktpNikInput', '').trim();
+      const nama = getElVal('ktpNameInput', '').trim().toUpperCase();
+      if (!nik || !nama) {
+        showToast('NIK dan Nama Lengkap wajib diisi.', 'warning');
+        return;
+      }
+      ktpRecords.unshift({
+        id: 'KTP-' + Date.now(),
+        nik,
+        nama,
+        gender: getElVal('ktpGenderSelect', 'LAKI-LAKI'),
+        pt: getElVal('ktpPtSelect', 'EPM'),
+        role: getElVal('ktpRoleInput', '').trim(),
+        photo: currentKtpPhotoData,
+        facePhoto: currentKtpFaceData,
+        _updatedAt: Date.now()
+      });
+      saveStorage();
+      renderKtpTable();
+      showToast(`Data KTP a/n ${nama} berhasil disimpan ke database.`, 'success');
+    }
+
+    function useScannedKtpForBooking() {
+      const nama = getElVal('ktpNameInput', '').trim().toUpperCase();
+      const nik = getElVal('ktpNikInput', '').trim();
+      const gender = getElVal('ktpGenderSelect', 'LAKI-LAKI');
+      const role = getElVal('ktpRoleInput', '').trim();
+      const pt = getElVal('ktpPtSelect', 'EPM');
+      if (!nama) {
+        showToast('Isi atau scan Nama KTP terlebih dahulu.', 'warning');
+        return;
+      }
+      const title = gender === 'PEREMPUAN' ? 'Mrs.' : 'Mr.';
+      setElVal('fPt', pt);
+      const box = getEl('passengerRowsContainer');
+      if (box) {
+        box.innerHTML = '';
+        addPassengerRow({ title, name: nama, role: role || (nik ? `NIK: ${nik}` : '') });
+      }
+      switchMainTab('input');
+      refreshFormDerivedOutputs();
+      showToast(`Data ${title} ${nama} otomatis dimasukkan ke Form Tiket!`, 'success');
+    }
+
+    function renderKtpTable() {
+      const tbody = getEl('ktpTableBody');
+      if (!tbody) return;
+      const q = getElVal('ktpSearchInput', '').toLowerCase();
+      const filtered = ktpRecords.filter(k => !q || [k.nik, k.nama || k.name, k.pt, k.role].some(v => String(v || '').toLowerCase().includes(q)));
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 italic">Belum ada data hasil scan KTP tersimpan.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filtered.map((k, i) => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 px-3 font-bold">${i + 1}</td>
+          <td class="py-2.5 px-3">
+            <div class="flex items-center gap-1.5">
+              ${k.photo ? `<img src="${k.photo}" class="w-12 h-8 object-cover rounded border border-slate-300" title="Foto KTP"/>` : ''}
+              ${k.facePhoto ? `<img src="${k.facePhoto}" class="w-8 h-9 object-cover rounded border border-amber-400" title="Pas Foto"/>` : ''}
+            </div>
+          </td>
+          <td class="py-2.5 px-3 font-mono font-black text-blue-900">${escapeHtml(k.nik)}</td>
+          <td class="py-2.5 px-3 font-extrabold text-slate-900">${escapeHtml(k.nama || k.name || '')}</td>
+          <td class="py-2.5 px-3 font-bold">${escapeHtml(k.gender || 'LAKI-LAKI')}</td>
+          <td class="py-2.5 px-3 font-bold">${escapeHtml(k.pt)} <span class="text-slate-500 font-normal">${escapeHtml(k.role)}</span></td>
+          <td class="py-2.5 px-3 text-center">
+            <div class="flex items-center justify-center gap-1">
+              <button type="button" onclick="applySavedKtpToTicket('${k.id}')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-extrabold">Pakai Tiket</button>
+              <button type="button" onclick="markEntityDeleted('${k.nik || k.id}');ktpRecords=ktpRecords.filter(x=>x.id!=='${k.id}');saveStorage();renderKtpTable();" class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-extrabold">Hapus</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function applySavedKtpToTicket(id) {
+      const k = ktpRecords.find(x => x.id === id);
+      if (!k) return;
+      const title = k.gender === 'PEREMPUAN' ? 'Mrs.' : 'Mr.';
+      const fullName = k.nama || k.name || '';
+      setElVal('fPt', k.pt || 'EPM');
+      const box = getEl('passengerRowsContainer');
+      if (box) {
+        box.innerHTML = '';
+        addPassengerRow({ title, name: fullName, role: k.role || `NIK: ${k.nik}` });
+      }
+      switchMainTab('input');
+      refreshFormDerivedOutputs();
+      showToast(`${title} ${fullName} dimasukkan ke form tiket.`, 'success');
+    }
+
+    function exportKtpExcel() {
+      if (typeof XLSX === 'undefined') return;
+      const rows = ktpRecords.map((k, i) => ({
+        'No.': i + 1,
+        'NIK': k.nik,
+        'Nama Lengkap': k.nama || k.name || '',
+        'Jenis Kelamin': k.gender || 'LAKI-LAKI',
+        'Entitas PT': k.pt,
+        'Jabatan': k.role
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'DATABASE_KTP');
+      XLSX.writeFile(wb, `Database_Scan_KTP_${getTodayIso()}.xlsx`);
+      showToast('Database KTP berhasil diunduh ke Excel.', 'success');
     }
 
     function onServiceTypeChange() {
