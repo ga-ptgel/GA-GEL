@@ -2358,6 +2358,8 @@
           vendorMalam: 'Warung Mandiri Site',
           vendorSupper: 'Warung Mandiri Site',
           pic: 'PIC Site 01',
+          baseSiteCount: 200,
+          baseLokalCount: 0,
           rate: 38000
         },
         {
@@ -2371,6 +2373,8 @@
           vendorMalam: 'Kantin Internal Site',
           vendorSupper: 'Kantin Internal Site',
           pic: 'PIC Site 02',
+          baseSiteCount: 150,
+          baseLokalCount: 0,
           rate: 32000
         },
         {
@@ -2384,6 +2388,8 @@
           vendorMalam: 'PT Prima Rasa Catering',
           vendorSupper: 'PT Prima Rasa Catering',
           pic: 'PIC Site 03',
+          baseSiteCount: 120,
+          baseLokalCount: 0,
           rate: 38000
         }
       ],
@@ -3936,6 +3942,16 @@
                 <input type="number" id="ctNewSiteRate" value="35000" required class="w-full h-9 px-3 text-xs border border-slate-300 rounded-xl font-bold" />
               </div>
             </div>
+            <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-blue-50/70 border border-blue-200">
+              <div>
+                <label class="block text-[11px] font-bold text-blue-950 mb-1">Kuota Karyawan Site (Mess) *</label>
+                <input type="number" id="ctNewSiteBaseCount" value="200" min="0" required class="w-full h-9 px-3 text-xs border border-blue-300 rounded-xl bg-white font-black text-blue-900" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-amber-950 mb-1">Kuota Karyawan Lokal (No Pagi)</label>
+                <input type="number" id="ctNewSiteLokalCount" value="0" min="0" class="w-full h-9 px-3 text-xs border border-amber-300 rounded-xl bg-white font-black text-amber-900" />
+              </div>
+            </div>
             <div class="flex justify-end gap-2 pt-2">
               <button type="button" onclick="closeUniversalModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-xs font-bold">Batal</button>
               <button type="submit" class="px-5 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-extrabold">✓ Simpan Site &amp; Vendor</button>
@@ -3970,13 +3986,15 @@
         vendorMalam: mode === 'MULTI_VENDOR' ? vMalam : summaryVendor,
         vendorSupper: mode === 'MULTI_VENDOR' ? vSupper : summaryVendor,
         pic: getElVal('ctNewSitePic', '').trim() || 'PIC Site',
+        baseSiteCount: Number(getElVal('ctNewSiteBaseCount', 0)) || 0,
+        baseLokalCount: Number(getElVal('ctNewSiteLokalCount', 0)) || 0,
         rate: Number(getElVal('ctNewSiteRate', 0)) || 0,
         _updatedAt: Date.now()
       });
       saveStorage();
       closeUniversalModal();
       ctRender();
-      showToast('Master Site & Kontak Person Vendor berhasil ditambahkan!', 'success');
+      showToast('Master Site, Kuota Karyawan & Vendor berhasil ditambahkan!', 'success');
     }
 
     function ctOpenEditSiteModal(siteId) {
@@ -4022,6 +4040,16 @@
               <input type="text" id="ctEditSitePic" value="${escapeHtml(s.pic)}" class="h-9 px-3 text-xs border border-slate-300 rounded-xl" />
               <input type="number" id="ctEditSiteRate" value="${Number(s.rate) || 0}" class="h-9 px-3 text-xs border border-slate-300 rounded-xl font-bold" />
             </div>
+            <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-blue-50/70 border border-blue-200">
+              <div>
+                <label class="block text-[11px] font-bold text-blue-950 mb-1">Kuota Karyawan Site (Mess) *</label>
+                <input type="number" id="ctEditSiteBaseCount" value="${Number(s.baseSiteCount ?? 200)}" min="0" required class="w-full h-9 px-3 text-xs border border-blue-300 rounded-xl bg-white font-black text-blue-900" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-amber-950 mb-1">Kuota Karyawan Lokal (No Pagi)</label>
+                <input type="number" id="ctEditSiteLokalCount" value="${Number(s.baseLokalCount ?? 0)}" min="0" class="w-full h-9 px-3 text-xs border border-amber-300 rounded-xl bg-white font-black text-amber-900" />
+              </div>
+            </div>
             <div class="flex justify-end gap-2 pt-2">
               <button type="button" onclick="closeUniversalModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-xs font-bold">Batal</button>
               <button type="submit" class="px-5 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-extrabold">Simpan Perubahan</button>
@@ -4050,12 +4078,14 @@
       s.vendorMalam = mode === 'MULTI_VENDOR' ? vMalam : singleVendor;
       s.vendorSupper = mode === 'MULTI_VENDOR' ? vSupper : singleVendor;
       s.pic = getElVal('ctEditSitePic', s.pic).trim();
+      s.baseSiteCount = Number(getElVal('ctEditSiteBaseCount', 0)) || 0;
+      s.baseLokalCount = Number(getElVal('ctEditSiteLokalCount', 0)) || 0;
       s.rate = Number(getElVal('ctEditSiteRate', s.rate)) || 0;
       s._updatedAt = Date.now();
       saveStorage();
       closeUniversalModal();
       ctRender();
-      showToast(`Data ${s.name} berhasil diperbarui.`, 'success');
+      showToast(`Data ${s.name} & Kuota Karyawan berhasil diperbarui.`, 'success');
     }
 
     function ctDeleteSite(siteId) {
@@ -4070,28 +4100,48 @@
     }
 
     function ctComputeSiteMealBreakdown(siteName, dateIso) {
+      const siteObj = (cateringTowerState.sites || []).find(s => s.name === siteName) || {};
       const emps = (cateringTowerState.employees || []).filter(e => e.site === siteName);
       const guests = (cateringTowerState.guests || []).filter(g => g.site === siteName && (!dateIso || g.date === dateIso));
       const ovLogs = (cateringTowerState.overtimeLogs || []).filter(o => o.site === siteName && (!dateIso || o.date === dateIso));
 
-      const totalEmp = emps.length;
+      // 100% ditarik otomatis dari Master Site Kuota & Employee Master & Roster
       const cutiCnt = emps.filter(e => e.status === 'CUTI').length;
       const perdinCnt = emps.filter(e => e.status === 'PERDIN').length;
       const resignCnt = emps.filter(e => e.status === 'RESIGN').length;
 
-      // Karyawan Site (Mess) yang ON_SITE mendapat Pagi, Siang, Malam
-      const activeSiteMess = emps.filter(e => e.status === 'ON_SITE' && (e.empType || 'SITE') === 'SITE').length;
-      // Karyawan Lokal yang ON_SITE (bekerja di site) TIDAK dapat Makan Pagi, tapi dapat Siang, Malam, dan Lembur
-      const activeLokal = emps.filter(e => e.status === 'ON_SITE' && e.empType === 'LOKAL').length;
+      const regSiteEmps = emps.filter(e => (e.empType || 'SITE') === 'SITE');
+      const regLokalEmps = emps.filter(e => e.empType === 'LOKAL');
 
+      const baseSiteQuota = Math.max(Number(siteObj.baseSiteCount) || 0, regSiteEmps.length);
+      const baseLokalQuota = Math.max(Number(siteObj.baseLokalCount) || 0, regLokalEmps.length);
+      const totalEmp = baseSiteQuota + baseLokalQuota;
+
+      const cutiSite = regSiteEmps.filter(e => e.status === 'CUTI').length;
+      const perdinSite = regSiteEmps.filter(e => e.status === 'PERDIN').length;
+      const resignSite = regSiteEmps.filter(e => e.status === 'RESIGN').length;
+
+      const cutiLokal = regLokalEmps.filter(e => e.status === 'CUTI').length;
+      const perdinLokal = regLokalEmps.filter(e => e.status === 'PERDIN').length;
+      const resignLokal = regLokalEmps.filter(e => e.status === 'RESIGN').length;
+
+      // Karyawan Site (Mess) aktif bekerja di site
+      const activeSiteMess = Math.max(0, baseSiteQuota - cutiSite - perdinSite - resignSite);
+      // Karyawan Lokal aktif bekerja di site (tidak dapat makan pagi, dapat siang/malam/lembur)
+      const activeLokal = Math.max(0, baseLokalQuota - cutiLokal - perdinLokal - resignLokal);
+
+      // 100% ditarik otomatis dari Guest Register & Lembur & Supper Site
       const tamuPax = guests.reduce((s, g) => s + (Number(g.pax) || 1), 0);
       const lemburEmpCnt = emps.filter(e => e.status === 'ON_SITE' && e.overtime).length;
       const lemburLogCnt = ovLogs.reduce((s, o) => s + (Number(o.pax) || 1), 0);
       const totalLemburSupper = lemburEmpCnt + lemburLogCnt;
 
+      // Makan Pagi: Karyawan Site Aktif + Tamu (Karyawan Lokal TIDAK dapat Makan Pagi)
       const pagi = activeSiteMess + tamuPax;
+      // Makan Siang & Malam: Karyawan Site Aktif + Karyawan Lokal Aktif + Tamu
       const siang = activeSiteMess + activeLokal + tamuPax;
       const malam = activeSiteMess + activeLokal + tamuPax;
+      // Supper: Lembur Shift Malam (Karyawan Site & Lokal yang lembur)
       const supper = totalLemburSupper;
 
       return {
@@ -4126,37 +4176,17 @@
       setElVal('ctMaSiang', calc.siang);
       setElVal('ctMaMalam', calc.malam);
       setElVal('ctMaSupper', calc.supper);
-      ctRecalcModalManual();
-    }
-
-    function ctRecalcModalManual() {
-      const totalEmp = Number(getElVal('ctMaTotalEmp', 0)) || 0;
-      const cuti = Number(getElVal('ctMaCuti', 0)) || 0;
-      const perdin = Number(getElVal('ctMaPerdin', 0)) || 0;
-      const resign = Number(getElVal('ctMaResign', 0)) || 0;
-      const lokal = Number(getElVal('ctMaLokal', 0)) || 0;
-      const tamu = Number(getElVal('ctMaTamu', 0)) || 0;
-      const lembur = Number(getElVal('ctMaLembur', 0)) || 0;
-
-      const eligibleSiangMalam = Math.max(0, totalEmp - cuti - perdin - resign) + tamu;
-      const eligiblePagi = Math.max(0, eligibleSiangMalam - lokal);
-
-      setElVal('ctMaPagi', eligiblePagi);
-      setElVal('ctMaSiang', eligibleSiangMalam);
-      setElVal('ctMaMalam', eligibleSiangMalam);
-      setElVal('ctMaSupper', lembur);
-      setElVal('ctMaTotalPorsi', eligiblePagi + eligibleSiangMalam + eligibleSiangMalam + lembur);
+      setElVal('ctMaTotalPorsi', calc.totalPorsiHarian);
     }
 
     function ctOpenMealActualModal() {
       ctDraftMealPhotos = { pagi: [], siang: [], malam: [], tengahMalam: [] };
-      const firstSite = cateringTowerState.sites[0] || { name: 'Site 01 — PT GEL (ARC)' };
       openUniversalModal(`
         <div class="space-y-3">
           <div class="flex items-center justify-between border-b pb-2">
             <div>
-              <h3 class="text-sm font-black text-slate-900">🍽 Input Meal Actual Harian Site (4 Waktu Makan + Wajib Foto)</h3>
-              <p class="text-[11px] text-slate-500">Rumus Otomatis: <b>Total Karyawan Site - (Cuti + Perdin + Resign) + Tamu + Lembur</b> (Karyawan Lokal tidak dapat Pagi).</p>
+              <h3 class="text-sm font-black text-slate-900">🍽 Input Meal Actual Harian Site (Otomatis 100% + Wajib 4 Foto)</h3>
+              <p class="text-[11px] text-slate-500">Seluruh angka ditarik otomatis dari <b>Employee Master &amp; Roster</b>, <b>Guest Register</b>, dan <b>Lembur &amp; Supper Site</b> (tanpa input angka manual).</p>
             </div>
             <button type="button" onclick="closeUniversalModal()" class="text-slate-500 font-bold">✕</button>
           </div>
@@ -4174,51 +4204,55 @@
               </div>
             </div>
 
-            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-black text-slate-800 uppercase">Kalkulasi Otomatis dari Employee Master, Guest &amp; Lembur</span>
-                <button type="button" onclick="ctSyncModalFromSiteMaster()" class="text-[10px] font-extrabold text-blue-700 hover:underline">↻ Tarik Ulang Data</button>
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-[11px] font-black text-slate-800 uppercase">🔒 Data Otomatis Terkunci dari Master Roster, Guest &amp; Lembur</span>
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <button type="button" onclick="closeUniversalModal(); ctGo('employees');" class="px-2 py-0.5 rounded bg-amber-100 hover:bg-amber-200 text-amber-950 text-[10px] font-extrabold">♙ Update Roster/Cuti</button>
+                  <button type="button" onclick="closeUniversalModal(); ctGo('overtime');" class="px-2 py-0.5 rounded bg-indigo-100 hover:bg-indigo-200 text-indigo-950 text-[10px] font-extrabold">🌙 Update Lembur</button>
+                  <button type="button" onclick="closeUniversalModal(); ctGo('guests');" class="px-2 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-950 text-[10px] font-extrabold">♧ Update Tamu</button>
+                </div>
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <div><label class="block text-[10px] font-bold">Total Karyawan Site</label><input type="number" id="ctMaTotalEmp" oninput="ctRecalcModalManual()" class="w-full h-8 px-2 text-xs border rounded-lg bg-white font-bold" /></div>
-                <div><label class="block text-[10px] font-bold text-rose-700">Cuti (No Makan)</label><input type="number" id="ctMaCuti" oninput="ctRecalcModalManual()" class="w-full h-8 px-2 text-xs border border-rose-300 rounded-lg bg-white font-bold" /></div>
-                <div><label class="block text-[10px] font-bold text-rose-700">Perdin (No Makan)</label><input type="number" id="ctMaPerdin" oninput="ctRecalcModalManual()" class="w-full h-8 px-2 text-xs border border-rose-300 rounded-lg bg-white font-bold" /></div>
-                <div><label class="block text-[10px] font-bold text-rose-700">Resign (No Makan)</label><input type="number" id="ctMaResign" oninput="ctRecalcModalManual()" class="w-full h-8 px-2 text-xs border border-rose-300 rounded-lg bg-white font-bold" /></div>
-                <div><label class="block text-[10px] font-bold text-amber-800">Karyawan Lokal (No Pagi)</label><input type="number" id="ctMaLokal" oninput="ctRecalcModalManual()" class="w-full h-8 px-2 text-xs border border-amber-300 rounded-lg bg-white font-bold" /></div>
-                <div><label class="block text-[10px] font-bold text-emerald-700">Guest / Tamu (+)</label><input type="number" id="ctMaTamu" oninput="ctRecalcModalManual()" class="w-full h-8 px-2 text-xs border border-emerald-300 rounded-lg bg-white font-bold" /></div>
-                <div><label class="block text-[10px] font-bold text-indigo-700">Lembur / Supper (+)</label><input type="number" id="ctMaLembur" oninput="ctRecalcModalManual()" class="w-full h-8 px-2 text-xs border border-indigo-300 rounded-lg bg-white font-bold" /></div>
-                <div><label class="block text-[10px] font-bold text-blue-900">TOTAL ACTUAL PORSI</label><input type="number" id="ctMaTotalPorsi" readonly class="w-full h-8 px-2 text-xs border border-blue-300 rounded-lg bg-blue-50 font-black text-blue-950" /></div>
+                <div><label class="block text-[10px] font-bold text-slate-600">Total Karyawan (Auto Roster)</label><input type="number" id="ctMaTotalEmp" readonly class="w-full h-8 px-2 text-xs border border-slate-300 rounded-lg bg-slate-100 font-black text-slate-900 cursor-not-allowed" /></div>
+                <div><label class="block text-[10px] font-bold text-rose-700">Cuti (Auto No Makan)</label><input type="number" id="ctMaCuti" readonly class="w-full h-8 px-2 text-xs border border-rose-300 rounded-lg bg-rose-50/70 font-black text-rose-900 cursor-not-allowed" /></div>
+                <div><label class="block text-[10px] font-bold text-rose-700">Perdin (Auto No Makan)</label><input type="number" id="ctMaPerdin" readonly class="w-full h-8 px-2 text-xs border border-rose-300 rounded-lg bg-rose-50/70 font-black text-rose-900 cursor-not-allowed" /></div>
+                <div><label class="block text-[10px] font-bold text-rose-700">Resign (Auto No Makan)</label><input type="number" id="ctMaResign" readonly class="w-full h-8 px-2 text-xs border border-rose-300 rounded-lg bg-rose-50/70 font-black text-rose-900 cursor-not-allowed" /></div>
+                <div><label class="block text-[10px] font-bold text-amber-800">Karyawan Lokal (No Pagi)</label><input type="number" id="ctMaLokal" readonly class="w-full h-8 px-2 text-xs border border-amber-300 rounded-lg bg-amber-50/70 font-black text-amber-950 cursor-not-allowed" /></div>
+                <div><label class="block text-[10px] font-bold text-emerald-700">Guest / Tamu (Auto +)</label><input type="number" id="ctMaTamu" readonly class="w-full h-8 px-2 text-xs border border-emerald-300 rounded-lg bg-emerald-50/70 font-black text-emerald-950 cursor-not-allowed" /></div>
+                <div><label class="block text-[10px] font-bold text-indigo-700">Lembur / Supper (Auto +)</label><input type="number" id="ctMaLembur" readonly class="w-full h-8 px-2 text-xs border border-indigo-300 rounded-lg bg-indigo-50/70 font-black text-indigo-950 cursor-not-allowed" /></div>
+                <div><label class="block text-[10px] font-bold text-blue-900">TOTAL ACTUAL PORSI</label><input type="number" id="ctMaTotalPorsi" readonly class="w-full h-8 px-2 text-xs border border-blue-400 rounded-lg bg-blue-100 font-black text-blue-950 cursor-not-allowed" /></div>
               </div>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div class="p-2.5 rounded-xl border border-slate-200 bg-white space-y-1.5">
-                <div class="text-[11px] font-black text-slate-800">🌅 Makan Pagi</div>
-                <input type="number" id="ctMaPagi" class="w-full h-8 px-2 text-xs border rounded-lg font-black text-blue-900" />
+                <div class="text-[11px] font-black text-slate-800">🌅 Makan Pagi (Auto)</div>
+                <input type="number" id="ctMaPagi" readonly class="w-full h-8 px-2 text-xs border border-slate-300 rounded-lg bg-slate-100 font-black text-blue-900 cursor-not-allowed" />
                 <label class="block p-1.5 rounded-lg border border-dashed border-amber-400 bg-amber-50/50 text-center cursor-pointer text-[10px] font-extrabold text-amber-950">
                   📷 Foto Pagi * (<span id="ctCntPagi">0</span>)
                   <input type="file" accept="image/*" multiple onchange="ctHandleShiftPhoto('pagi', this.files)" class="hidden" />
                 </label>
               </div>
               <div class="p-2.5 rounded-xl border border-slate-200 bg-white space-y-1.5">
-                <div class="text-[11px] font-black text-slate-800">☀️ Makan Siang</div>
-                <input type="number" id="ctMaSiang" class="w-full h-8 px-2 text-xs border rounded-lg font-black text-blue-900" />
+                <div class="text-[11px] font-black text-slate-800">☀️ Makan Siang (Auto)</div>
+                <input type="number" id="ctMaSiang" readonly class="w-full h-8 px-2 text-xs border border-slate-300 rounded-lg bg-slate-100 font-black text-blue-900 cursor-not-allowed" />
                 <label class="block p-1.5 rounded-lg border border-dashed border-amber-400 bg-amber-50/50 text-center cursor-pointer text-[10px] font-extrabold text-amber-950">
                   📷 Foto Siang * (<span id="ctCntSiang">0</span>)
                   <input type="file" accept="image/*" multiple onchange="ctHandleShiftPhoto('siang', this.files)" class="hidden" />
                 </label>
               </div>
               <div class="p-2.5 rounded-xl border border-slate-200 bg-white space-y-1.5">
-                <div class="text-[11px] font-black text-slate-800">🌆 Makan Malam</div>
-                <input type="number" id="ctMaMalam" class="w-full h-8 px-2 text-xs border rounded-lg font-black text-blue-900" />
+                <div class="text-[11px] font-black text-slate-800">🌆 Makan Malam (Auto)</div>
+                <input type="number" id="ctMaMalam" readonly class="w-full h-8 px-2 text-xs border border-slate-300 rounded-lg bg-slate-100 font-black text-blue-900 cursor-not-allowed" />
                 <label class="block p-1.5 rounded-lg border border-dashed border-amber-400 bg-amber-50/50 text-center cursor-pointer text-[10px] font-extrabold text-amber-950">
                   📷 Foto Malam * (<span id="ctCntMalam">0</span>)
                   <input type="file" accept="image/*" multiple onchange="ctHandleShiftPhoto('malam', this.files)" class="hidden" />
                 </label>
               </div>
               <div class="p-2.5 rounded-xl border border-slate-200 bg-white space-y-1.5">
-                <div class="text-[11px] font-black text-slate-800">🌙 Supper / Lembur</div>
-                <input type="number" id="ctMaSupper" class="w-full h-8 px-2 text-xs border rounded-lg font-black text-indigo-900" />
+                <div class="text-[11px] font-black text-slate-800">🌙 Supper / Lembur (Auto)</div>
+                <input type="number" id="ctMaSupper" readonly class="w-full h-8 px-2 text-xs border border-slate-300 rounded-lg bg-slate-100 font-black text-indigo-900 cursor-not-allowed" />
                 <label class="block p-1.5 rounded-lg border border-dashed border-amber-400 bg-amber-50/50 text-center cursor-pointer text-[10px] font-extrabold text-amber-950">
                   📷 Foto Supper * (<span id="ctCntTengahMalam">0</span>)
                   <input type="file" accept="image/*" multiple onchange="ctHandleShiftPhoto('tengahMalam', this.files)" class="hidden" />
@@ -4696,6 +4730,7 @@
                     <th class="py-3 px-3">Sistem Dapur</th>
                     <th class="py-3 px-3">Nama Vendor / Kantin</th>
                     <th class="py-3 px-3">Kontak Person Vendor / Kantin</th>
+                    <th class="py-3 px-3 text-center">Kuota Karyawan (Site / Lokal)</th>
                     <th class="py-3 px-3">PIC Site</th>
                     <th class="py-3 px-3 text-right">Tarif / Porsi</th>
                     <th class="py-3 px-3 text-center">Aksi</th>
@@ -4709,6 +4744,7 @@
                       <td class="py-2.5 px-3 font-bold text-amber-900">${ctKitchenModeLabel(s.kitchenMode)}</td>
                       <td class="py-2.5 px-3 font-semibold">${escapeHtml(s.vendor)}</td>
                       <td class="py-2.5 px-3 font-bold text-blue-900">${escapeHtml(s.contactPerson || '-')}</td>
+                      <td class="py-2.5 px-3 text-center font-extrabold text-slate-800">${Number(s.baseSiteCount || 0)} Site / ${Number(s.baseLokalCount || 0)} Lokal</td>
                       <td class="py-2.5 px-3">${escapeHtml(s.pic || '-')}</td>
                       <td class="py-2.5 px-3 text-right font-bold text-emerald-800">${formatRupiah(s.rate)}</td>
                       <td class="py-2.5 px-3 text-center">
@@ -4718,7 +4754,7 @@
                         </div>
                       </td>
                     </tr>
-                  `).join('') || `<tr><td colspan="8" class="py-6 text-center text-slate-400">Tidak ada data vendor/site yang cocok.</td></tr>`}
+                  `).join('') || `<tr><td colspan="9" class="py-6 text-center text-slate-400">Tidak ada data vendor/site yang cocok.</td></tr>`}
                 </tbody>
               </table>
             </div>
